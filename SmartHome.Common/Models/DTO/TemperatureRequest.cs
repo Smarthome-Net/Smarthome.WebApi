@@ -2,7 +2,7 @@
 
 public class TemperatureRequest 
 {
-    public Scope Scope { get; set; }
+    public ScopeType Scope { get; set; }
     public string ScopeValue { get; set; }
     public PageSetting PageSetting { get; set; }
 }

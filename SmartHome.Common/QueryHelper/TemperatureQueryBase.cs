@@ -10,16 +10,16 @@ namespace SmartHome.Common.QueryHelper;
 
 public abstract class TemperatureQueryBase
 {
-    protected static Func<Temperature, string> CreateKeySelector(Scope scope)
+    protected static Func<Temperature, string> CreateKeySelector(ScopeType scope)
     {
         //The default selector is for the room
         Func<Temperature, string> keySelector = item => item.Device.Room;
         switch (scope)
         {
-            case Scope.All:
+            case ScopeType.All:
                 break;
-            case Scope.Room:
-            case Scope.Device:
+            case ScopeType.Room:
+            case ScopeType.Device:
                 //If the scope is room we use the device name for the selector, because we only want to display
                 //the data for the selected room
                 keySelector = item => item.Device.Name;
@@ -31,17 +31,17 @@ public abstract class TemperatureQueryBase
         return keySelector;
     }
 
-    protected static Func<Temperature, bool> CreatePredicate(Scope scope, string scopeValue)
+    protected static Func<Temperature, bool> CreatePredicate(ScopeType scope, string scopeValue)
     {
         Func<Temperature, bool> predicate = item => true;
         switch (scope)
         {
-            case Scope.All:
+            case ScopeType.All:
                 break;
-            case Scope.Room:
+            case ScopeType.Room:
                 predicate = item => item.Device.Room == scopeValue;
                 break;
-            case Scope.Device:
+            case ScopeType.Device:
                 //Layout of scopeValue in this block should be MyRoom/Window. MyRoom is the room where the device stands
                 //and the Window is the name of the device. In this case, the number of results should be exactly 2 
                 if (TrySplitString(scopeValue, '/', out List<string> results))

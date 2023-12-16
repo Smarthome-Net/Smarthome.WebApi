@@ -18,7 +18,7 @@ public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
     private readonly Subject<FilterableChart> _subject;
 
     private string _scopeValue;
-    private Scope _scope;
+    private ScopeType _scope;
 
     public TemperatureHubQueue(MqttClientServiceProvider mqttClientServiceProvider)
     {
@@ -49,18 +49,18 @@ public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
         return GroupData(keySelector, data);
     }
 
-    private static Scope GetScope(string scopeValue)
+    private static ScopeType GetScope(string scopeValue)
     {
         if (scopeValue.Equals(string.Empty))
         {
-            return Scope.All;
+            return ScopeType.All;
         }
 
         if(scopeValue.Contains('/'))
         {
-            return Scope.Room;
+            return ScopeType.Room;
         }
-        return Scope.Device;
+        return ScopeType.Device;
     }
 
     public void SetScope(string scopeValue)

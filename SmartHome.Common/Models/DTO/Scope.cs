@@ -1,8 +1,8 @@
-﻿namespace SmartHome.Common.Models.DTO;
-
-public enum Scope 
+﻿namespace SmartHome.Common.Models.DTO
 {
-    All,
-    Room,
-    Device
+    public class Scope
+    {
+        public ScopeType ScopeType { get; set; }
+        public string Value { get; set; }
+    }
 }
