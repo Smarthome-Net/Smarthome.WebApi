@@ -2,8 +2,8 @@
 
 namespace SmartHome.Common.Models.DTO;
 
-public class Chart
+public class Chart<TSeries>
 {
     public string Name { get; set; }
-    public IEnumerable<TimeSeries> Series { get; set; }
+    public IEnumerable<TSeries> Series { get; set; }
 }

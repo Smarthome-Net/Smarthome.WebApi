@@ -6,6 +6,6 @@ public class TemperatureResponse
 {
     public ScopeType Scope { get; set; }
     public string ScopeValue { get; set; }
-    public IEnumerable<Chart> Temperatures { get; set; }
+    public IEnumerable<Chart<TimeSeries>> Temperatures { get; set; }
     public PageSetting PageSetting { get; set; }
 }

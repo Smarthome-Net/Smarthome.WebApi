@@ -7,6 +7,6 @@ public interface ITemperatureHubQueue
 {
     public void SetScope(string scopeValue);
 
-    public IObservable<FilterableChart> TemperaturChartData { get; }
+    public IObservable<FilterableChart<TimeSeries>> TemperaturChartData { get; }
 
 }

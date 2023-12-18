@@ -4,7 +4,6 @@ using SmartHome.MongoService.Provider;
 using SmartHome.Common.Interfaces;
 using SmartHome.MongoService.Services;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization;
 
 namespace SmartHome.MongoService.Extension;
 
@@ -24,6 +23,7 @@ public static class MongoDBServiceExtension
 
         services.AddTransient<ITemperatureWriterService, TemperatureWriterService>();
         services.AddTransient<ITemperatureReaderService, TemperatureReaderService>();
+        services.AddTransient<ITemperatureStatisticService, TemperaturStatisticService>();
         services.AddTransient<IDeviceService, DeviceService>();
 
         return services;

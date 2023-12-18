@@ -5,5 +5,5 @@ namespace SmartHome.Common.Interfaces;
 
 public interface ITemperatureReaderService
 {
-    IEnumerable<Chart> GetTemperature(TemperatureRequest request);
+    IEnumerable<Chart<TimeSeries>> GetTemperature(TemperatureRequest request);
 }

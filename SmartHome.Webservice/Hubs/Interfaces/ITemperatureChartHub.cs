@@ -6,7 +6,7 @@ namespace SmartHome.Webservice.Hubs.Interfaces;
 
 public interface ITemperatureChartHub
 {
-    Task UpdateTemperatuure(IEnumerable<Chart> chartData);
+    Task UpdateTemperatuure(IEnumerable<Chart<TimeSeries>> chartData);
 
     Task SendMessage(string message);
 }

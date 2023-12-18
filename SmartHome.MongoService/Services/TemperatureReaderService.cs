@@ -22,7 +22,7 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
         _deviceCollection = mongoConnectionProvider.GetDeviceCollection();
     }
 
-    public IEnumerable<Chart> GetTemperature(TemperatureRequest request)
+    public IEnumerable<Chart<TimeSeries>> GetTemperature(TemperatureRequest request)
     {
         Func<Temperature, bool> predicate = CreatePredicate(request.Scope, request.ScopeValue);
         Func<Temperature, string> keySelector = CreateKeySelector(request.Scope);

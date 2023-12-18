@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHome.Common.Interfaces;
+using SmartHome.Common.Models.DTO;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -19,10 +20,10 @@ public class StatisticController : ControllerBase
         this.statisticService = statisticService;
     }
 
-    [HttpPost("device/{name}/{isRoom}")]
-    public async Task<IActionResult> CompareStatistic(string name, bool isRoom, List<string> compareList = null) 
+    [HttpPost]
+    public IActionResult GetStatistic(Scope scope)
     {
-        var result = await statisticService.GetStatistic(name, isRoom, compareList);
+        var result = statisticService.GetStatistic(scope);
         return Ok(result);
     }
 }

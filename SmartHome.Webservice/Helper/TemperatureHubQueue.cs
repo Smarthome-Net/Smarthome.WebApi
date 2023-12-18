@@ -15,7 +15,7 @@ namespace SmartHome.Webservice.Helper;
 public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
 {
     private readonly IMqttClientService _mqttClientService;
-    private readonly Subject<FilterableChart> _subject;
+    private readonly Subject<FilterableChart<TimeSeries>> _subject;
 
     private string _scopeValue;
     private ScopeType _scope;
@@ -23,7 +23,7 @@ public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
     public TemperatureHubQueue(MqttClientServiceProvider mqttClientServiceProvider)
     {
         _mqttClientService = mqttClientServiceProvider.MqttClientService;
-        _subject = new Subject<FilterableChart>();
+        _subject = new Subject<FilterableChart<TimeSeries>>();
         _mqttClientService.Temperature
             .Subscribe(data => 
             {
@@ -35,14 +35,14 @@ public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
     private void Process(IList<Temperature> rawData)
     {
         var data = CreateTemperatureChart(rawData);
-        var chartData = new FilterableChart(_scopeValue, data);
+        var chartData = new FilterableChart<TimeSeries>(_scopeValue, data);
         _subject.OnNext(chartData);
     }
 
 
-    public IObservable<FilterableChart> TemperaturChartData { get => _subject.AsObservable(); }
+    public IObservable<FilterableChart<TimeSeries>> TemperaturChartData { get => _subject.AsObservable(); }
 
-    public IEnumerable<Chart> CreateTemperatureChart(IList<Temperature> data)
+    public IEnumerable<Chart<TimeSeries>> CreateTemperatureChart(IList<Temperature> data)
     {
         var keySelector = CreateKeySelector(_scope);
 
