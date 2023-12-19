@@ -2,6 +2,7 @@
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.DTO.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,20 +32,20 @@ public abstract class TemperatureQueryBase
         return keySelector;
     }
 
-    protected static Func<Temperature, bool> CreatePredicate(ScopeType scope, string scopeValue)
+    protected static Func<Temperature, bool> CreatePredicate(Scope scope)
     {
         Func<Temperature, bool> predicate = item => true;
-        switch (scope)
+        switch (scope.ScopeType)
         {
             case ScopeType.All:
                 break;
             case ScopeType.Room:
-                predicate = item => item.Device.Room == scopeValue;
+                predicate = item => item.Device.Room == scope.Value;
                 break;
             case ScopeType.Device:
                 //Layout of scopeValue in this block should be MyRoom/Window. MyRoom is the room where the device stands
                 //and the Window is the name of the device. In this case, the number of results should be exactly 2 
-                if (TrySplitString(scopeValue, '/', out List<string> results))
+                if (TrySplitString(scope.Value, '/', out List<string> results))
                 {
                     if (results.Count == 2)
                     {

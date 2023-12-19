@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.DTO.Requests;
+using SmartHome.Common.Models.DTO.Responses;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -25,7 +26,6 @@ public class TemperatureChartController : ControllerBase
         TemperatureResponse temperatureResponse = new()
         {
             Scope = temperatureRequest.Scope,
-            ScopeValue = temperatureRequest.ScopeValue,
             Temperatures = temperatureService.GetTemperature(temperatureRequest),
             PageSetting = temperatureRequest.PageSetting
         };

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using SmartHome.Common.Models.DTO.Charts;
 
-namespace SmartHome.Common.Models.DTO;
+namespace SmartHome.Common.Models.DTO.Responses;
 
-public class TemperatureResponse 
+public class TemperatureResponse
 {
-    public ScopeType Scope { get; set; }
-    public string ScopeValue { get; set; }
+    public Scope Scope { get; set; }
     public IEnumerable<Chart<TimeSeries>> Temperatures { get; set; }
     public PageSetting PageSetting { get; set; }
 }

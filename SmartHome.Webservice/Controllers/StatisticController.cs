@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.DTO.Requests;
+using SmartHome.Common.Models.DTO.Responses;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -21,9 +20,13 @@ public class StatisticController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult GetStatistic(Scope scope)
+    public ActionResult<StatisticResponse> GetStatistic(StatisticRequest request)
     {
-        var result = statisticService.GetStatistic(scope);
-        return Ok(result);
+        var response = new StatisticResponse
+        {
+            Scope = request.Scope,
+            StatisticChart = statisticService.GetStatistic(request)
+        };
+        return Ok(response);
     }
 }

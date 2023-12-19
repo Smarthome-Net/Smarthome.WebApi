@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using SmartHome.MqttService.Settings;
 using System.Reactive.Subjects;
 using SmartHome.Common.Exceptions;
-using Microsoft.Extensions.Hosting;
 using System.Reactive.Linq;
 using SmartHome.MqttService.Providers;
 using SmartHome.Common.Models.Db;

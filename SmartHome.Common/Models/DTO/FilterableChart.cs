@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartHome.Common.Models.DTO.Charts;
 
 namespace SmartHome.Common.Models.DTO;
 

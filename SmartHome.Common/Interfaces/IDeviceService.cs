@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MongoDB.Bson;
 using SmartHome.Common.Models.Db;
 
 namespace SmartHome.Common.Interfaces;

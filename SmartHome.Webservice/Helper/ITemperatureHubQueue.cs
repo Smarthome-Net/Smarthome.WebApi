@@ -1,4 +1,5 @@
 ﻿using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.DTO.Charts;
 using System;
 
 namespace SmartHome.Webservice.Helper;

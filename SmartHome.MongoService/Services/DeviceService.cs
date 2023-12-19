@@ -6,7 +6,6 @@ using SmartHome.MongoService.Provider;
 using MongoDB.Driver;
 using System;
 using SmartHome.Common.Models.Db;
-using MongoDB.Bson;
 
 namespace SmartHome.MongoService.Services;
 

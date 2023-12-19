@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SmartHome.Common.Models.DTO;
+namespace SmartHome.Common.Models.DTO.Charts;
 
 public class Chart<TSeries>
 {

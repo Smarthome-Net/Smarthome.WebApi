@@ -2,7 +2,8 @@
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.DTO.Charts;
+using SmartHome.Common.Models.DTO.Requests;
 using SmartHome.Common.QueryHelper;
 using SmartHome.MongoService.Provider;
 using System;
@@ -24,8 +25,8 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
 
     public IEnumerable<Chart<TimeSeries>> GetTemperature(TemperatureRequest request)
     {
-        Func<Temperature, bool> predicate = CreatePredicate(request.Scope, request.ScopeValue);
-        Func<Temperature, string> keySelector = CreateKeySelector(request.Scope);
+        Func<Temperature, bool> predicate = CreatePredicate(request.Scope);
+        Func<Temperature, string> keySelector = CreateKeySelector(request.Scope.ScopeType);
 
         var temperatureQuery = _temperatureCollection.AsQueryable();
         var deviceQuery = _deviceCollection.AsQueryable();

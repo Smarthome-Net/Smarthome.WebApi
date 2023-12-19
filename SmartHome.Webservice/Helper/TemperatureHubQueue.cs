@@ -1,11 +1,11 @@
 ﻿using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.DTO.Charts;
 using SmartHome.Common.QueryHelper;
 using SmartHome.MqttService.Providers;
 using SmartHome.MqttService.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
