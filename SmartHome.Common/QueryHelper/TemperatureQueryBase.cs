@@ -115,15 +115,17 @@ public abstract class TemperatureQueryBase
             .ToList();
     }
 
-    protected static IEnumerable<Chart<TimeSeries>> GroupData(Func<Temperature, string> keySelector, IList<Temperature> data)
+    protected static IEnumerable<Chart<TimeSeries>> GroupData(Func<Temperature, string> keySelector, Func<Temperature, bool> predicate, IList<Temperature> data)
     {
-        return data.GroupBy(
-            keySelector,
-            (key, values) => new Chart<TimeSeries>()
-            {
-                Name = key,
-                Series = CreateTemperatureChartData(values)
-            })
+        return data
+            .Where(predicate)
+            .GroupBy(
+                keySelector,
+                (key, values) => new Chart<TimeSeries>()
+                {
+                    Name = key,
+                    Series = CreateTemperatureChartData(values)
+                })
             .ToList();
     }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using SmartHome.Webservice.Hubs.Interfaces;
 using Microsoft.Extensions.Logging;
 using SmartHome.Webservice.Helper;
+using SmartHome.Common.Models.DTO;
 
 namespace SmartHome.Webservice.Hubs;
 
@@ -29,14 +30,13 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
         return base.OnDisconnectedAsync(exception);
     }
 
-    public void Temperature(string scopeFilter) 
+    public void Temperature(Scope scope) 
     {
         var clients = Clients;
         var context = Context;
-        _temperatureHubQueue.SetScope(scopeFilter);
-        var subscription = _temperatureHubQueue.TemperaturChartData
-           .Where(item => item.ScopeFilter.Equals(scopeFilter))
-           .Select(item => item.Chart)
+        _temperatureHubQueue.SetScope(scope);
+        var subscription = _temperatureHubQueue
+            .TemperaturChartData
            .Subscribe(chartData =>
             {
                 _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), context.ConnectionId);
