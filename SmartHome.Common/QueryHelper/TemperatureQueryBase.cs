@@ -80,6 +80,7 @@ public abstract class TemperatureQueryBase
 
         var itemsToSkip = setting.PageIndex * setting.PageSize;
         var itemsToTake = setting.PageSize;
+        setting.Length = groupedTemperatureValues.Count;
 
         return groupedTemperatureValues
             .Skip(itemsToSkip)

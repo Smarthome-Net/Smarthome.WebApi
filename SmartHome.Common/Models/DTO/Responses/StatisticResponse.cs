@@ -7,5 +7,5 @@ public class StatisticResponse
 {
     public Scope Scope { get; set; }
 
-    public IEnumerable<Chart<NamedSeries>> StatisticChart { get; set; }
+    public IEnumerable<Chart<NamedSeries>> Statistics { get; set; }
 }

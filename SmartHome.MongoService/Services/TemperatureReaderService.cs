@@ -33,7 +33,6 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
         
         var data = QueryData(predicate, deviceQuery, temperatureQuery);
         var pageSetting = request.PageSetting;
-        pageSetting.Length = data.Count;
 
         return GroupData(keySelector, pageSetting, data);
     }
