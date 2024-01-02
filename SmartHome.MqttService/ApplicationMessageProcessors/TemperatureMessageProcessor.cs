@@ -49,7 +49,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
                 throw new ObjectDisposedException(nameof(TemperatureMessageProcessor));
             }
 
-            var payload = Encoding.UTF8.GetString(applicationMessage.Payload);
+            var payload = Encoding.UTF8.GetString(applicationMessage.PayloadSegment);
             var message = JsonSerializer.Deserialize<MqttMessage>(payload, SerializerOptions);
             var fullTopic = GetDeviceTopic(applicationMessage.Topic, "temperature");
             var device = await _deviceService.GetOrCreateDeviceByTopic(fullTopic);

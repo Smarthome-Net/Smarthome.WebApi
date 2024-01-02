@@ -97,5 +97,10 @@ public class DeviceService : IDeviceService
         return device;
     }
 
-    
+    public async Task<Device> GetDeviceById(string deviceId)
+    {
+        var filter = Builders<Device>.Filter.Eq(d => d.Id, deviceId);
+        var result = await _deviceCollection.FindAsync(filter);
+        return result.FirstOrDefault();
+    }
 }

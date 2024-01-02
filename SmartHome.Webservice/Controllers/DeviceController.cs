@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHome.Common.Interfaces;
+using SmartHome.Common.Models;
 using SmartHome.Common.Models.Db;
+using SmartHome.MqttService.Services;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -12,12 +14,15 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class DeviceController : ControllerBase
 {
-    private readonly ILogger<DeviceController> logger;
-    private readonly IDeviceService deviceService;
-    public DeviceController(ILogger<DeviceController> logger, IDeviceService deviceService)
+    private readonly ILogger<DeviceController> _logger;
+    private readonly IDeviceService _deviceService;
+    private readonly IDeviceManager _deviceManager;
+
+    public DeviceController(ILogger<DeviceController> logger, IDeviceService deviceService, IDeviceManager deviceManager)
     {
-        this.logger = logger;
-        this.deviceService = deviceService;
+        _logger = logger;
+        _deviceService = deviceService;
+        _deviceManager = deviceManager;
     }
 
     [HttpGet("rooms")]
@@ -25,12 +30,12 @@ public class DeviceController : ControllerBase
     {
         try
         {
-            var rooms = await deviceService.GetRooms();
+            var rooms = await _deviceService.GetRooms();
             return Ok(rooms);
         }
         catch (Exception ex)
         {
-            logger.LogError("Exception on get rooms", ex);
+            _logger.LogError("Exception on get rooms", ex);
             return Problem();
         }
     }
@@ -41,12 +46,12 @@ public class DeviceController : ControllerBase
     {
         try
         {
-            var devices = await deviceService.GetAllDevices();
+            var devices = await _deviceService.GetAllDevices();
             return Ok(devices);
         }
         catch (Exception ex)
         {
-            logger.LogError("Excepion on get rooms", ex);
+            _logger.LogError("Excepion on get rooms", ex);
             return Problem();
         }
     }
@@ -56,12 +61,61 @@ public class DeviceController : ControllerBase
     {
         try
         {
-            var devices = await deviceService.GetDevices(room);
+            var devices = await _deviceService.GetDevices(room);
             return Ok(devices);
         }
         catch (Exception ex)
         {
-            logger.LogError("Excepion on get rooms", ex);
+            _logger.LogError("Excepion on get rooms", ex);
+            return Problem();
+        }
+    }
+
+    [HttpGet("{deviceId}/status")]
+    public async Task<ActionResult<DeviceStatus>> GetDeviceConfig(string deviceId)
+    {
+        try
+        {
+            var device = await _deviceService.GetDeviceById(deviceId);
+            var status = await _deviceManager.GetStatus(device.Topic);
+            return Ok(status);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Excepion on get device status", ex);
+            return Problem();
+        }
+    }
+
+    [HttpGet("{deviceId}/config")]
+    public async Task<ActionResult<Device>> GetDeviceStatus(string deviceId)
+    {
+        try
+        {
+            var device = await _deviceService.GetDeviceById(deviceId);
+            device.Configuration = await _deviceManager.GetConfiguration(device.Topic);
+            return Ok(device);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Excepion on get device status", ex);
+            return Problem();
+        }
+    }
+
+    [HttpPost("config")]
+    public async Task<ActionResult<Device>> UpdateDeviceConfig(Device device)
+    {
+        try
+        {
+            var config = await _deviceManager.PopulateConfiguration(device.Topic, device.Configuration);
+            await _deviceService.UpdateDevice(device);
+            device.Configuration = config;
+            return Ok(device);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Excepion on get device status", ex);
             return Problem();
         }
     }

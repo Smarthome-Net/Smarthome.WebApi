@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SmartHome.Common.Interfaces;
+namespace SmartHome.MqttService.ApplicationMessageProcessors;
 
 /// <summary>
 /// A Generic Application Message Processor for MQTT.

@@ -45,6 +45,8 @@ public static class MqttClientServiceExtension
             var mqttClientServiceProvider = new MqttClientServiceProvider(mqttClientService);
             return mqttClientServiceProvider;
         });
+
+        services.AddTransient<IDeviceManager, DeviceManager>();
         return services;
     }
 }

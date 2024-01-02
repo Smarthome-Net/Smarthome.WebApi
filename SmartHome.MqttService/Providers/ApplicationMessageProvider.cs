@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Common.Interfaces;
+using SmartHome.MqttService.ApplicationMessageProcessors;
 using System;
 
 namespace SmartHome.MqttService.Providers;

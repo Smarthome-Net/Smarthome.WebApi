@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.Providers;

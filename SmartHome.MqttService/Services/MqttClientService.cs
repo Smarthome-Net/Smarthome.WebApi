@@ -10,6 +10,7 @@ using SmartHome.Common.Exceptions;
 using System.Reactive.Linq;
 using SmartHome.MqttService.Providers;
 using SmartHome.Common.Models.Db;
+using MQTTnet.Extensions.Rpc;
 
 namespace SmartHome.MqttService.Services;
 
@@ -21,6 +22,8 @@ public class MqttClientService : IMqttClientService
     private readonly MqttSetting _mqttSetting;
     private readonly IApplicationMessageProvider _applicationMessageProvider;
     private readonly Subject<Temperature> _temperatureSubject;
+
+    private readonly MqttFactory _mqttFactory;
     private bool _isDisposed = false;
 
     public MqttClientService(ILogger<MqttClientService> logger, 
@@ -34,14 +37,14 @@ public class MqttClientService : IMqttClientService
         _applicationMessageProvider = applicationMessageProvider;
         _temperatureSubject = new Subject<Temperature>();
 
-        _client = new MqttFactory().CreateMqttClient();
+        _mqttFactory = new MqttFactory();
+        _client = _mqttFactory.CreateMqttClient();
         _client.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
         _client.ConnectedAsync += HandleConnectedAsync;
         _client.DisconnectedAsync += HandleDisconnectedAsync;
     }
 
     public IObservable<Temperature> Temperature { get => _temperatureSubject.AsObservable(); }
-
 
     #region IHostedService Implementation
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -63,7 +66,7 @@ public class MqttClientService : IMqttClientService
         {
             var disconnectOption = new MqttClientDisconnectOptions
             {
-                Reason = MqttClientDisconnectReason.NormalDisconnection,
+                Reason = MqttClientDisconnectOptionsReason.NormalDisconnection,
                 ReasonString = "Normal Disconect"
             };
             await _client.DisconnectAsync(disconnectOption, cancellationToken);
@@ -112,6 +115,15 @@ public class MqttClientService : IMqttClientService
         {
             await _client.ConnectAsync(_options);
         }
+    }
+
+    public IMqttRpcClient CreateMqttRpcClient() 
+    {
+        var options = new MqttRpcClientOptionsBuilder()
+            .WithTopicGenerationStrategy(new SmarthomeRpcTopicGenerationStrategy(_mqttSetting))
+            .Build();
+        
+        return _mqttFactory.CreateMqttRpcClient(_client, options);
     }
 
     protected virtual void Dispose(bool disposing)

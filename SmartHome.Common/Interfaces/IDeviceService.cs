@@ -6,6 +6,7 @@ namespace SmartHome.Common.Interfaces;
 
 public  interface IDeviceService
 {
+    Task<Device> GetDeviceById(string deviceId);
     Task<Device> GetDeviceByTopic(string topic);
     Task<Device> GetOrCreateDeviceByTopic(string topic);
     Task<IEnumerable<Device>> GetRooms();
