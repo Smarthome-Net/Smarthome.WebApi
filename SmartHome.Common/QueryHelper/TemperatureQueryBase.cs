@@ -85,7 +85,7 @@ public abstract class TemperatureQueryBase
         return groupedTemperatureValues
             .Skip(itemsToSkip)
             .Take(itemsToTake)
-            .OrderBy(item => item.Name);
+            .OrderByDescending(item => item.Name);
     }
 
     private static IEnumerable<TimeSeries> CreateTemperatureChartData(IEnumerable<Temperature> temperatureValues)
