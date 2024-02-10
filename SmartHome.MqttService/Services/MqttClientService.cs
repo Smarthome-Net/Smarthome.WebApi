@@ -78,18 +78,20 @@ public class MqttClientService : IMqttClientService
 
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
+        var source = new CancellationTokenSource();
         if (eventArgs.ApplicationMessage.Topic.Contains("temperature"))
         {
             try
             {
                 using var messageProcessor = _applicationMessageProvider.GetApplicationMessageProcessor<Temperature>();
                 messageProcessor.SubscriptionTopic = _mqttSetting.TopicSetting.SubscriptionTopic;
-                var temperature = await messageProcessor.ProcessMessage(eventArgs.ApplicationMessage);
+                var temperature = await messageProcessor.ProcessMessage(eventArgs.ApplicationMessage, source.Token);
                 _temperatureSubject.OnNext(temperature);
             }
             catch (ApplicationMessageException ex)
             {
                 _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
+                source.Cancel();
             }
             
         }

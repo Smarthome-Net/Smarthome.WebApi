@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -10,14 +9,15 @@ using SmartHome.Common.Exceptions;
 using SmartHome.MqttService.JsonConvertes;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.MqttMessages;
+using System.IO;
 
 namespace SmartHome.MqttService.ApplicationMessageProcessors;
 
 class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
 {
-    private ILogger<TemperatureMessageProcessor> _logger;
-    private ITemperatureWriterService _temperatureWriteService;
-    private IDeviceService _deviceService;
+    private ILogger<TemperatureMessageProcessor>? _logger;
+    private ITemperatureWriterService? _temperatureWriteService;
+    private IDeviceService? _deviceService;
 
     private bool isDisposed;
 
@@ -28,6 +28,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         _logger = logger;
         _temperatureWriteService = temperatureWriteService;
         _deviceService = deviceService;
+        SubscriptionTopic = string.Empty;
     }
 
     public string SubscriptionTopic { get; set; }
@@ -40,7 +41,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         }
     };
 
-    public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, CancellationToken cancellationToken)
+    public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -48,20 +49,19 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
             {
                 throw new ObjectDisposedException(nameof(TemperatureMessageProcessor));
             }
-
-            var payload = Encoding.UTF8.GetString(applicationMessage.PayloadSegment);
-            var message = JsonSerializer.Deserialize<MqttMessage>(payload, SerializerOptions);
+            using var byteStream = new MemoryStream(applicationMessage.PayloadSegment.ToArray());
+            var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
             var fullTopic = GetDeviceTopic(applicationMessage.Topic, "temperature");
-            var device = await _deviceService.GetOrCreateDeviceByTopic(fullTopic);
+            var device = await _deviceService!.GetOrCreateDeviceByTopic(fullTopic, cancellationToken);
             var temperature = new Temperature
             {
-                RecordDateTime = message.Time,
-                Value = message.Value,
+                RecordDateTime = message!.Time,
+                Value = message!.Value,
                 DeviceId = device.Id,
                 Device = device
             };
 
-            return await _temperatureWriteService.WriteTemperature(temperature, cancellationToken);
+            return await _temperatureWriteService!.WriteTemperature(temperature, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         return deviceTopic;
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposing, CancellationToken cancellationToken = default)
     {
         if (!isDisposed)
         {
