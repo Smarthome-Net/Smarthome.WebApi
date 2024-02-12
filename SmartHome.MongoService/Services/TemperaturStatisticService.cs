@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using SmartHome.Common.Extensions;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.DTO;
@@ -26,7 +27,7 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
 
     public IEnumerable<Chart<NamedSeries>> GetStatistic(StatisticRequest request)
     {
-        Func<Temperature, bool> predicate = CreatePredicate(request.Scope);
+        Func<Temperature, bool> predicate = request.Scope.ToTemperaturePredicate();
 
         return new List<Chart<NamedSeries>>
         {
@@ -47,7 +48,7 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
     {
         return new NamedSeries
         {
-            Name = "Max",
+            Name = "max",
             Value = QueryMax(predicate),
         };
     }
@@ -56,7 +57,7 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
     {
         return new NamedSeries
         {
-            Name = "Min",
+            Name = "min",
             Value = QueryMin(predicate),
         };
     }
@@ -65,7 +66,7 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
     {
         return new NamedSeries
         {
-            Name = "Durchschnitt",
+            Name = "average",
             Value = QueryAverage(predicate),
         };
     }

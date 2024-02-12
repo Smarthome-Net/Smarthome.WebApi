@@ -1,4 +1,5 @@
-﻿using SmartHome.Common.Models.Db;
+﻿using SmartHome.Common.Extensions;
+using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.DTO;
 using SmartHome.Common.Models.DTO.Charts;
 using SmartHome.Common.QueryHelper;
@@ -32,8 +33,8 @@ public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
 
     private IEnumerable<Chart<TimeSeries>> CreateTemperatureChart(IList<Temperature> data)
     {
-        var keySelector = CreateKeySelector(_scope.ScopeType);
-        var predictae = CreatePredicate(_scope);
+        var keySelector = _scope.ToTemperatureKeySelector();
+        var predictae = _scope.ToTemperaturePredicate();
 
         return GroupData(keySelector, predictae, data);
     }
