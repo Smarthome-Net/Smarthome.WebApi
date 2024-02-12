@@ -18,6 +18,6 @@ public class ApplicationMessageProvider : IApplicationMessageProvider
     }
     public IApplicationMessageProcessor<TMessage> GetApplicationMessageProcessor<TMessage>() where TMessage : class
     {
-        return _provider.GetService<IApplicationMessageProcessor<TMessage>>();
+        return _provider.GetRequiredService<IApplicationMessageProcessor<TMessage>>();
     }
 }

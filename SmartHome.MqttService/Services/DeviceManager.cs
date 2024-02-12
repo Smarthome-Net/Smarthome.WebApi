@@ -19,19 +19,19 @@ public class DeviceManager : IDeviceManager
         _mqttRpcClient = mqttClientService.CreateMqttRpcClient();
     }
 
-    public async Task<DeviceConfiguration> GetConfiguration(string deviceId)
+    public async Task<DeviceConfiguration?> GetConfiguration(string deviceId)
     {
         var methodName = GetMethodName(deviceId, "config");
         return await _mqttRpcClient.ExecuteAsync<DeviceConfiguration>(TimeSpan.FromSeconds(10), methodName, null, MqttQualityOfServiceLevel.AtMostOnce);
     }
 
-    public async Task<DeviceStatus> GetStatus(string deviceId)
+    public async Task<DeviceStatus?> GetStatus(string deviceId)
     {
         var methodName = GetMethodName(deviceId, "status");
         return await _mqttRpcClient.ExecuteAsync<DeviceStatus>(TimeSpan.FromSeconds(10), methodName, null, MqttQualityOfServiceLevel.AtMostOnce);
     }
 
-    public async Task<DeviceConfiguration> PopulateConfiguration(string deviceId, DeviceConfiguration deviceConfiguration)
+    public async Task<DeviceConfiguration?> PopulateConfiguration(string deviceId, DeviceConfiguration deviceConfiguration)
     {
         var methodName = GetMethodName(deviceId, "config");
         return await _mqttRpcClient.ExecuteAsync(TimeSpan.FromSeconds(10), methodName, deviceConfiguration, MqttQualityOfServiceLevel.AtMostOnce);

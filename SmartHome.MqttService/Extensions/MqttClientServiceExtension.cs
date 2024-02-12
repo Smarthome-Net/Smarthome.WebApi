@@ -16,9 +16,9 @@ public static class MqttClientServiceExtension
         services.AddMqttClientServiceWithConfig(optionsBuilder =>
         {
             optionsBuilder
-                .WithCredentials(configuration.ClientSetting.UserName, configuration.ClientSetting.Password)
-                .WithClientId(configuration.ClientSetting.Id)
-                .WithTcpServer(configuration.BrokerSetting.Host, configuration.BrokerSetting.Port);
+                .WithCredentials(configuration?.ClientSetting?.UserName, configuration?.ClientSetting?.Password)
+                .WithClientId(configuration?.ClientSetting?.Id)
+                .WithTcpServer(configuration?.BrokerSetting?.Host, configuration?.BrokerSetting?.Port);
         });
         return services;
     }
@@ -36,12 +36,12 @@ public static class MqttClientServiceExtension
         services.AddSingleton<IMqttClientService, MqttClientService>();
         services.AddSingleton<IHostedService>(serviceProvider =>
         {
-            return serviceProvider.GetService<IMqttClientService>();
+            return serviceProvider.GetRequiredService<IMqttClientService>();
         });
 
         services.AddSingleton(serviceProvider =>
         {
-            var mqttClientService = serviceProvider.GetService<IMqttClientService>();
+            var mqttClientService = serviceProvider.GetRequiredService<IMqttClientService>();
             var mqttClientServiceProvider = new MqttClientServiceProvider(mqttClientService);
             return mqttClientServiceProvider;
         });

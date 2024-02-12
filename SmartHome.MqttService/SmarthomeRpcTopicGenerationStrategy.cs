@@ -24,7 +24,7 @@ internal class SmarthomeRpcTopicGenerationStrategy : IMqttRpcClientTopicGenerati
             throw new ArgumentException("The method name cannot contain + or #.");
         }
 
-        var baseTopic = _mqttSetting.TopicSetting.SubscriptionTopic.TrimEnd('#').TrimEnd('/');
+        var baseTopic = _mqttSetting?.TopicSetting?.SubscriptionTopic!.TrimEnd('#').TrimEnd('/');
 
         var requestTopic = $"{baseTopic}.RPC/{context.MethodName}";
         var responseTopic = requestTopic + "/response";

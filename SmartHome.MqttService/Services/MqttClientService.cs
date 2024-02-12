@@ -84,7 +84,7 @@ public class MqttClientService : IMqttClientService
             try
             {
                 using var messageProcessor = _applicationMessageProvider.GetApplicationMessageProcessor<Temperature>();
-                messageProcessor.SubscriptionTopic = _mqttSetting.TopicSetting.SubscriptionTopic;
+                messageProcessor.SubscriptionTopic = _mqttSetting?.TopicSetting?.SubscriptionTopic!;
                 var temperature = await messageProcessor.ProcessMessage(eventArgs.ApplicationMessage, source.Token);
                 _temperatureSubject.OnNext(temperature);
             }
@@ -102,7 +102,7 @@ public class MqttClientService : IMqttClientService
         MqttFactory factory = new();
 
         var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => f.WithTopic(_mqttSetting.TopicSetting.SubscriptionTopic))
+            .WithTopicFilter(f => f.WithTopic(_mqttSetting?.TopicSetting?.SubscriptionTopic!))
             .Build();
 
 

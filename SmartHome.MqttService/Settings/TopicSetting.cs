@@ -2,5 +2,5 @@
 
 public class TopicSetting
 {
-    public string SubscriptionTopic { get; set; }
+    public string? SubscriptionTopic { get; set; }
 }

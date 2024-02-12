@@ -2,7 +2,7 @@
 
 public class MqttSetting
 {
-    public BrokerSetting BrokerSetting { get; set; }
-    public ClientSetting ClientSetting { get; set; }
-    public TopicSetting TopicSetting { get; set; }
+    public BrokerSetting? BrokerSetting { get; set; }
+    public ClientSetting? ClientSetting { get; set; }
+    public TopicSetting? TopicSetting { get; set; }
 }
