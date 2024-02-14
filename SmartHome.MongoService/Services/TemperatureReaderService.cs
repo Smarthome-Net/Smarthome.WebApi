@@ -18,7 +18,7 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
     private readonly IMongoCollection<Temperature> _temperatureCollection;
     private readonly IMongoCollection<Device> _deviceCollection;
 
-    public TemperatureReaderService(MongoDBConnectionProvider mongoConnectionProvider) 
+    public TemperatureReaderService(MongoDBConnectionProvider mongoConnectionProvider)
     {
         _temperatureCollection = mongoConnectionProvider.GetTemperatureCollection();
         _deviceCollection = mongoConnectionProvider.GetDeviceCollection();
@@ -29,19 +29,17 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
         Func<Temperature, bool> predicate = request.Scope.ToTemperaturePredicate();
         Func<Temperature, string> keySelector = request.Scope.ToTemperatureKeySelector();
 
-        var temperatureQuery = _temperatureCollection.AsQueryable();
-        var deviceQuery = _deviceCollection.AsQueryable();
-        
-        var data = QueryData(predicate, deviceQuery, temperatureQuery);
+        var data = QueryData(predicate);
         var pageSetting = request.PageSetting;
 
         return GroupData(keySelector, pageSetting, data);
     }
 
-    private static List<Temperature> QueryData(Func<Temperature, bool> predicate, 
-        IMongoQueryable<Device> deviceQuery, 
-        IMongoQueryable<Temperature> temperatureQuery)
+    private List<Temperature> QueryData(Func<Temperature, bool> predicate)
     {
+        var temperatureQuery = _temperatureCollection.AsQueryable();
+        var deviceQuery = _deviceCollection.AsQueryable();
+
         return temperatureQuery
             .Join(deviceQuery,
                 p => p.DeviceId,
