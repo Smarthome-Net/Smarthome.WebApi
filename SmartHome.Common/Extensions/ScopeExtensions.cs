@@ -1,7 +1,7 @@
-﻿using SmartHome.Common.Models.Db;
+﻿using SmartHome.Common.Collections;
+using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.DTO;
 using System;
-using System.Collections.Generic;
 
 namespace SmartHome.Common.Extensions;
 
@@ -36,21 +36,22 @@ public static class ScopeExtensions
             case ScopeType.All:
                 break;
             case ScopeType.Room:
+                //we don't realy need to split the value, we just assume that the value only contain the room name
                 predicate = item => item.Device.Room == scope.Value;
                 break;
             case ScopeType.Device:
-                //Layout of scopeValue in this block should be MyRoom/Window. MyRoom is the room where the device stands
-                //and the Window is the name of the device. In this case, the number of results should be exactly 2 
-                if (TrySplitString(scope.Value, '/', out List<string> results))
+                //The scope value contains the for the room and the device seperated by the '/', for example: myRoom/Window
+                //This new extenions method split the value into a strong typed collection, to improve the handling with each segment
+                var segments = scope.SplitValueIntoSegments();
+
+                if(segments.Count == 1) 
                 {
-                    if (results.Count == 2)
-                    {
-                        predicate = item => item.Device.Room == results[0] && item.Device.Name == results[1];
-                    }
-                    else
-                    {
-                        predicate = item => item.Device.Room == results[0];
-                    }
+                    predicate = item => item.Device.Room == segments[0].Value;
+                }
+
+                if(segments.Count == 2)
+                {
+                    predicate = item => item.Device.Room == segments[0].Value && item.Device.Name == segments[1].Value;
                 }
                 break;
             default:
@@ -60,25 +61,13 @@ public static class ScopeExtensions
         return predicate;
     }
 
-    private static bool TrySplitString<TReturn>(string stringToSplit, char seperator, out List<TReturn> outList)
+    private static ScopeValueSegment SplitValueIntoSegments(this Scope scope) 
     {
-        //make sure the list is initialized
-        outList = new();
-
-        var splitedString = stringToSplit.Split(seperator);
-        foreach (var item in splitedString)
+        var result = new ScopeValueSegment();
+        foreach (var value in scope.Value.Split(ScopeValueSegment.SegmentSeperator))
         {
-            try
-            {
-                TReturn value = (TReturn)Convert.ChangeType(item, typeof(TReturn));
-                outList.Add(value);
-            }
-            catch
-            {
-                outList = null;
-                return false;
-            }
+            result.AddSegment(value);
         }
-        return true;
+        return result;
     }
 }
