@@ -4,7 +4,6 @@ using MQTTnet.Extensions.Rpc;
 using System;
 using SmartHome.MqttService.Extensions;
 using System.Threading.Tasks;
-using SmartHome.MqttService.Settings;
 using MQTTnet.Protocol;
 
 namespace SmartHome.MqttService.Services;

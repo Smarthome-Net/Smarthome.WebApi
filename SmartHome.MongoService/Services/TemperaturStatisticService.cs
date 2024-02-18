@@ -3,7 +3,6 @@ using MongoDB.Driver.Linq;
 using SmartHome.Common.Extensions;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.DTO;
 using SmartHome.Common.Models.DTO.Charts;
 using SmartHome.Common.Models.DTO.Requests;
 using SmartHome.Common.QueryHelper;
@@ -25,75 +24,56 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
         _deviceCollection = connectionProvider.GetDeviceCollection();
     }
 
-    public IEnumerable<Chart<NamedSeries>> GetStatistic(StatisticRequest request)
+    public Chart<NamedSeries> GetStatistic(StatisticRequest request)
     {
         Func<Temperature, bool> predicate = request.Scope.ToTemperaturePredicate();
 
-        return new List<Chart<NamedSeries>>
+        var baseResult = GetBaseTemperatureQuery().Where(predicate);
+
+        var max = FilterMax(baseResult);
+        var min = FilterMin(baseResult);
+        var avg = FilterAverage(baseResult);
+
+        return new Chart<NamedSeries>
         {
-            new Chart<NamedSeries>
+            Name = request.Scope.Value,
+            Series = new List<NamedSeries>
             {
-                Name = request.Scope.Value,
-                Series = new List<NamedSeries>
-                {
-                    CreateMaxStatistic(predicate),
-                    CreateMinStatistic(predicate),
-                    CreateAverageStatistic(predicate)
-                },
-            }
+                CreateNameSeries("min", min),
+                CreateNameSeries("average", avg),
+                CreateNameSeries("max", max),
+            },
         };
     }
 
-    public NamedSeries CreateMaxStatistic(Func<Temperature, bool> predicate)
+    public static NamedSeries CreateNameSeries(string name, float value)
     {
         return new NamedSeries
         {
-            Name = "max",
-            Value = QueryMax(predicate),
+            Name = name,
+            Value = value,
         };
     }
 
-    private NamedSeries CreateMinStatistic(Func<Temperature, bool> predicate)
+    private static float FilterMax(IEnumerable<Temperature> data)
     {
-        return new NamedSeries
-        {
-            Name = "min",
-            Value = QueryMin(predicate),
-        };
-    }
-
-    private NamedSeries CreateAverageStatistic(Func<Temperature, bool> predicate)
-    {
-        return new NamedSeries
-        {
-            Name = "average",
-            Value = QueryAverage(predicate),
-        };
-    }
-
-    private float QueryMax(Func<Temperature, bool> predicate)
-    {
-        return GetBaseTemperatureQuery()
-            .Where(predicate)
+        return data
             .OrderByDescending(item => item.Value)
             .Select(item => item.Value)
             .FirstOrDefault();
     }
 
-    private float QueryMin(Func<Temperature, bool> predicate)
+    private static float FilterMin(IEnumerable<Temperature> data)
     {
-        return GetBaseTemperatureQuery()
-            .Where(predicate)
+        return data
             .OrderBy(item => item.Value)
             .Select(item => item.Value)
             .FirstOrDefault();
     }
 
-    private float QueryAverage(Func<Temperature, bool> predicate)
+    private static float FilterAverage(IEnumerable<Temperature> data)
     {
-        return GetBaseTemperatureQuery()
-            .Where(predicate)
-            .Average(i => i.Value);
+        return data.Average(i => i.Value);
     }
 
     private IMongoQueryable<Temperature> GetBaseTemperatureQuery()

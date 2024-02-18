@@ -1,5 +1,3 @@
-using SmartHome.Common.Models.DTO;
-
 namespace SmartHome.Common.Models;
 
 public readonly struct Segment 

@@ -25,7 +25,7 @@ public class StatisticController : ControllerBase
         var response = new StatisticResponse
         {
             Scope = request.Scope,
-            Statistics = statisticService.GetStatistic(request)
+            Statistic = statisticService.GetStatistic(request)
         };
         return Ok(response);
     }
