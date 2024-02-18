@@ -11,13 +11,15 @@ using System.Reactive.Linq;
 using SmartHome.MqttService.Providers;
 using SmartHome.Common.Models.Db;
 using MQTTnet.Extensions.Rpc;
+using Microsoft.Extensions.Options;
+using SmartHome.MqttService.Extensions;
 
 namespace SmartHome.MqttService.Services;
 
 public class MqttClientService : IMqttClientService
 {
     private readonly IMqttClient _client;
-    private readonly MqttClientOptions _options;
+    private readonly MqttClientOptions _clientOptions;
     private readonly ILogger<MqttClientService> _logger;
     private readonly MqttSetting _mqttSetting;
     private readonly IApplicationMessageProvider _applicationMessageProvider;
@@ -27,13 +29,13 @@ public class MqttClientService : IMqttClientService
     private bool _isDisposed = false;
 
     public MqttClientService(ILogger<MqttClientService> logger, 
-        MqttClientOptions options,
-        MqttSetting mqttSetting,
+        MqttClientOptions clientOptions,
+        IOptions<MqttOptions> mqttOptions,
         IApplicationMessageProvider applicationMessageProvider)
     {
         _logger = logger;
-        _options = options;
-        _mqttSetting = mqttSetting;
+        _clientOptions = clientOptions;
+        _mqttSetting = mqttOptions.Value.MqttSetting!;
         _applicationMessageProvider = applicationMessageProvider;
         _temperatureSubject = new Subject<Temperature>();
 
@@ -51,7 +53,7 @@ public class MqttClientService : IMqttClientService
     {
         try
         {
-            await _client.ConnectAsync(_options, cancellationToken);
+            await _client.ConnectAsync(_clientOptions, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -115,7 +117,7 @@ public class MqttClientService : IMqttClientService
         _logger.LogInformation("Disconnected from Mqtt Broker: {Reason}", eventArgs.Reason);
         if(!_client.IsConnected && eventArgs.Reason == MqttClientDisconnectReason.NormalDisconnection) 
         {
-            await _client.ConnectAsync(_options);
+            await _client.ConnectAsync(_clientOptions);
         }
     }
 

@@ -37,7 +37,10 @@ public class Startup
             o.DbConnectionSetting = config;
         });
 
-        services.AddMqttClientHostedService(mqttSetting);
+        services.AddMqttClientHostedService(o =>
+        {
+            o.MqttSetting = mqttSetting;
+        });
 
         services.AddControllers()
             .AddJsonOptions(options => 
