@@ -20,6 +20,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
     private IDeviceService? _deviceService;
 
     private bool isDisposed;
+    private string _subscriptionTopic;
 
     public TemperatureMessageProcessor(ILogger<TemperatureMessageProcessor> logger,
         ITemperatureWriterService temperatureWriteService,
@@ -28,10 +29,13 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         _logger = logger;
         _temperatureWriteService = temperatureWriteService;
         _deviceService = deviceService;
-        SubscriptionTopic = string.Empty;
+        _subscriptionTopic = string.Empty;
     }
 
-    public string SubscriptionTopic { get; set; }
+    public void SetSubscriptionTopic(string topic)
+    {
+        _subscriptionTopic = topic;
+    }
 
     private static JsonSerializerOptions SerializerOptions => new()
     {
@@ -71,7 +75,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
 
     private string GetDeviceTopic(string topic, string sensorType)
     {
-        var baseTopic = SubscriptionTopic.Replace("#", "");
+        var baseTopic = _subscriptionTopic.Replace("#", "");
         var sensor = topic.Remove(0, baseTopic.Length);
         var deviceTopic = sensor.Remove(0, sensorType.Length + 1);
         return deviceTopic;
@@ -106,4 +110,6 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    
 }

@@ -44,7 +44,7 @@ public static class ScopeExtensions
                 //This new extenions method split the value into a strong typed collection, to improve the handling with each segment
                 var segments = scope.SplitValueIntoSegments();
 
-                if(segments.Count == 1) 
+                if (segments.Count == 1) 
                 {
                     predicate = item => item.Device.Room == segments[0].Value;
                 }
