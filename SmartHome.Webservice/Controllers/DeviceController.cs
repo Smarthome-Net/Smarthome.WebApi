@@ -35,7 +35,7 @@ public class DeviceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError("Exception on get rooms", ex);
+            _logger.LogError(ex, "Exception on get rooms");
             return Problem();
         }
     }
@@ -51,7 +51,7 @@ public class DeviceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError("Excepion on get rooms", ex);
+            _logger.LogError(ex, "Excepion on get rooms");
             return Problem();
         }
     }
@@ -66,7 +66,7 @@ public class DeviceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError("Excepion on get rooms", ex);
+            _logger.LogError(ex, "Excepion on get rooms");
             return Problem();
         }
     }
@@ -82,7 +82,7 @@ public class DeviceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError("Excepion on get device status", ex);
+            _logger.LogError(ex, "Excepion on get device status");
             return Problem();
         }
     }
@@ -98,7 +98,7 @@ public class DeviceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError("Excepion on get device status", ex);
+            _logger.LogError(ex, "Excepion on get device status");
             return Problem();
         }
     }
@@ -115,7 +115,7 @@ public class DeviceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError("Excepion on get device status", ex);
+            _logger.LogError(ex, "Excepion on get device status");
             return Problem();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SmartHome.Common.Models.DTO.Charts;
+using SmartHome.Common.Models.Dto.Charts;
 
 namespace SmartHome.Webservice.Hubs.Interfaces;
 

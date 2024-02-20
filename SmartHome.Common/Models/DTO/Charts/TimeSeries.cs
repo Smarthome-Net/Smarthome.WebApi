@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartHome.Common.Models.DTO.Charts;
+namespace SmartHome.Common.Models.Dto.Charts;
 
 public class TimeSeries
 {

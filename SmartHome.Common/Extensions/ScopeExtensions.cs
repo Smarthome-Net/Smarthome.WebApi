@@ -1,6 +1,6 @@
 ﻿using SmartHome.Common.Collections;
 using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.Dto;
 using System;
 
 namespace SmartHome.Common.Extensions;

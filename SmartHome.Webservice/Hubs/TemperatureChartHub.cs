@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using SmartHome.Webservice.Hubs.Interfaces;
 using Microsoft.Extensions.Logging;
 using SmartHome.Webservice.Helper;
-using SmartHome.Common.Models.DTO;
+using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.Webservice.Hubs;
 

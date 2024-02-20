@@ -1,5 +1,5 @@
-﻿using SmartHome.Common.Models.DTO;
-using SmartHome.Common.Models.DTO.Charts;
+﻿using SmartHome.Common.Models.Dto;
+using SmartHome.Common.Models.Dto.Charts;
 using System;
 using System.Collections.Generic;
 

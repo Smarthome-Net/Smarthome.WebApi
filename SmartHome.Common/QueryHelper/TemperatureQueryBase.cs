@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.DTO;
-using SmartHome.Common.Models.DTO.Charts;
+using SmartHome.Common.Models.Dto;
+using SmartHome.Common.Models.Dto.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;

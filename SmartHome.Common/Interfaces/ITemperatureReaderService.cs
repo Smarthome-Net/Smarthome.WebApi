@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using SmartHome.Common.Models.DTO.Charts;
-using SmartHome.Common.Models.DTO.Requests;
+using SmartHome.Common.Models.Dto.Charts;
+using SmartHome.Common.Models.Dto.Requests;
 
 namespace SmartHome.Common.Interfaces;
 

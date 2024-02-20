@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Models.DTO.Requests;
-using SmartHome.Common.Models.DTO.Responses;
+using SmartHome.Common.Models.Dto.Requests;
+using SmartHome.Common.Models.Dto.Responses;
 
 namespace SmartHome.Webservice.Controllers;
 

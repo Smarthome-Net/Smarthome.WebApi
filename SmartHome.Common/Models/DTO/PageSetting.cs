@@ -1,4 +1,4 @@
-﻿namespace SmartHome.Common.Models.DTO;
+﻿namespace SmartHome.Common.Models.Dto;
 
 public class PageSetting
 {

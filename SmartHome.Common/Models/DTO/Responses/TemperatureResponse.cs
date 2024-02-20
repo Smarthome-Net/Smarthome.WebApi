@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SmartHome.Common.Models.DTO.Charts;
+using SmartHome.Common.Models.Dto.Charts;
 
-namespace SmartHome.Common.Models.DTO.Responses;
+namespace SmartHome.Common.Models.Dto.Responses;
 
 public class TemperatureResponse
 {

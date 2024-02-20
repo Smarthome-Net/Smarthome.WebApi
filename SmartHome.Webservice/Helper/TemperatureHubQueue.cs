@@ -1,7 +1,7 @@
 ﻿using SmartHome.Common.Extensions;
 using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.DTO;
-using SmartHome.Common.Models.DTO.Charts;
+using SmartHome.Common.Models.Dto;
+using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.QueryHelper;
 using SmartHome.MqttService.Providers;
 using SmartHome.MqttService.Services;

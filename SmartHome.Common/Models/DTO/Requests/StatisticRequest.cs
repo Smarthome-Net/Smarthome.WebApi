@@ -1,4 +1,4 @@
-﻿namespace SmartHome.Common.Models.DTO.Requests;
+﻿namespace SmartHome.Common.Models.Dto.Requests;
 
 public class StatisticRequest
 {
