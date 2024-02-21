@@ -62,10 +62,11 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
                 RecordDateTime = message!.Time,
                 Value = message!.Value,
                 DeviceId = device.Id,
-                Device = device
             };
 
-            return await _temperatureWriteService!.WriteTemperature(temperature, cancellationToken);
+            temperature = await _temperatureWriteService!.WriteTemperature(temperature, cancellationToken);
+            temperature.Device = device;
+            return temperature;
         }
         catch (Exception ex)
         {

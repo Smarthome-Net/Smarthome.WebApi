@@ -26,9 +26,25 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
 
     public Chart<NamedSeries> GetStatistic(StatisticRequest request)
     {
-        Func<Temperature, bool> predicate = request.Scope.ToTemperaturePredicate();
+        var predicate = request.Scope.ToPredicate<Device>(
+            (device, room) => device.Room == room,
+            (device, room, name) => device.Room == room && device.Name == name);
+        var temperatureQuery = _temperatureCollection.AsQueryable();
+        var deviceQuery = _deviceCollection.AsQueryable();
 
-        var baseResult = GetBaseTemperatureQuery().Where(predicate);
+        var baseResult = deviceQuery
+            .Where(predicate)
+            .Join(temperatureQuery.AsQueryable(),
+                device => device.Id,
+                temperature => temperature.DeviceId,
+                (device, temperature) => new Temperature()
+                {
+                    Id = temperature.Id,
+                    Value = temperature.Value,
+                    RecordDateTime = temperature.RecordDateTime,
+                    DeviceId = temperature.DeviceId,
+                    Device = device,
+                });
 
         var max = FilterMax(baseResult);
         var min = FilterMin(baseResult);
@@ -37,12 +53,12 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
         return new Chart<NamedSeries>
         {
             Name = request.Scope.Value,
-            Series = new List<NamedSeries>
-            {
+            Series =
+            [
                 CreateNameSeries("min", min),
                 CreateNameSeries("average", avg),
                 CreateNameSeries("max", max),
-            },
+            ],
         };
     }
 
@@ -74,22 +90,5 @@ public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStat
     private static float FilterAverage(IEnumerable<Temperature> data)
     {
         return data.Average(i => i.Value);
-    }
-
-    private IMongoQueryable<Temperature> GetBaseTemperatureQuery()
-    {
-        return _temperatureCollection.AsQueryable()
-            .Join(_deviceCollection.AsQueryable(),
-                p => p.DeviceId,
-                o => o.Id,
-                (p, o) => new Temperature()
-                {
-                    Id = p.Id,
-                    Value = p.Value,
-                    RecordDateTime =
-                    p.RecordDateTime,
-                    DeviceId = p.DeviceId,
-                    Device = o
-                });
     }
 }

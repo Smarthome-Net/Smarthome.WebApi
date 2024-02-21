@@ -28,30 +28,32 @@ public static class ScopeExtensions
         return keySelector;
     }
 
-    public static Func<Temperature, bool> ToTemperaturePredicate(this Scope scope)
+    public static Func<TType, bool> ToPredicate<TType>(this Scope scope,
+        Func<TType, string, bool> roomSelector,
+        Func<TType, string, string, bool> deviceSelector)
     {
-        Func<Temperature, bool> predicate = item => true;
+        Func<TType, bool> predicate = item => true;
         switch (scope.ScopeType)
         {
             case ScopeType.All:
                 break;
             case ScopeType.Room:
                 //we don't realy need to split the value, we just assume that the value only contain the room name
-                predicate = item => item.Device.Room == scope.Value;
+                predicate = item => roomSelector(item, scope.Value);
                 break;
             case ScopeType.Device:
                 //The scope value contains the for the room and the device seperated by the '/', for example: myRoom/Window
                 //This new extenions method split the value into a strong typed collection, to improve the handling with each segment
                 var segments = scope.SplitValueIntoSegments();
 
-                if (segments.Count == 1) 
+                if (segments.Count == 1)
                 {
-                    predicate = item => item.Device.Room == segments[0].Value;
+                    predicate = item => roomSelector(item, segments[0].Value);
                 }
 
-                if(segments.Count == 2)
+                if (segments.Count == 2)
                 {
-                    predicate = item => item.Device.Room == segments[0].Value && item.Device.Name == segments[1].Value;
+                    predicate = item => deviceSelector(item, segments[0].Value, segments[1].Value);
                 }
                 break;
             default:

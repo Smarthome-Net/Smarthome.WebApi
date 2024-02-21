@@ -28,13 +28,15 @@ public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
         get => _mqttClientService.Temperature
             .Buffer(TimeSpan.FromSeconds(2))
             .Where(x => x.Count > 0)
-            .Select(data => CreateTemperatureChart(data)); 
+            .Select(CreateTemperatureChart); 
     }
 
     private IEnumerable<Chart<TimeSeries>> CreateTemperatureChart(IList<Temperature> data)
     {
         var keySelector = _scope.ToTemperatureKeySelector();
-        var predictae = _scope.ToTemperaturePredicate();
+        var predictae = _scope.ToPredicate<Temperature>(
+            (temp, room) => temp.Device.Room == room, 
+            (temperature, room, name) => temperature.Device.Room == room && temperature.Device.Name == name);
 
         return GroupData(keySelector, predictae, data);
     }

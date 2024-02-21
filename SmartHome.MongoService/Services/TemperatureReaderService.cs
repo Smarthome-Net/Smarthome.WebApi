@@ -26,8 +26,10 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
 
     public IEnumerable<Chart<TimeSeries>> GetTemperature(TemperatureRequest request)
     {
-        Func<Temperature, bool> predicate = request.Scope.ToTemperaturePredicate();
-        Func<Temperature, string> keySelector = request.Scope.ToTemperatureKeySelector();
+        var predicate = request.Scope.ToPredicate<Device>(
+            (device, room) => device.Room == room, 
+            (device, room, name) => device.Room == room && device.Name == name);
+        var keySelector = request.Scope.ToTemperatureKeySelector();
 
         var data = QueryData(predicate);
         var pageSetting = request.PageSetting;
@@ -35,24 +37,24 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
         return GroupData(keySelector, pageSetting, data);
     }
 
-    private List<Temperature> QueryData(Func<Temperature, bool> predicate)
+    private List<Temperature> QueryData(Func<Device, bool> predicate)
     {
         var temperatureQuery = _temperatureCollection.AsQueryable();
         var deviceQuery = _deviceCollection.AsQueryable();
 
-        return temperatureQuery
-            .Join(deviceQuery,
-                p => p.DeviceId,
-                o => o.Id,
-                (p, o) => new Temperature()
-                {
-                    Id = p.Id,
-                    Value = p.Value,
-                    RecordDateTime = p.RecordDateTime,
-                    DeviceId = p.DeviceId,
-                    Device = o
-                })
+        return deviceQuery
             .Where(predicate)
+            .Join(temperatureQuery,
+                device => device.Id,
+                temperature => temperature.DeviceId,
+                (device, temperature) => new Temperature()
+                {
+                    Id = temperature.Id,
+                    Value = temperature.Value,
+                    RecordDateTime = temperature.RecordDateTime,
+                    DeviceId = temperature.DeviceId,
+                    Device = device
+                })
             .OrderByDescending(item => item.RecordDateTime)
             .ToList();
     }
