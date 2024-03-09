@@ -22,26 +22,27 @@ public class DeviceService : IDeviceService
     {
         var filter = Builders<Device>.Filter.Eq(p => p.Topic, topic);
         var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
-        return result.FirstOrDefault(cancellationToken: cancellationToken);
+        return result.FirstOrDefault(cancellationToken);
+    }
+
+    public async Task<Device> GetDeviceById(string deviceId, CancellationToken cancellationToken = default)
+    {
+        var filter = Builders<Device>.Filter.Eq(d => d.Id, deviceId);
+        var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
+        return result.FirstOrDefault(cancellationToken);
     }
 
     public async Task<IEnumerable<Device>> GetDevices(string room, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Device>.Filter.Eq(p => p.Room, room);
         var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
-        return result.ToEnumerable(cancellationToken: cancellationToken);
+        return result.ToEnumerable(cancellationToken);
     }
 
     public async Task<IEnumerable<Device>> GetAllDevices(CancellationToken cancellationToken = default)
     {
         var result = await _deviceCollection.FindAsync(device => true, cancellationToken: cancellationToken);
-        return result.ToEnumerable(cancellationToken: cancellationToken);
-    }
-
-    public async Task<IEnumerable<Device>> GetRooms(CancellationToken cancellationToken = default)
-    {
-        var result = await _deviceCollection.FindAsync(device => true);
-        return result.ToEnumerable(cancellationToken: cancellationToken).Distinct(new DeviceComparer());
+        return result.ToEnumerable(cancellationToken);
     }
 
     public async Task<long> UpdateDevice(Device device, CancellationToken cancellationToken = default)
@@ -96,12 +97,5 @@ public class DeviceService : IDeviceService
             await CreateDevice(device, cancellationToken);
         }
         return device;
-    }
-
-    public async Task<Device> GetDeviceById(string deviceId, CancellationToken cancellationToken = default)
-    {
-        var filter = Builders<Device>.Filter.Eq(d => d.Id, deviceId);
-        var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
-        return result.FirstOrDefault();
     }
 }

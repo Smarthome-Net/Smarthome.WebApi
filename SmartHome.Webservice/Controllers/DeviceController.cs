@@ -25,24 +25,12 @@ public class DeviceController : ControllerBase
         _deviceManager = deviceManager;
     }
 
-    [HttpGet("rooms")]
-    public async Task<ActionResult<IEnumerable<Device>>> GetListOfRooms()
-    {
-        try
-        {
-            var rooms = await _deviceService.GetRooms();
-            return Ok(rooms);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Exception on get rooms");
-            return Problem();
-        }
-    }
-
+    /// <summary>
+    /// Get a list of all devices
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
-
-    public async Task<ActionResult<IEnumerable<Device>>> GetAllDevices() 
+    public async Task<ActionResult<IEnumerable<Device>>> GetAllDevices()
     {
         try
         {
@@ -55,7 +43,12 @@ public class DeviceController : ControllerBase
             return Problem();
         }
     }
-
+    
+    /// <summary>
+    /// Get a list of all devices in one room
+    /// </summary>
+    /// <param name="room">Name of the room</param>
+    /// <returns></returns>
     [HttpGet("{room}")]
     public async Task<ActionResult<IEnumerable<Device>>> GetListOfDevices(string room)
     {
@@ -71,8 +64,13 @@ public class DeviceController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Get the status of the spezified device id
+    /// </summary>
+    /// <param name="deviceId">Id of the device</param>
+    /// <returns></returns>
     [HttpGet("{deviceId}/status")]
-    public async Task<ActionResult<DeviceStatus>> GetDeviceConfig(string deviceId)
+    public async Task<ActionResult<DeviceStatus>> GetDeviceStatus(string deviceId)
     {
         try
         {
@@ -87,8 +85,13 @@ public class DeviceController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Get the config of the spezified device id
+    /// </summary>
+    /// <param name="deviceId">Id of the device</param>
+    /// <returns></returns>
     [HttpGet("{deviceId}/config")]
-    public async Task<ActionResult<Device>> GetDeviceStatus(string deviceId)
+    public async Task<ActionResult<Device>> GetDeviceConfig(string deviceId)
     {
         try
         {
@@ -103,14 +106,32 @@ public class DeviceController : ControllerBase
         }
     }
 
-    [HttpPost("config")]
-    public async Task<ActionResult<Device>> UpdateDeviceConfig(Device device)
+    /// <summary>
+    /// Updates the config of the spezified device id
+    /// </summary>
+    /// <param name="deviceId">Id of the device</param>
+    /// <returns></returns>
+    [HttpPost("{deviceId}/config")]
+    public async Task<ActionResult<Device>> UpdateDeviceConfig(string deviceId, Device device)
     {
+        if(!string.Equals(deviceId, device.Id)) 
+        {
+            return BadRequest("Id mismatch");
+        }
+
+        if(device.Configuration is null) 
+        {
+            return BadRequest("Configuartion was not set");
+        }
+
         try
         {
-            var config = await _deviceManager.PopulateConfiguration(device.Topic, device.Configuration);
-            await _deviceService.UpdateDevice(device);
-            device.Configuration = config;
+            var result = await _deviceService.UpdateDevice(device);
+            if(result == 0)
+            {
+                return Problem();
+            }
+            device.Configuration = await _deviceManager.PopulateConfiguration(device.Topic, device.Configuration);
             return Ok(device);
         }
         catch (Exception ex)
