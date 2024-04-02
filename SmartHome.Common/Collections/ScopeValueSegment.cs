@@ -12,7 +12,7 @@ public class ScopeValueSegment : IEnumerable<Segment>
 {
     public const char SegmentSeperator = '/';
     
-    private readonly List<Segment> _scopeSegements = new();
+    private readonly List<Segment> _scopeSegements = [];
 
     public Segment this[int index]
     {

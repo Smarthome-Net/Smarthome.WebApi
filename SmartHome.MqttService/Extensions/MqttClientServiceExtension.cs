@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using SmartHome.MqttService.Providers;
 using SmartHome.MqttService.Services;
-using SmartHome.MqttService.Settings;
 using System;
 using MQTTnet.Client;
 using Microsoft.Extensions.Options;

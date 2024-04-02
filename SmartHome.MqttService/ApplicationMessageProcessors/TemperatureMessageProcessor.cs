@@ -19,7 +19,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
     private ITemperatureWriterService? _temperatureWriteService;
     private IDeviceService? _deviceService;
 
-    private bool isDisposed;
+    private bool _isDisposed;
     private string _subscriptionTopic;
 
     public TemperatureMessageProcessor(ILogger<TemperatureMessageProcessor> logger,
@@ -49,11 +49,10 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
     {
         try
         {
-            if (isDisposed)
-            {
-                throw new ObjectDisposedException(nameof(TemperatureMessageProcessor));
-            }
-            using var byteStream = new MemoryStream(applicationMessage.PayloadSegment.ToArray());
+            _logger!.LogInformation("Start processing new application message");
+            ObjectDisposedException.ThrowIf(_isDisposed, typeof(TemperatureMessageProcessor));
+            
+            using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
             var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
             var fullTopic = GetDeviceTopic(applicationMessage.Topic, "temperature");
             var device = await _deviceService!.GetOrCreateDeviceByTopic(fullTopic, cancellationToken);
@@ -70,6 +69,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         }
         catch (Exception ex)
         {
+            _logger!.LogError("Processing application failed with: {Message}", ex.Message);
             throw new ApplicationMessageException(ex);
         }
     }
@@ -84,7 +84,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
 
     protected virtual void Dispose(bool disposing, CancellationToken cancellationToken = default)
     {
-        if (!isDisposed)
+        if (!_isDisposed)
         {
             if (disposing)
             {
@@ -95,7 +95,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
             _logger = null;
             _temperatureWriteService = null;
             _deviceService = null;
-            isDisposed = true;
+            _isDisposed = true;
         }
     }
 

@@ -14,19 +14,14 @@ internal class SmarthomeRpcTopicGenerationStrategy : IMqttRpcClientTopicGenerati
     }
     public MqttRpcTopicPair CreateRpcTopics(TopicGenerationContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
         if (context.MethodName.Contains('+') || context.MethodName.Contains('#'))
         {
             throw new ArgumentException("The method name cannot contain + or #.");
         }
 
-        var baseTopic = _mqttSetting?.TopicSetting?.SubscriptionTopic!.TrimEnd('#').TrimEnd('/');
-
-        var requestTopic = $"{baseTopic}.RPC/{context.MethodName}";
+        var requestTopic = $"{_mqttSetting?.TopicSetting?.SubscriptionRpcTopic}/{context.MethodName}";
         var responseTopic = requestTopic + "/response";
 
         return new MqttRpcTopicPair

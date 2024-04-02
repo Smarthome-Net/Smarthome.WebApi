@@ -115,7 +115,7 @@ public class MqttClientService : IMqttClientService
     public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
     {
         _logger.LogInformation("Disconnected from Mqtt Broker: {Reason}", eventArgs.Reason);
-        if(!_client.IsConnected && eventArgs.Reason == MqttClientDisconnectReason.NormalDisconnection) 
+        if(!_client.IsConnected && eventArgs.Reason != MqttClientDisconnectReason.NormalDisconnection) 
         {
             await _client.ConnectAsync(_clientOptions);
         }
