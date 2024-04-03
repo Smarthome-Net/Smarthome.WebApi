@@ -20,7 +20,6 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
     private IDeviceService? _deviceService;
 
     private bool _isDisposed;
-    private string _subscriptionTopic;
 
     public TemperatureMessageProcessor(ILogger<TemperatureMessageProcessor> logger,
         ITemperatureWriterService temperatureWriteService,
@@ -29,12 +28,6 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         _logger = logger;
         _temperatureWriteService = temperatureWriteService;
         _deviceService = deviceService;
-        _subscriptionTopic = string.Empty;
-    }
-
-    public void SetSubscriptionTopic(string topic)
-    {
-        _subscriptionTopic = topic;
     }
 
     private static JsonSerializerOptions SerializerOptions => new()
@@ -42,7 +35,8 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         Converters =
         {
             new DateTimeOffsetConverter()
-        }
+        },
+        PropertyNameCaseInsensitive = true,
     };
 
     public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, CancellationToken cancellationToken = default)
@@ -54,8 +48,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
             
             using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
             var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
-            var fullTopic = GetDeviceTopic(applicationMessage.Topic, "temperature");
-            var device = await _deviceService!.GetOrCreateDeviceByTopic(fullTopic, cancellationToken);
+            var device = await _deviceService!.GetOrCreateDeviceByTopic(applicationMessage.Topic, cancellationToken);
             var temperature = new Temperature
             {
                 RecordDateTime = message!.Time,
@@ -72,14 +65,6 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
             _logger!.LogError("Processing application failed with: {Message}", ex.Message);
             throw new ApplicationMessageException(ex);
         }
-    }
-
-    private string GetDeviceTopic(string topic, string sensorType)
-    {
-        var baseTopic = _subscriptionTopic.Replace("#", "");
-        var sensor = topic.Remove(0, baseTopic.Length);
-        var deviceTopic = sensor.Remove(0, sensorType.Length + 1);
-        return deviceTopic;
     }
 
     protected virtual void Dispose(bool disposing, CancellationToken cancellationToken = default)

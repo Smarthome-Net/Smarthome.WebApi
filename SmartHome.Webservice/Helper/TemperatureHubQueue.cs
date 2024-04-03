@@ -3,8 +3,7 @@ using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.QueryHelper;
-using SmartHome.MqttService.Providers;
-using SmartHome.MqttService.Services;
+using SmartHome.MqttService.Observables;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -14,18 +13,18 @@ namespace SmartHome.Webservice.Helper;
 
 public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
 {
-    private readonly IMqttClientService _mqttClientService;
+    private readonly ITemperatureObservable _temperatureObservable;
 
     private Scope _scope;
 
-    public TemperatureHubQueue(MqttClientServiceProvider mqttClientServiceProvider)
+    public TemperatureHubQueue(ITemperatureObservable temperatureObservable)
     {
-        _mqttClientService = mqttClientServiceProvider.MqttClientService;
+        _temperatureObservable = temperatureObservable;
     }
 
     public IObservable<IEnumerable<Chart<TimeSeries>>> TemperaturChartData 
     { 
-        get => _mqttClientService.Temperature
+        get => _temperatureObservable.Temperature
             .Buffer(TimeSpan.FromSeconds(2))
             .Where(x => x.Count > 0)
             .Select(CreateTemperatureChart); 

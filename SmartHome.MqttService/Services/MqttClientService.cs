@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 using MQTTnet.Client;
 using Microsoft.Extensions.Logging;
 using SmartHome.MqttService.Settings;
-using System.Reactive.Subjects;
 using SmartHome.Common.Exceptions;
-using System.Reactive.Linq;
-using SmartHome.MqttService.Providers;
-using SmartHome.Common.Models.Db;
 using MQTTnet.Extensions.Rpc;
 using Microsoft.Extensions.Options;
 using SmartHome.MqttService.Extensions;
+using SmartHome.MqttService.MqttActions;
 
 namespace SmartHome.MqttService.Services;
 
@@ -22,22 +19,19 @@ public class MqttClientService : IMqttClientService
     private readonly MqttClientOptions _clientOptions;
     private readonly ILogger<MqttClientService> _logger;
     private readonly MqttSetting _mqttSetting;
-    private readonly IApplicationMessageProvider _applicationMessageProvider;
-    private readonly Subject<Temperature> _temperatureSubject;
-
     private readonly MqttFactory _mqttFactory;
+    private readonly MqttActionRegistry _mqttActionRegistry;
     private bool _isDisposed = false;
 
-    public MqttClientService(ILogger<MqttClientService> logger, 
+    public MqttClientService(ILogger<MqttClientService> logger,
         MqttClientOptions clientOptions,
         IOptions<MqttOptions> mqttOptions,
-        IApplicationMessageProvider applicationMessageProvider)
+        MqttActionRegistry mqttActionRegistry)
     {
         _logger = logger;
         _clientOptions = clientOptions;
+        _mqttActionRegistry = mqttActionRegistry;
         _mqttSetting = mqttOptions.Value.MqttSetting!;
-        _applicationMessageProvider = applicationMessageProvider;
-        _temperatureSubject = new Subject<Temperature>();
 
         _mqttFactory = new MqttFactory();
         _client = _mqttFactory.CreateMqttClient();
@@ -45,8 +39,6 @@ public class MqttClientService : IMqttClientService
         _client.ConnectedAsync += HandleConnectedAsync;
         _client.DisconnectedAsync += HandleDisconnectedAsync;
     }
-
-    public IObservable<Temperature> Temperature { get => _temperatureSubject.AsObservable(); }
 
     #region IHostedService Implementation
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -81,21 +73,17 @@ public class MqttClientService : IMqttClientService
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         var source = new CancellationTokenSource();
-        if (eventArgs.ApplicationMessage.Topic.Contains("temperature"))
+        var action = _mqttActionRegistry.GetAction(eventArgs.ApplicationMessage.Topic);
+        try
         {
-            try
-            {
-                using var messageProcessor = _applicationMessageProvider.GetApplicationMessageProcessor<Temperature>();
-                messageProcessor.SetSubscriptionTopic(_mqttSetting?.TopicSetting?.SubscriptionTopic!);
-                var temperature = await messageProcessor.ProcessMessage(eventArgs.ApplicationMessage, source.Token);
-                _temperatureSubject.OnNext(temperature);
-            }
-            catch (ApplicationMessageException ex)
-            {
-                _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
-                source.Cancel();
-            }
-            
+            eventArgs.ApplicationMessage.Topic = action!.GetActionSubTopic(eventArgs.ApplicationMessage.Topic, _mqttSetting.TopicSetting!.SubscriptionTopic!);
+            await action!.ExecuteAction(eventArgs.ApplicationMessage, source.Token);
+        }
+        catch (ApplicationMessageException ex)
+        {
+            _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
+            source.Cancel();
+            action!.Dispose();
         }
     }
 
@@ -104,7 +92,7 @@ public class MqttClientService : IMqttClientService
         MqttFactory factory = new();
 
         var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => f.WithTopic(_mqttSetting?.TopicSetting?.SubscriptionTopic!))
+            .WithTopicFilter(f => f.WithTopic($"{_mqttSetting?.TopicSetting?.SubscriptionTopic!}/#"))
             .Build();
 
 
@@ -136,7 +124,6 @@ public class MqttClientService : IMqttClientService
         {
             if (disposing)
             {
-                _temperatureSubject.Dispose();
                 _client.Dispose();
             }
 

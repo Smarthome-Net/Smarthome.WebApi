@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SmartHome.Common.Extensions;
 using SmartHome.Common.Models;
 
 namespace SmartHome.Common.Collections;
@@ -56,6 +57,25 @@ public class ScopeValueSegment : IEnumerable<Segment>
     /// Forward property to the capacity value of the inner collection
     /// </summary>
     public int Capacity => _scopeSegements.Capacity;
+
+    /// <summary>
+    /// Remove segments from the collection, by the value
+    /// </summary>
+    /// <param name="value">The value, can also contain the segment seperator</param>
+    public void RemoveSegments(string value) 
+    {
+        var scopeSegment = new ScopeValueSegment();
+        scopeSegment.AddSegment(value);
+        if(value.Contains(SegmentSeperator))
+        {
+            scopeSegment = value.SplitIntoScope();
+        }
+
+        foreach(var segement in scopeSegment)
+        {
+            _scopeSegements.Remove(segement);
+        }
+    }
 
     public IEnumerator<Segment> GetEnumerator()
     {

@@ -17,12 +17,6 @@ namespace SmartHome.MqttService.ApplicationMessageProcessors;
 public interface IApplicationMessageProcessor<TMessage> : IDisposable where TMessage : class 
 {
     /// <summary>
-    /// The Subscription topic of the mqtt service
-    /// </summary>
-    /// <param name="topic"></param>
-    void SetSubscriptionTopic(string topic);
-
-    /// <summary>
     /// Processes the incoming <see cref="MqttApplicationMessage"/> into the <typeparamref name="TMessage"/>
     /// </summary>
     /// <param name="applicationMessage"></param>

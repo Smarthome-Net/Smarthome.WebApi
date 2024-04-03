@@ -7,7 +7,6 @@ using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.Common.QueryHelper;
 using SmartHome.MongoService.Provider;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

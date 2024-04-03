@@ -5,6 +5,8 @@ using SmartHome.MqttService.Services;
 using System;
 using MQTTnet.Client;
 using Microsoft.Extensions.Options;
+using SmartHome.MqttService.MqttActions;
+using SmartHome.MqttService.Observables;
 
 namespace SmartHome.MqttService.Extensions;
 
@@ -14,6 +16,7 @@ public static class MqttClientServiceExtension
     {
         services.AddOptions<MqttOptions>()
             .Configure(configuration);
+        services.AddMqttActions();
         services.AddMqttClientServiceWithConfig((optionsBuilder, serviceProvider) =>
         {
             var mqttOptions = serviceProvider.GetRequiredService<IOptions<MqttOptions>>();
@@ -50,6 +53,17 @@ public static class MqttClientServiceExtension
         });
 
         services.AddTransient<IDeviceManager, DeviceManager>();
+        return services;
+    }
+
+    private static IServiceCollection AddMqttActions(this IServiceCollection services)
+    {
+        services.AddSingleton<ITemperatureObservable, TemperatureObservable>();
+
+        services.AddKeyedTransient<IMqttAction, TemperatureMqttAction>(SensorType.Temperature);
+
+        services.AddTransient<MqttActionRegistry>();
+
         return services;
     }
 }
