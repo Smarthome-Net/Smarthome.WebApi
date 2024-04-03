@@ -44,7 +44,7 @@ public static class ScopeExtensions
             case ScopeType.Device:
                 //The scope value contains the for the room and the device seperated by the '/', for example: myRoom/Window
                 //This new extenions method split the value into a strong typed collection, to improve the handling with each segment
-                var segments = scope.SplitValueIntoSegments();
+                var segments = Segments.FromString(scope.Value);
 
                 if (segments.Count == 1)
                 {
@@ -61,15 +61,5 @@ public static class ScopeExtensions
                 throw new InvalidOperationException($"Scope was invaild: {scope}");
         }
         return predicate;
-    }
-
-    private static ScopeValueSegment SplitValueIntoSegments(this Scope scope) 
-    {
-        var result = new ScopeValueSegment();
-        foreach (var value in scope.Value.Split(ScopeValueSegment.SegmentSeperator))
-        {
-            result.AddSegment(value);
-        }
-        return result;
     }
 }

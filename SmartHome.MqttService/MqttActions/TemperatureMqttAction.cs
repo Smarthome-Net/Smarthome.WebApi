@@ -1,5 +1,5 @@
 ﻿using MQTTnet;
-using SmartHome.Common.Extensions;
+using SmartHome.Common.Collections;
 using SmartHome.Common.Models.Db;
 using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.Observables;
@@ -29,7 +29,7 @@ public class TemperatureMqttAction : IMqttAction
 
     public string GetActionSubTopic(string fullTopic, string baseTopic)
     {
-        var scopes = fullTopic.SplitIntoScope();
+        var scopes = Segments.FromString(fullTopic);
         scopes.RemoveSegments($"{baseTopic}/{SensorType.Temperature}");
         return scopes.MergeSegments();
     }

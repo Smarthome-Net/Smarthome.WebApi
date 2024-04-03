@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using SmartHome.Common.Extensions;
+using SmartHome.Common.Collections;
 using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.Settings;
 using System;
@@ -20,7 +20,7 @@ public class MqttActionRegistry
 
     public IMqttAction? GetAction(string topic)
     {
-        var scopes = topic.SplitIntoScope();
+        var scopes = Segments.FromString(topic);
         scopes.RemoveSegments(_topicSetting.SubscriptionTopic);
         return _provider.GetKeyedService<IMqttAction>(scopes[0].Value);
     }
