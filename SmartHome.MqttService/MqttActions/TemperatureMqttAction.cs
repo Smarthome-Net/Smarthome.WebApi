@@ -29,9 +29,9 @@ public class TemperatureMqttAction : IMqttAction
 
     public string GetActionSubTopic(string fullTopic, string baseTopic)
     {
-        var scopes = Segments.FromString(fullTopic);
-        scopes.RemoveSegments($"{baseTopic}/{SensorType.Temperature}");
-        return scopes.MergeSegments();
+        var segments = Segments.FromString(fullTopic);
+        segments.RemoveSegments($"{baseTopic}/{SensorType.Temperature}");
+        return segments.MergeSegments();
     }
 
     protected virtual void Dispose(bool disposing)

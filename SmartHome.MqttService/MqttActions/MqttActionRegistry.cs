@@ -20,8 +20,8 @@ public class MqttActionRegistry
 
     public IMqttAction? GetAction(string topic)
     {
-        var scopes = Segments.FromString(topic);
-        scopes.RemoveSegments(_topicSetting.SubscriptionTopic);
-        return _provider.GetKeyedService<IMqttAction>(scopes[0].Value);
+        var segments = Segments.FromString(topic);
+        segments.RemoveSegments(_topicSetting.SubscriptionTopic);
+        return _provider.GetKeyedService<IMqttAction>(segments[0].Value);
     }
 }

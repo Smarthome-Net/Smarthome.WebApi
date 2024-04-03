@@ -41,7 +41,7 @@ public class Segments : IEnumerable<Segment>
     /// <param name="value"></param>
     public void AddSegment(string value) 
     {
-        _segements.Add(new Segment(value));
+        AddSegment(new Segment(value));
     }
 
     /// <summary>
@@ -54,12 +54,26 @@ public class Segments : IEnumerable<Segment>
     }
 
     /// <summary>
-    /// Merge the segments into string, with the seperator
+    /// Merge the segments into a raw string
     /// </summary>
     /// <returns></returns>
     public string MergeSegments() 
     {
         return string.Join(SegmentSeperator, _segements.Select(seg => seg.Value));
+    }
+
+    /// <summary>
+    /// Remove segments from the collection
+    /// </summary>
+    /// <param name="value">The value, can also contain the segment seperator to remove multiple segments</param>
+    public void RemoveSegments(string value)
+    {
+        var segmentsToRemove = FromString(value);
+
+        foreach (var segement in segmentsToRemove)
+        {
+            _segements.Remove(segement);
+        }
     }
 
     /// <summary>
@@ -71,20 +85,6 @@ public class Segments : IEnumerable<Segment>
     /// Forward property to the capacity value of the inner collection
     /// </summary>
     public int Capacity => _segements.Capacity;
-
-    /// <summary>
-    /// Remove segments from the collection
-    /// </summary>
-    /// <param name="value">The value, can also contain the segment seperator</param>
-    public void RemoveSegments(string value) 
-    {
-        var segmentsToRemove = FromString(value);
-
-        foreach(var segement in segmentsToRemove)
-        {
-            _segements.Remove(segement);
-        }
-    }
 
     public IEnumerator<Segment> GetEnumerator()
     {
