@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>SmartHome.Common</RootNamespace>
     <AssemblyName>SmartHome.Common</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

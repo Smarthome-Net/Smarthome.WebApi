@@ -10,6 +10,7 @@ using MQTTnet.Extensions.Rpc;
 using Microsoft.Extensions.Options;
 using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.MqttActions;
+using SmartHome.Common.Interfaces;
 
 namespace SmartHome.MqttService.Services;
 
@@ -20,17 +21,17 @@ public class MqttClientService : IMqttClientService
     private readonly ILogger<MqttClientService> _logger;
     private readonly MqttSetting _mqttSetting;
     private readonly MqttFactory _mqttFactory;
-    private readonly MqttActionRegistry _mqttActionRegistry;
+    private readonly ITypedProvider<IMqttAction, string> _mqttActionProvider;
     private bool _isDisposed = false;
 
     public MqttClientService(ILogger<MqttClientService> logger,
         MqttClientOptions clientOptions,
         IOptions<MqttOptions> mqttOptions,
-        MqttActionRegistry mqttActionRegistry)
+        ITypedProvider<IMqttAction, string> mqttActionProvider)
     {
         _logger = logger;
         _clientOptions = clientOptions;
-        _mqttActionRegistry = mqttActionRegistry;
+        _mqttActionProvider = mqttActionProvider;
         _mqttSetting = mqttOptions.Value.MqttSetting!;
 
         _mqttFactory = new MqttFactory();
@@ -73,7 +74,7 @@ public class MqttClientService : IMqttClientService
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         var source = new CancellationTokenSource();
-        var action = _mqttActionRegistry.GetAction(eventArgs.ApplicationMessage.Topic);
+        var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
         try
         {
             eventArgs.ApplicationMessage.Topic = action!.GetActionSubTopic(eventArgs.ApplicationMessage.Topic, _mqttSetting.TopicSetting!.SubscriptionTopic!);
