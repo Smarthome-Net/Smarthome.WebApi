@@ -21,17 +21,15 @@ public class TemperatureMqttAction : IMqttAction
         _temperatureObservable = temperatureObservable;
     }
 
-    public async Task ExecuteAction(MqttApplicationMessage message, CancellationToken token = default)
+    public async Task ExecuteAction(MqttApplicationMessage message, string deviceContext, CancellationToken token = default)
     {
-        var temperature = await _messageProcessor.ProcessMessage(message, token);
+        var temperature = await _messageProcessor.ProcessMessage(message, deviceContext, token);
         _temperatureObservable.OnNext(temperature);
     }
 
-    public string GetActionSubTopic(string fullTopic, string baseTopic)
+    public string GetSensorType()
     {
-        var segments = Segments.FromString(fullTopic);
-        segments.RemoveSegments($"{baseTopic}/{SensorType.Temperature}");
-        return segments.MergeSegments();
+        return SensorType.Temperature;
     }
 
     protected virtual void Dispose(bool disposing)

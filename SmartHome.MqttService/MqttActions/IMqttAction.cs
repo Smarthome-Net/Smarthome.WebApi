@@ -7,7 +7,7 @@ namespace SmartHome.MqttService.MqttActions;
 
 public interface IMqttAction : IDisposable
 {
-    Task ExecuteAction(MqttApplicationMessage message, CancellationToken token = default);
+    Task ExecuteAction(MqttApplicationMessage message, string deviceContext, CancellationToken token = default);
     
-    string GetActionSubTopic(string fullTopic, string baseTopic);
+    string GetSensorType();
 }

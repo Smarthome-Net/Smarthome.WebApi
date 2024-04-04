@@ -39,7 +39,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
         PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, CancellationToken cancellationToken = default)
+    public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -48,7 +48,7 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
             
             using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
             var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
-            var device = await _deviceService!.GetOrCreateDeviceByTopic(applicationMessage.Topic, cancellationToken);
+            var device = await _deviceService!.GetOrCreateDeviceByTopic(deviceContext, cancellationToken);
             var temperature = new Temperature
             {
                 RecordDateTime = message!.Time,

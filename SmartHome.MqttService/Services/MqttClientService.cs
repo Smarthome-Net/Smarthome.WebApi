@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.Common.Interfaces;
+using SmartHome.Common.Collections;
 
 namespace SmartHome.MqttService.Services;
 
@@ -74,17 +75,19 @@ public class MqttClientService : IMqttClientService
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         var source = new CancellationTokenSource();
-        var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
+        using var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
         try
         {
-            eventArgs.ApplicationMessage.Topic = action!.GetActionSubTopic(eventArgs.ApplicationMessage.Topic, _mqttSetting.TopicSetting!.SubscriptionTopic!);
-            await action!.ExecuteAction(eventArgs.ApplicationMessage, source.Token);
+            var sensorType = action!.GetSensorType();
+            var segmetns = Segments.FromString(eventArgs.ApplicationMessage.Topic);
+            segmetns.RemoveSegments($"{_mqttSetting!.TopicSetting!.SubscriptionRpcTopic}/{sensorType}");
+            var deviceContext = segmetns.MergeSegments();
+            await action!.ExecuteAction(eventArgs.ApplicationMessage, deviceContext, source.Token);
         }
         catch (ApplicationMessageException ex)
         {
             _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
             source.Cancel();
-            action!.Dispose();
         }
     }
 

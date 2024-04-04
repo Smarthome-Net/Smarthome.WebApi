@@ -20,7 +20,8 @@ public interface IApplicationMessageProcessor<TMessage> : IDisposable where TMes
     /// Processes the incoming <see cref="MqttApplicationMessage"/> into the <typeparamref name="TMessage"/>
     /// </summary>
     /// <param name="applicationMessage"></param>
+    /// <param name="deviceContext"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<TMessage> ProcessMessage(MqttApplicationMessage applicationMessage, CancellationToken cancellationToken = default);
+    Task<TMessage> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default);
 }
