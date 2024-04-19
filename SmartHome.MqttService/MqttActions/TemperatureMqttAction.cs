@@ -1,5 +1,4 @@
 ﻿using MQTTnet;
-using SmartHome.Common.Collections;
 using SmartHome.Common.Models.Db;
 using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.Observables;
@@ -27,10 +26,7 @@ public class TemperatureMqttAction : IMqttAction
         _temperatureObservable.OnNext(temperature);
     }
 
-    public string GetSensorType()
-    {
-        return SensorType.Temperature;
-    }
+    public string GetSensorType() => SensorType.Temperature;
 
     protected virtual void Dispose(bool disposing)
     {
