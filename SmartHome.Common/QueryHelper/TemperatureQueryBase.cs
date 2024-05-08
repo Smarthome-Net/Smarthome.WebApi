@@ -19,7 +19,7 @@ public abstract class TemperatureQueryBase
                  var firstValue = groupedValues.FirstOrDefault();
                  return new TimeSeries()
                  {
-                     Name = firstValue.RecordDateTime,
+                     Name = firstValue!.RecordDateTime,
                      Value = groupedValues.Average(item => item.Value)
                  };
              })
@@ -43,7 +43,7 @@ public abstract class TemperatureQueryBase
                 var firstValue = groupedValues.FirstOrDefault();
                 return new TimeSeries()
                 {
-                    Name = firstValue.RecordDateTime,
+                    Name = firstValue!.RecordDateTime,
                     Value = groupedValues.Average(item => item.Value)
                 };
             })

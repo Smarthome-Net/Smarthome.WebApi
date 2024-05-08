@@ -2,5 +2,5 @@
 
 public class StatisticRequest
 {
-    public Scope Scope { get; set; }
+    public Scope? Scope { get; set; }
 }
