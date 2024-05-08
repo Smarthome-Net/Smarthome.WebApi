@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SmartHome.MqttService.MqttActions;
 
-public interface IMqttAction : IDisposable
+public interface IMqttAction
 {
     Task ExecuteAction(MqttApplicationMessage message, string deviceContext, CancellationToken token = default);
     

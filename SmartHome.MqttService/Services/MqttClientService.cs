@@ -75,7 +75,7 @@ public class MqttClientService : IMqttClientService
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         var source = new CancellationTokenSource();
-        using var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
+        var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
         try
         {
             var sensorType = action!.GetSensorType();
@@ -92,7 +92,7 @@ public class MqttClientService : IMqttClientService
     private string GetDeviceContext(MqttApplicationMessage applicationMessage, string? sensorType)
     {
         var segmetns = Segments.FromString(applicationMessage.Topic);
-        segmetns.RemoveSegments($"{_mqttSetting!.TopicSetting!.SubscriptionRpcTopic}/{sensorType}");
+        segmetns.RemoveSegments($"{_mqttSetting!.TopicSetting!.SubscriptionTopic}/{sensorType}");
         var deviceContext = segmetns.MergeSegments();
         return deviceContext;
     }

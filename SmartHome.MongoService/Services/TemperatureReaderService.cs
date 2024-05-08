@@ -5,7 +5,6 @@ using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
-using SmartHome.Common.QueryHelper;
 using SmartHome.MongoService.Provider;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using System.Linq;
 
 namespace SmartHome.MongoService.Services;
 
-public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReaderService
+public class TemperatureReaderService : ITemperatureReaderService
 {
     private readonly IMongoCollection<Temperature> _temperatureCollection;
     private readonly IMongoCollection<Device> _deviceCollection;
@@ -33,8 +32,9 @@ public class TemperatureReaderService : TemperatureQueryBase, ITemperatureReader
 
         var data = QueryData(predicate);
         var pageSetting = request.PageSetting;
+        request.PageSetting.Length = data.Count;
 
-        return GroupData(keySelector, pageSetting, data);
+        return data.ToTimeSeriesChart(keySelector, pageSetting);
     }
 
     private List<Temperature> QueryData(Func<Device, bool> predicate)

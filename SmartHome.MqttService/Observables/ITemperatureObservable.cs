@@ -3,7 +3,7 @@ using System;
 
 namespace SmartHome.MqttService.Observables;
 
-public interface ITemperatureObservable : IDisposable
+public interface ITemperatureObservable
 {
 
     public IObservable<Temperature> Temperature { get; }

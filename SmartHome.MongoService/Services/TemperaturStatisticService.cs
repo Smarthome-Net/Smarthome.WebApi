@@ -5,14 +5,13 @@ using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
-using SmartHome.Common.QueryHelper;
 using SmartHome.MongoService.Provider;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartHome.MongoService.Services;
 
-public class TemperaturStatisticService : TemperatureQueryBase, ITemperatureStatisticService
+public class TemperaturStatisticService : ITemperatureStatisticService
 {
     private readonly IMongoCollection<Temperature> _temperatureCollection;
     private readonly IMongoCollection<Device> _deviceCollection;
