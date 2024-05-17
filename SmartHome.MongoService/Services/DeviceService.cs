@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SmartHome.MongoService.Provider;
+using SmartHome.MongoService.DbContext;
 using MongoDB.Driver;
 using System;
 using SmartHome.Common.Models.Db;
@@ -12,36 +12,36 @@ namespace SmartHome.MongoService.Services;
 
 public class DeviceService : IDeviceService
 {
-    private readonly IMongoCollection<Device> _deviceCollection;
-    public DeviceService(MongoDBConnectionProvider connectionProvider) 
+    private readonly MongoDBContext _dbContext;
+    public DeviceService(MongoDBContext dbContext) 
     {
-        _deviceCollection = connectionProvider.GetDeviceCollection();
+        _dbContext = dbContext;
     }
 
     public async Task<Device> GetDeviceByTopic(string topic, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Device>.Filter.Eq(p => p.Topic, topic);
-        var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
+        var result = await _dbContext.DeviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
         return result.FirstOrDefault(cancellationToken);
     }
 
     public async Task<Device> GetDeviceById(string deviceId, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Device>.Filter.Eq(d => d.Id, deviceId);
-        var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
+        var result = await _dbContext.DeviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
         return result.FirstOrDefault(cancellationToken);
     }
 
     public async Task<IEnumerable<Device>> GetDevices(string room, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Device>.Filter.Eq(p => p.Room, room);
-        var result = await _deviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
+        var result = await _dbContext.DeviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
         return result.ToEnumerable(cancellationToken);
     }
 
     public async Task<IEnumerable<Device>> GetAllDevices(CancellationToken cancellationToken = default)
     {
-        var result = await _deviceCollection.FindAsync(device => true, cancellationToken: cancellationToken);
+        var result = await _dbContext.DeviceCollection.FindAsync(device => true, cancellationToken: cancellationToken);
         return result.ToEnumerable(cancellationToken);
     }
 
@@ -53,7 +53,7 @@ public class DeviceService : IDeviceService
             .Set(p => p.Room, device.Room)
             .Set(p => p.Topic, device.Topic);
 
-        var result = await _deviceCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        var result = await _dbContext.DeviceCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         if(result.IsAcknowledged) 
         {
             return result.ModifiedCount;
@@ -62,14 +62,14 @@ public class DeviceService : IDeviceService
     }
     public async Task<Device> CreateDevice(Device device, CancellationToken cancellationToken = default)
     {
-        await _deviceCollection.InsertOneAsync(device, cancellationToken: cancellationToken);
+        await _dbContext.DeviceCollection.InsertOneAsync(device, cancellationToken: cancellationToken);
         return device;
     }
 
     public async Task<long> DeleteDevice(string deviceId, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Device>.Filter.Eq(p => p.Id, deviceId);
-        var result = await _deviceCollection.DeleteOneAsync(filter, cancellationToken);
+        var result = await _dbContext.DeviceCollection.DeleteOneAsync(filter, cancellationToken);
         
         if(result.IsAcknowledged) 
         {

@@ -1,22 +1,21 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
-using SmartHome.MongoService.Provider;
+using SmartHome.MongoService.DbContext;
 
 namespace SmartHome.MongoService.Services;
 
 public class TemperatureWriterService : ITemperatureWriterService
 {
-    private readonly IMongoCollection<Temperature> _temperatureCollection;
-    public TemperatureWriterService(MongoDBConnectionProvider connectionProvider) 
+    private readonly MongoDBContext _dbContext;
+    public TemperatureWriterService(MongoDBContext dBContext) 
     {
-        _temperatureCollection = connectionProvider.GetTemperatureCollection();
+        _dbContext = dBContext;
     }
     public async Task<Temperature> WriteTemperature(Temperature temperature, CancellationToken cancellationToken)
     {
-        await _temperatureCollection.InsertOneAsync(temperature, cancellationToken: cancellationToken);
+        await _dbContext.TemperatureCollection.InsertOneAsync(temperature, cancellationToken: cancellationToken);
         return temperature;
     }
 }

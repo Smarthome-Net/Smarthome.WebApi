@@ -1,4 +1,4 @@
-﻿namespace SmartHome.MongoService.Provider;
+﻿namespace SmartHome.MongoService.DbContext;
 
 //the names for mongodb collections
 internal static class Collection

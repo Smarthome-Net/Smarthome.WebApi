@@ -5,7 +5,7 @@ using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
-using SmartHome.MongoService.Provider;
+using SmartHome.MongoService.DbContext;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,13 +13,11 @@ namespace SmartHome.MongoService.Services;
 
 public class TemperaturStatisticService : ITemperatureStatisticService
 {
-    private readonly IMongoCollection<Temperature> _temperatureCollection;
-    private readonly IMongoCollection<Device> _deviceCollection;
+    private readonly MongoDBContext _dbContext;
 
-    public TemperaturStatisticService(MongoDBConnectionProvider connectionProvider)
+    public TemperaturStatisticService(MongoDBContext dbContext)
     {
-        _temperatureCollection = connectionProvider.GetTemperatureCollection();
-        _deviceCollection = connectionProvider.GetDeviceCollection();
+        _dbContext = dbContext;
     }
 
     public Chart<NamedSeries> GetStatistic(StatisticRequest request)
@@ -27,8 +25,8 @@ public class TemperaturStatisticService : ITemperatureStatisticService
         var predicate = request.Scope.ToPredicate<Device>(
             (device, room) => device.Room == room,
             (device, room, name) => device.Room == room && device.Name == name);
-        var temperatureQuery = _temperatureCollection.AsQueryable();
-        var deviceQuery = _deviceCollection.AsQueryable();
+        var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
+        var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
         var baseResult = deviceQuery
             .Where(predicate)

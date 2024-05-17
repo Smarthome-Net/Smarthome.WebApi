@@ -5,7 +5,7 @@ using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
-using SmartHome.MongoService.Provider;
+using SmartHome.MongoService.DbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +14,11 @@ namespace SmartHome.MongoService.Services;
 
 public class TemperatureReaderService : ITemperatureReaderService
 {
-    private readonly IMongoCollection<Temperature> _temperatureCollection;
-    private readonly IMongoCollection<Device> _deviceCollection;
+    private readonly MongoDBContext _dbContext;
 
-    public TemperatureReaderService(MongoDBConnectionProvider mongoConnectionProvider)
+    public TemperatureReaderService(MongoDBContext dbContext)
     {
-        _temperatureCollection = mongoConnectionProvider.GetTemperatureCollection();
-        _deviceCollection = mongoConnectionProvider.GetDeviceCollection();
+        _dbContext = dbContext;
     }
 
     public IEnumerable<Chart<TimeSeries>> GetTemperature(TemperatureRequest request)
@@ -39,8 +37,8 @@ public class TemperatureReaderService : ITemperatureReaderService
 
     private List<Temperature> QueryData(Func<Device, bool> predicate)
     {
-        var temperatureQuery = _temperatureCollection.AsQueryable();
-        var deviceQuery = _deviceCollection.AsQueryable();
+        var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
+        var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
         return deviceQuery
             .Where(predicate)
