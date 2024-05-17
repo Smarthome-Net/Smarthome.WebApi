@@ -26,19 +26,17 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        var mqttSetting = Configuration.GetSection("MqttSetting").Get<MqttSetting>();
-        var config = Configuration.GetSection("DbConnectionSetting").Get<DbConnectionSetting>();
-
-
         services.AddSingleton<ITemperatureHubQueue, TemperatureHubQueue>();
         
         services.AddMongoDbService(o =>
         {
-            o.DbConnectionSetting = config;
+            var connectionSetting = Configuration.GetSection("DbConnectionSetting").Get<DbConnectionSetting>();
+            o.DbConnectionSetting = connectionSetting;
         });
 
         services.AddMqttClientHostedService(o =>
         {
+            var mqttSetting = Configuration.GetSection("MqttSetting").Get<MqttSetting>();
             o.MqttSetting = mqttSetting;
         });
 
