@@ -7,7 +7,7 @@ namespace SmartHome.MongoService.DbContext;
 
 public class MongoDBContext
 {
-    private readonly IMongoClient _mongoClient;
+    private readonly MongoClient _mongoClient;
     private readonly IMongoDatabase _database;
     public MongoDBContext(DbConnectionSetting dbConnection)
     {
@@ -20,7 +20,6 @@ public class MongoDBContext
         {
             Console.WriteLine($"Unable to connect with database server: {ex.Message}");
         }
-        
     }
 
     public IMongoCollection<Device> DeviceCollection => _database.GetCollection<Device>(Collection.Device);
