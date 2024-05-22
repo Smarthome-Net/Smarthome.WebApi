@@ -5,6 +5,7 @@ using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.MqttService.Observables;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 
 namespace SmartHome.Webservice.Helper;
@@ -36,7 +37,9 @@ public class TemperatureHubQueue : ITemperatureHubQueue
             (temp, room) => temp.Device.Room == room, 
             (temperature, room, name) => temperature.Device.Room == room && temperature.Device.Name == name);
 
-        return data.ToTimeSeriesChart(keySelector, predictae);
+        return data
+            .Where(predictae)
+            .ToTimeSeriesChart(keySelector);
     }
 
     public void SetScope(Scope scope)

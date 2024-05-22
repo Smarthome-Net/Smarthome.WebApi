@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using System;
 using SmartHome.Common.Models.Db;
 using System.Threading;
+using SmartHome.Common.Collections;
 
 namespace SmartHome.MongoService.Services;
 
@@ -80,18 +81,17 @@ public class DeviceService : IDeviceService
 
     public async Task<Device> GetOrCreateDeviceByTopic(string topic, CancellationToken cancellationToken = default)
     {
-        const string Separator = "/";
-        if (!topic.Contains(Separator)) {
-            throw new ArgumentException($"Argument does not contain {Separator}, the argument was: {topic}");
+        var segments = Segments.FromString(topic);
+        if (segments.Count == 1) {
+            throw new ArgumentException($"Topic has not enough segments: {segments.Count} segments");
         }
 
         var device = await GetDeviceByTopic(topic, cancellationToken);
         if (device is null) {
-            var splited = topic.Split(Separator);
             device = new Device()
             {
-                Room = splited[0],
-                Name = splited[1],
+                Room = segments[0].Value,
+                Name = segments[1].Value,
                 Topic = topic
             };
             await CreateDevice(device, cancellationToken);

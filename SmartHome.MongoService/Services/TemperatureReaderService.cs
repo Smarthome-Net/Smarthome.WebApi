@@ -30,9 +30,10 @@ public class TemperatureReaderService : ITemperatureReaderService
 
         var data = QueryData(predicate);
         var pageSetting = request.PageSetting;
-        request.PageSetting.Length = data.Count;
 
-        return data.ToTimeSeriesChart(keySelector, pageSetting);
+        return data
+            .ToTimeSeriesChart(keySelector)
+            .ApplayPaging(pageSetting);
     }
 
     private List<Temperature> QueryData(Func<Device, bool> predicate)

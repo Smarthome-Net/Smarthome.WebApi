@@ -15,11 +15,20 @@ public static class TemperatureExtension
     {
         var itemsToSkip = setting.PageIndex * setting.PageSize;
         var itemsToTake = setting.PageSize;
-
+        setting.Length = data.Count();
+        
         return data
             .Skip(itemsToSkip)
             .Take(itemsToTake)
             .OrderByDescending(item => item.Name);
+    }
+
+    public static IEnumerable<Chart<TimeSeries>> ApplayPaging(this IEnumerable<Chart<TimeSeries>> data, PageSetting setting) 
+    {
+        foreach (var item in data) {
+            item.Series = item.Series.ApplayPaging(setting);
+            yield return item;
+        }
     }
 
     public static IEnumerable<TimeSeries> ToTimeSeries(this IEnumerable<Temperature> data)
@@ -37,24 +46,9 @@ public static class TemperatureExtension
             });
     }
 
-    public static IEnumerable<Chart<TimeSeries>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector, PageSetting setting)
+    public static IEnumerable<Chart<TimeSeries>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector)
     {
         return data
-            .GroupBy(
-            keySelector,
-            (key, values) => new Chart<TimeSeries>()
-            {
-                Name = key,
-                Series = values
-                    .ToTimeSeries()
-                    .ApplayPaging(setting)
-            });
-    }
-
-    public static IEnumerable<Chart<TimeSeries>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector, Func<Temperature, bool> predicate)
-    {
-        return data
-            .Where(predicate)
             .GroupBy(
                 keySelector,
                 (key, values) => new Chart<TimeSeries>()
