@@ -1,20 +1,19 @@
 ﻿using MongoDB.Driver;
 using System;
 using SmartHome.Common.Models.Db;
-using SmartHome.MongoService.Settings;
 
 namespace SmartHome.MongoService.DbContext;
 
 public class MongoDBContext
 {
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     private readonly IMongoDatabase _database;
-    public MongoDBContext(DbConnectionSetting dbConnection)
+    public MongoDBContext(IMongoClient mongoClient, string database)
     {
         try
         {
-            _mongoClient = new MongoClient(dbConnection.GetMongoConnectionString());
-            _database = _mongoClient.GetDatabase(dbConnection.Database);
+            _mongoClient = mongoClient;
+            _database = _mongoClient.GetDatabase(database);
         }
         catch (Exception ex)
         {

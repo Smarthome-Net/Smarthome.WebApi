@@ -1,6 +1,8 @@
 ﻿namespace SmartHome.MongoService.DbContext;
 
-//the names for mongodb collections
+/// <summary>
+/// the names for mongodb collections
+/// </summary>
 internal static class Collection
 {
     internal const string Temperature = "temperature";
