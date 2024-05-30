@@ -22,7 +22,7 @@ public class TemperatureHubQueue : ITemperatureHubQueue
         _temperatureObservable = temperatureObservable;
     }
 
-    public IObservable<IEnumerable<Chart<TimeSeries>>> TemperaturChartData 
+    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> TemperaturChartData 
     { 
         get => _temperatureObservable.Temperature
             .Buffer(TimeSpan.FromSeconds(2))
@@ -30,7 +30,7 @@ public class TemperatureHubQueue : ITemperatureHubQueue
             .Select(CreateTemperatureChart); 
     }
 
-    private IEnumerable<Chart<TimeSeries>> CreateTemperatureChart(IList<Temperature> data)
+    private IEnumerable<Chart<DateTimeOffset, float>> CreateTemperatureChart(IList<Temperature> data)
     {
         var keySelector = _scope.ToTemperatureKeySelector();
         var predictae = _scope.ToPredicate<Temperature>(

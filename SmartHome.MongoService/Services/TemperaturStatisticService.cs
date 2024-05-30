@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Extensions;
+using SmartHome.Common.Helpers;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto.Charts;
@@ -20,7 +21,7 @@ public class TemperaturStatisticService : ITemperatureStatisticService
         _dbContext = dbContext;
     }
 
-    public Chart<NamedSeries> GetStatistic(StatisticRequest request)
+    public Chart<string, float> GetStatistic(StatisticRequest request)
     {
         var predicate = request.Scope.ToPredicate<Device>(
             (device, room) => device.Room == room,
@@ -46,24 +47,15 @@ public class TemperaturStatisticService : ITemperatureStatisticService
         var min = FilterMin(baseResult);
         var avg = FilterAverage(baseResult);
 
-        return new Chart<NamedSeries>
+        return new Chart<string, float>
         {
             Name = request.Scope.Value,
             Series =
             [
-                CreateNameSeries("min", min),
-                CreateNameSeries("average", avg),
-                CreateNameSeries("max", max),
+                SeriesHelper.Create("min", min),
+                SeriesHelper.Create("average", avg),
+                SeriesHelper.Create("max", max),
             ],
-        };
-    }
-
-    public static NamedSeries CreateNameSeries(string name, float value)
-    {
-        return new NamedSeries
-        {
-            Name = name,
-            Value = value,
         };
     }
 

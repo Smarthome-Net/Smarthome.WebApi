@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using SmartHome.Common.Helpers;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
@@ -11,7 +12,7 @@ namespace SmartHome.Common.Extensions;
 
 public static class TemperatureExtension
 {
-    public static IEnumerable<TimeSeries> ApplayPaging(this IEnumerable<TimeSeries> data, PageSetting setting) 
+    public static IEnumerable<Series<DateTimeOffset, float>> ApplayPaging(this IEnumerable<Series<DateTimeOffset, float>> data, PageSetting setting) 
     {
         var itemsToSkip = setting.PageIndex * setting.PageSize;
         var itemsToTake = setting.PageSize;
@@ -23,7 +24,7 @@ public static class TemperatureExtension
             .OrderByDescending(item => item.Name);
     }
 
-    public static IEnumerable<Chart<TimeSeries>> ApplayPaging(this IEnumerable<Chart<TimeSeries>> data, PageSetting setting) 
+    public static IEnumerable<Chart<DateTimeOffset, float>> ApplayPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, PageSetting setting) 
     {
         foreach (var item in data) {
             item.Series = item.Series.ApplayPaging(setting);
@@ -31,27 +32,23 @@ public static class TemperatureExtension
         }
     }
 
-    public static IEnumerable<TimeSeries> ToTimeSeries(this IEnumerable<Temperature> data)
+    public static IEnumerable<Series<DateTimeOffset, float>> ToTimeSeries(this IEnumerable<Temperature> data)
     {
         return data
             .GroupBy(item => item.RecordDateTime.Ticks / TimeSpan.FromSeconds(10).Ticks)
             .Select(groupedValues =>
             {
                 var firstValue = groupedValues.FirstOrDefault();
-                return new TimeSeries()
-                {
-                    Name = firstValue!.RecordDateTime,
-                    Value = groupedValues.Average(item => item.Value)
-                };
+                return SeriesHelper.Create(firstValue!.RecordDateTime, groupedValues.Average(item => item.Value));
             });
     }
 
-    public static IEnumerable<Chart<TimeSeries>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector)
+    public static IEnumerable<Chart<DateTimeOffset, float>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector)
     {
         return data
             .GroupBy(
                 keySelector,
-                (key, values) => new Chart<TimeSeries>()
+                (key, values) => new Chart<DateTimeOffset, float>()
                 {
                     Name = key,
                     Series = values.ToTimeSeries()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SmartHome.Common.Models.Dto.Charts;
 
@@ -6,5 +7,5 @@ namespace SmartHome.Webservice.Hubs.Interfaces;
 
 public interface ITemperatureChartHub
 {
-    Task UpdateTemperatuure(IEnumerable<Chart<TimeSeries>> chartData);
+    Task UpdateTemperatuure(IEnumerable<Chart<DateTimeOffset, float>> chartData);
 }

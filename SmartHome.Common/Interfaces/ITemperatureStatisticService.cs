@@ -5,5 +5,5 @@ namespace SmartHome.Common.Interfaces;
 
 public interface ITemperatureStatisticService
 {
-    Chart<NamedSeries> GetStatistic(StatisticRequest request);
+    Chart<string, float> GetStatistic(StatisticRequest request);
 }

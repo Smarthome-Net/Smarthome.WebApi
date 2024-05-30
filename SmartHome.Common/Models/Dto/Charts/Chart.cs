@@ -2,8 +2,13 @@
 
 namespace SmartHome.Common.Models.Dto.Charts;
 
-public class Chart<TSeries>
+/// <summary>
+/// Strong typed chart class with generic series collection
+/// </summary>
+/// <typeparam name="TName"></typeparam>
+/// <typeparam name="TValue"></typeparam>
+public class Chart<TName, TValue>
 {
-    public string? Name { get; set; }
-    public IEnumerable<TSeries> Series { get; set; } = [];
+    public required string Name { get; set; }
+    public IEnumerable<Series<TName, TValue>> Series { get; set; } = [];
 }

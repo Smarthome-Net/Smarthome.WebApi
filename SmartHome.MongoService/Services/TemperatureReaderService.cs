@@ -21,7 +21,7 @@ public class TemperatureReaderService : ITemperatureReaderService
         _dbContext = dbContext;
     }
 
-    public IEnumerable<Chart<TimeSeries>> GetTemperature(TemperatureRequest request)
+    public IEnumerable<Chart<DateTimeOffset, float>> GetTemperature(TemperatureRequest request)
     {
         var predicate = request.Scope.ToPredicate<Device>(
             (device, room) => device.Room == room, 
