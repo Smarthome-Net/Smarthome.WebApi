@@ -7,7 +7,6 @@ using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.MongoService.DbContext;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartHome.MongoService.Services;
@@ -29,7 +28,7 @@ public class TemperaturStatisticService : ITemperatureStatisticService
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
-        var baseResult = deviceQuery
+        var result = deviceQuery
             .Where(predicate)
             .Join(temperatureQuery.AsQueryable(),
                 device => device.Id,
@@ -43,9 +42,9 @@ public class TemperaturStatisticService : ITemperatureStatisticService
                     Device = device,
                 });
 
-        var max = FilterMax(baseResult);
-        var min = FilterMin(baseResult);
-        var avg = FilterAverage(baseResult);
+        var max = result.Max(x => x.Value);
+        var min = result.Min(x => x.Value);
+        var avg = result.Average(x => x.Value);
 
         return new Chart<string, float>
         {
@@ -57,26 +56,5 @@ public class TemperaturStatisticService : ITemperatureStatisticService
                 SeriesHelper.Create("max", max),
             ],
         };
-    }
-
-    private static float FilterMax(IEnumerable<Temperature> data)
-    {
-        return data
-            .OrderByDescending(item => item.Value)
-            .Select(item => item.Value)
-            .FirstOrDefault();
-    }
-
-    private static float FilterMin(IEnumerable<Temperature> data)
-    {
-        return data
-            .OrderBy(item => item.Value)
-            .Select(item => item.Value)
-            .FirstOrDefault();
-    }
-
-    private static float FilterAverage(IEnumerable<Temperature> data)
-    {
-        return data.Average(i => i.Value);
     }
 }
