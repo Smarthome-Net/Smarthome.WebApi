@@ -79,7 +79,7 @@ public class MqttClientService : IMqttClientService
         try
         {
             var sensorType = action!.GetSensorType();
-            string deviceContext = GetDeviceContext(eventArgs.ApplicationMessage, sensorType);
+            string deviceContext = eventArgs.ApplicationMessage.GetDeviceContext($"{_mqttSetting!.TopicSetting!.SubscriptionTopic}/{sensorType}");
             await action!.ExecuteAction(eventArgs.ApplicationMessage, deviceContext, source.Token);
         }
         catch (ApplicationMessageException ex)
@@ -87,14 +87,6 @@ public class MqttClientService : IMqttClientService
             _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
             source.Cancel();
         }
-    }
-
-    private string GetDeviceContext(MqttApplicationMessage applicationMessage, string? sensorType)
-    {
-        var segmetns = Segments.FromString(applicationMessage.Topic);
-        segmetns.RemoveSegments($"{_mqttSetting!.TopicSetting!.SubscriptionTopic}/{sensorType}");
-        var deviceContext = segmetns.MergeSegments();
-        return deviceContext;
     }
 
     public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)

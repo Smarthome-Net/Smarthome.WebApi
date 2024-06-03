@@ -4,7 +4,7 @@ using SmartHome.MqttService.ApplicationMessageProcessors;
 
 namespace SmartHome.MqttService.Extensions;
 
-public static class ApplicationMessageExtension
+internal static class ApplicationMessageProcessorExtension
 {
     public static IServiceCollection AddApplicationMessageProcessors(this IServiceCollection services) 
     {
