@@ -12,21 +12,22 @@ namespace SmartHome.Common.Extensions;
 
 public static class TemperatureExtension
 {
-    public static IEnumerable<Series<DateTimeOffset, float>> ApplayPaging(this IEnumerable<Series<DateTimeOffset, float>> data, PageSetting setting) 
+    public static IEnumerable<Series<DateTimeOffset, float>> ApplayPaging(this IEnumerable<Series<DateTimeOffset, float>> data, PageSetting setting)
     {
         var itemsToSkip = setting.PageIndex * setting.PageSize;
         var itemsToTake = setting.PageSize;
         setting.Length = data.Count();
-        
+
         return data
             .Skip(itemsToSkip)
             .Take(itemsToTake)
             .OrderByDescending(item => item.Name);
     }
 
-    public static IEnumerable<Chart<DateTimeOffset, float>> ApplayPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, PageSetting setting) 
+    public static IEnumerable<Chart<DateTimeOffset, float>> ApplayPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, PageSetting setting)
     {
-        foreach (var item in data) {
+        foreach (var item in data)
+        {
             item.Series = item.Series.ApplayPaging(setting);
             yield return item;
         }

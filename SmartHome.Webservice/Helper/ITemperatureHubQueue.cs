@@ -9,6 +9,6 @@ public interface ITemperatureHubQueue
 {
     public void SetScope(Scope scope);
 
-    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> TemperaturChartData { get; }
+    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData();
 
 }

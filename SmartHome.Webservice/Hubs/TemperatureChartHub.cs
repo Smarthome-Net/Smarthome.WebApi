@@ -36,7 +36,7 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
         var context = Context;
         _temperatureHubQueue.SetScope(scope);
         var subscription = _temperatureHubQueue
-            .TemperaturChartData
+            .GetTemperaturChartData()
             .Subscribe(chartData =>
             {
                 _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), context.ConnectionId);

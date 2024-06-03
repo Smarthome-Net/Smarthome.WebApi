@@ -22,24 +22,18 @@ public class TemperatureHubQueue : ITemperatureHubQueue
         _temperatureObservable = temperatureObservable;
     }
 
-    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> TemperaturChartData 
-    { 
-        get => _temperatureObservable.Temperature
-            .Buffer(TimeSpan.FromSeconds(2))
-            .Where(x => x.Count > 0)
-            .Select(CreateTemperatureChart); 
-    }
-
-    private IEnumerable<Chart<DateTimeOffset, float>> CreateTemperatureChart(IList<Temperature> data)
+    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData()
     {
         var keySelector = _scope.ToTemperatureKeySelector();
         var predictae = _scope.ToPredicate<Temperature>(
-            (temp, room) => temp.Device.Room == room, 
-            (temperature, room, name) => temperature.Device.Room == room && temperature.Device.Name == name);
+            (temp, room) => temp.Device?.Room == room,
+            (temperature, room, name) => temperature.Device?.Room == room && temperature.Device?.Name == name);
 
-        return data
-            .Where(predictae)
-            .ToTimeSeriesChart(keySelector);
+        return _temperatureObservable.Temperature
+                    .Buffer(TimeSpan.FromSeconds(2))
+                    .Where(x => x.Count > 0)
+                    .Select(d => d.Where(predictae)
+                                .ToTimeSeriesChart(keySelector));
     }
 
     public void SetScope(Scope scope)
