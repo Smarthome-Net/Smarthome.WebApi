@@ -27,21 +27,11 @@ public class TemperatureReaderService : ITemperatureReaderService
             (device, room) => device.Room == room, 
             (device, room, name) => device.Room == room && device.Name == name);
         var keySelector = request.Scope.ToTemperatureKeySelector();
-
-        var data = QueryData(predicate);
-        var pageSetting = request.PageSetting;
-
-        return data
-            .ToTimeSeriesChart(keySelector)
-            .ApplayPaging(pageSetting);
-    }
-
-    private List<Temperature> QueryData(Func<Device, bool> predicate)
-    {
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
+        var pageSetting = request.PageSetting;
 
-        return deviceQuery
+        var data = deviceQuery
             .Where(predicate)
             .Join(temperatureQuery,
                 device => device.Id,
@@ -54,7 +44,10 @@ public class TemperatureReaderService : ITemperatureReaderService
                     DeviceId = temperature.DeviceId,
                     Device = device
                 })
-            .OrderByDescending(item => item.RecordDateTime)
-            .ToList();
+            .OrderByDescending(item => item.RecordDateTime);
+        
+        return data
+            .ToTimeSeriesChart(keySelector)
+            .ApplayPaging(pageSetting);
     }
 }
