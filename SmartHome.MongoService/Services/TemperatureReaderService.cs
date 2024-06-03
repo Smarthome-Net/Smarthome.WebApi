@@ -29,9 +29,8 @@ public class TemperatureReaderService : ITemperatureReaderService
         var keySelector = request.Scope.ToTemperatureKeySelector();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
-        var pageSetting = request.PageSetting;
 
-        var data = deviceQuery
+        return deviceQuery
             .Where(predicate)
             .Join(temperatureQuery,
                 device => device.Id,
@@ -44,10 +43,8 @@ public class TemperatureReaderService : ITemperatureReaderService
                     DeviceId = temperature.DeviceId,
                     Device = device
                 })
-            .OrderByDescending(item => item.RecordDateTime);
-        
-        return data
+            .OrderByDescending(item => item.RecordDateTime)
             .ToTimeSeriesChart(keySelector)
-            .ApplayPaging(pageSetting);
+            .ApplayPaging(request.PageSetting);
     }
 }
