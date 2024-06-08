@@ -22,9 +22,7 @@ public class TemperaturStatisticService : ITemperatureStatisticService
 
     public Chart<string, float> GetStatistic(StatisticRequest request)
     {
-        var predicate = request.Scope.ToPredicate<Device>(
-            (device, room) => device.Room == room,
-            (device, room, name) => device.Room == room && device.Name == name);
+        var predicate = request.Scope.ToPredicate();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 

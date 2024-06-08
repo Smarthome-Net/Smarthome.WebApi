@@ -28,18 +28,16 @@ public static class ScopeExtensions
         return keySelector;
     }
 
-    public static Func<TType, bool> ToPredicate<TType>(this Scope scope,
-        Func<TType, string, bool> roomSelector,
-        Func<TType, string, string, bool> deviceSelector)
+    public static Func<Device, bool> ToPredicate(this Scope scope)
     {
-        Func<TType, bool> predicate = item => true;
+        Func<Device, bool> predicate = item => true;
         switch (scope.ScopeType)
         {
             case ScopeType.All:
                 break;
             case ScopeType.Room:
                 //we don't realy need to split the value, we just assume that the value only contain the room name
-                predicate = item => roomSelector(item, scope.Value!);
+                predicate = item => string.Equals(item.Room, scope.Value);
                 break;
             case ScopeType.Device:
                 //The scope value contains the for the room and the device seperated by the '/', for example: myRoom/Window
@@ -48,12 +46,12 @@ public static class ScopeExtensions
 
                 if (segments.Count == 1)
                 {
-                    predicate = item => roomSelector(item, segments[0].Value);
+                    predicate = item => string.Equals(item.Room, segments[0].Value);
                 }
 
                 if (segments.Count == 2)
                 {
-                    predicate = item => deviceSelector(item, segments[0].Value, segments[1].Value);
+                    predicate = item => string.Equals(item.Room, segments[0].Value) && string.Equals(item.Name, segments[1].Value);
                 }
                 break;
             default:

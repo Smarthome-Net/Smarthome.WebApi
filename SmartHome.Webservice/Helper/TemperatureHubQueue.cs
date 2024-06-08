@@ -25,14 +25,12 @@ public class TemperatureHubQueue : ITemperatureHubQueue
     public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData()
     {
         var keySelector = _scope.ToTemperatureKeySelector();
-        var predictae = _scope.ToPredicate<Temperature>(
-            (temp, room) => temp.Device?.Room == room,
-            (temperature, room, name) => temperature.Device?.Room == room && temperature.Device?.Name == name);
+        var predictae = _scope.ToPredicate();
 
         return _temperatureObservable.Temperature
                     .Buffer(TimeSpan.FromSeconds(2))
                     .Where(x => x.Count > 0)
-                    .Select(d => d.Where(predictae)
+                    .Select(d => d.Where(t => predictae(t.Device))
                                 .ToTimeSeriesChart(keySelector));
     }
 
