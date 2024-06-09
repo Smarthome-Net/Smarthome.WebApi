@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Helpers;
 using SmartHome.Common.Models.Db;
