@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Amazon.Runtime.Internal;
+using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Helpers;
 using SmartHome.Common.Models.Db;
@@ -42,6 +43,24 @@ public static class TemperatureExtension
                 var firstValue = groupedValues.FirstOrDefault();
                 return SeriesHelper.Create(firstValue!.RecordDateTime, groupedValues.Average(item => item.Value));
             });
+    }
+
+    public static Chart<string, float> ToStatisticChart(this IEnumerable<Temperature> data, Scope scope) 
+    {
+        var max = data.Max(x => x.Value);
+        var min = data.Min(x => x.Value);
+        var avg = data.Average(x => x.Value);
+
+        return new Chart<string, float>
+        {
+            Name = scope.Value!,
+            Series =
+            [
+                SeriesHelper.Create("min", min),
+                SeriesHelper.Create("average", avg),
+                SeriesHelper.Create("max", max),
+            ],
+        };
     }
 
     public static IEnumerable<Chart<DateTimeOffset, float>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector)

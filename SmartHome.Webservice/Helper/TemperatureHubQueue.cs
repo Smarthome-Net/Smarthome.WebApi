@@ -25,7 +25,7 @@ public class TemperatureHubQueue : ITemperatureHubQueue
     public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData()
     {
         var keySelector = _scope.ToTemperatureKeySelector();
-        var predictae = _scope.ToPredicate();
+        var predictae = _scope.ToDevicePredicate();
 
         return _temperatureObservable.Temperature
                     .Buffer(TimeSpan.FromSeconds(2))

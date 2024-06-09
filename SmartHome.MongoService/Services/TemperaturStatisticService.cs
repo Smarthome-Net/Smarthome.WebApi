@@ -22,11 +22,11 @@ public class TemperaturStatisticService : ITemperatureStatisticService
 
     public Chart<string, float> GetStatistic(StatisticRequest request)
     {
-        var predicate = request.Scope.ToPredicate();
+        var predicate = request.Scope.ToDevicePredicate();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
-        var result = deviceQuery
+        return deviceQuery
             .Where(predicate)
             .Join(temperatureQuery.AsQueryable(),
                 device => device.Id,
@@ -38,21 +38,7 @@ public class TemperaturStatisticService : ITemperatureStatisticService
                     RecordDateTime = temperature.RecordDateTime,
                     DeviceId = temperature.DeviceId,
                     Device = device,
-                });
-
-        var max = result.Max(x => x.Value);
-        var min = result.Min(x => x.Value);
-        var avg = result.Average(x => x.Value);
-
-        return new Chart<string, float>
-        {
-            Name = request.Scope.Value,
-            Series =
-            [
-                SeriesHelper.Create("min", min),
-                SeriesHelper.Create("average", avg),
-                SeriesHelper.Create("max", max),
-            ],
-        };
+                })
+            .ToStatisticChart(request.Scope);
     }
 }

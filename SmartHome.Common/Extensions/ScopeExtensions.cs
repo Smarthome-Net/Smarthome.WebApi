@@ -17,7 +17,7 @@ public static class ScopeExtensions
         };
     }
 
-    public static Func<Device, bool> ToPredicate(this Scope scope)
+    public static Func<Device, bool> ToDevicePredicate(this Scope scope)
     {
         return scope.ScopeType switch
         {
