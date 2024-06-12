@@ -43,6 +43,6 @@ public class TemperatureReaderService : ITemperatureReaderService
                 })
             .OrderByDescending(item => item.RecordDateTime)
             .ToTimeSeriesChart(keySelector)
-            .ApplayPaging(request.PageSetting);
+            .ApplyPaging(request.PageSetting);
     }
 }
