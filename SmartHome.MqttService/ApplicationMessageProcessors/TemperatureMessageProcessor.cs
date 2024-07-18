@@ -13,7 +13,7 @@ using System.IO;
 
 namespace SmartHome.MqttService.ApplicationMessageProcessors;
 
-class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
+public class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
 {
     private ILogger<TemperatureMessageProcessor>? _logger;
     private ITemperatureWriterService? _temperatureWriteService;
@@ -71,12 +71,6 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
     {
         if (!_isDisposed)
         {
-            if (disposing)
-            {
-                // TODO: Verwalteten Zustand (verwaltete Objekte) bereinigen
-            }
-            // TODO: Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
-            // TODO: Große Felder auf NULL setzen
             _logger = null;
             _temperatureWriteService = null;
             _deviceService = null;
@@ -86,16 +80,12 @@ class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
 
     // ~TemperatureMessageProcessor()
     // {
-    //     // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
     //     Dispose(disposing: false);
     // }
 
     public void Dispose()
     {
-        // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
-
-    
 }
