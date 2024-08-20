@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -26,6 +26,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SmartHome.MongoService\SmartHome.MongoService.csproj" />
     <ProjectReference Include="..\SmartHome.Common\SmartHome.Common.csproj" />
+    <ProjectReference Include="..\SmartHome.MqttService\SmartHome.MqttService.csproj" />
+    <ProjectReference Include="..\SmartHome.Webservice\SmartHome.Webservice.csproj" />
   </ItemGroup>
 
 </Project>

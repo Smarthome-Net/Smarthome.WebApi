@@ -56,7 +56,7 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperat
                 DeviceId = device.Id,
             };
 
-            temperature = await _temperatureWriteService!.WriteTemperature(temperature, cancellationToken);
+            await _temperatureWriteService!.WriteTemperature(temperature, cancellationToken);
             temperature.Device = device;
             return temperature;
         }
