@@ -5,6 +5,7 @@ using SmartHome.Common.Interfaces;
 using SmartHome.MongoService.Services;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Microsoft.Extensions.Logging;
 
 namespace SmartHome.MongoService.Extension;
 
@@ -18,10 +19,13 @@ public static class MongoDBServiceExtension
 
         services.AddSingleton(provider =>
         {
-            var option = provider.GetService<IOptions<MongoDbOptions>>();
+            var option = provider.GetRequiredService<IOptions<MongoDbOptions>>();
+            var logger = provider.GetRequiredService<ILogger<MongoDBContext>>();
             var setting = option.Value.DbConnectionSetting;
             var mongoClient = new MongoClient(setting.GetMongoConnectionString());
-            return new MongoDBContext(mongoClient, setting.Database);
+            var mongoDBContext = new MongoDBContext(mongoClient, logger);
+            mongoDBContext.ConfigureDatabase(setting!.Database);
+            return mongoDBContext;
         });
 
         services.AddTransient<ITemperatureWriterService, TemperatureWriterService>();

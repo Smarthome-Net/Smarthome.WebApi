@@ -4,5 +4,5 @@ namespace SmartHome.MongoService.Extension;
 
 public class MongoDbOptions
 {
-    public DbConnectionSetting DbConnectionSetting { get; set; }
+    public required DbConnectionSetting DbConnectionSetting { get; set; }
 }

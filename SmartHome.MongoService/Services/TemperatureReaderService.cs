@@ -23,13 +23,13 @@ public class TemperatureReaderService : ITemperatureReaderService
 
     public IEnumerable<Chart<DateTimeOffset, float>> GetTemperature(TemperatureRequest request)
     {
-        var predicate = request.Scope.ToDevicePredicate();
-        var keySelector = request.Scope.ToTemperatureKeySelector();
+        var predicate = request.Scope?.ToDevicePredicate();
+        var keySelector = request.Scope?.ToTemperatureKeySelector();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
         return deviceQuery
-            .Where(predicate)
+            .Where(predicate!)
             .Join(temperatureQuery,
                 device => device.Id,
                 temperature => temperature.DeviceId,
@@ -42,7 +42,7 @@ public class TemperatureReaderService : ITemperatureReaderService
                     Device = device
                 })
             .OrderByDescending(item => item.RecordDateTime)
-            .ToTimeSeriesChart(keySelector)
-            .ApplyPaging(request.PageSetting);
+            .ToTimeSeriesChart(keySelector!)
+            .ApplyPaging(request.PageSetting!);
     }
 }

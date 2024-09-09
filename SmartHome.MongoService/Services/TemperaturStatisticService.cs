@@ -22,12 +22,12 @@ public class TemperaturStatisticService : ITemperatureStatisticService
 
     public Chart<string, float> GetStatistic(StatisticRequest request)
     {
-        var predicate = request.Scope.ToDevicePredicate();
+        var predicate = request.Scope?.ToDevicePredicate();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
         return deviceQuery
-            .Where(predicate)
+            .Where(predicate!)
             .Join(temperatureQuery.AsQueryable(),
                 device => device.Id,
                 temperature => temperature.DeviceId,
@@ -39,6 +39,6 @@ public class TemperaturStatisticService : ITemperatureStatisticService
                     DeviceId = temperature.DeviceId,
                     Device = device,
                 })
-            .ToStatisticChart(request.Scope);
+            .ToStatisticChart(request.Scope!);
     }
 }

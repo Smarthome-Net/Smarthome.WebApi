@@ -54,7 +54,7 @@ public class DeviceService : IDeviceService
             .Set(p => p.Room, device.Room)
             .Set(p => p.Topic, device.Topic);
 
-        var result = await _dbContext.DeviceCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        var result = await _dbContext.DeviceCollection!.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         if(result.IsAcknowledged) 
         {
             return result.ModifiedCount;
@@ -63,14 +63,14 @@ public class DeviceService : IDeviceService
     }
     public async Task<Device> CreateDevice(Device device, CancellationToken cancellationToken = default)
     {
-        await _dbContext.DeviceCollection.InsertOneAsync(device, cancellationToken: cancellationToken);
+        await _dbContext.DeviceCollection!.InsertOneAsync(device, cancellationToken: cancellationToken);
         return device;
     }
 
     public async Task<long> DeleteDevice(string deviceId, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Device>.Filter.Eq(p => p.Id, deviceId);
-        var result = await _dbContext.DeviceCollection.DeleteOneAsync(filter, cancellationToken);
+        var result = await _dbContext.DeviceCollection!.DeleteOneAsync(filter, cancellationToken);
         
         if(result.IsAcknowledged) 
         {

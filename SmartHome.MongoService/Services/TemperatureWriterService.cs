@@ -15,6 +15,6 @@ public class TemperatureWriterService : ITemperatureWriterService
     }
     public async Task WriteTemperature(Temperature temperature, CancellationToken cancellationToken)
     {
-        await _dbContext.TemperatureCollection.InsertOneAsync(temperature, cancellationToken: cancellationToken);
+        await _dbContext.TemperatureCollection!.InsertOneAsync(temperature, cancellationToken: cancellationToken);
     }
 }
