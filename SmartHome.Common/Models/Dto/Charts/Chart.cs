@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using SmartHome.Common.Collections;
 
 namespace SmartHome.Common.Models.Dto.Charts;
 
@@ -10,5 +10,5 @@ namespace SmartHome.Common.Models.Dto.Charts;
 public class Chart<TName, TValue>
 {
     public required string Name { get; set; }
-    public IEnumerable<Series<TName, TValue>> Series { get; set; } = [];
+    public Series<TName, TValue> Series { get; set; } = [];
 }

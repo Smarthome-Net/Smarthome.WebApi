@@ -5,7 +5,7 @@ namespace SmartHome.Common.Models.Dto.Charts;
 /// </summary>
 /// <typeparam name="TName"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class Series<TName, TValue>
+public class SeriesItem<TName, TValue>
 {
     public required TName Name { get; set; }
     public required TValue Value { get; set; }

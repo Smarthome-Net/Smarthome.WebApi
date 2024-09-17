@@ -1,5 +1,4 @@
-﻿using SmartHome.Common.Collections;
-using SmartHome.Common.Models.Db;
+﻿using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 using System;
 

@@ -15,9 +15,9 @@ public static class SeriesHelper
     /// <typeparam name="TName"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    public static Series<TName, TValue> Create<TName, TValue>(TName name, TValue value)
+    public static SeriesItem<TName, TValue> Create<TName, TValue>(TName name, TValue value)
     {
-        return new Series<TName, TValue>
+        return new SeriesItem<TName, TValue>
         {
             Name = name,
             Value = value,

@@ -12,7 +12,7 @@ namespace SmartHome.Common.Extensions;
 
 public static class TemperatureExtension
 {
-    public static IEnumerable<Series<DateTimeOffset, float>> ApplyPaging(this IEnumerable<Series<DateTimeOffset, float>> data, PageSetting setting)
+    public static IEnumerable<SeriesItem<DateTimeOffset, float>> ApplyPaging(this IEnumerable<SeriesItem<DateTimeOffset, float>> data, PageSetting setting)
     {
         var itemsToSkip = setting.PageIndex * setting.PageSize;
         var itemsToTake = setting.PageSize;
@@ -28,12 +28,14 @@ public static class TemperatureExtension
     {
         foreach (var item in data)
         {
-            item.Series = item.Series.ApplyPaging(setting);
+            item.Series = item.Series
+                .ApplyPaging(setting)
+                .ToSeries();
             yield return item;
         }
     }
 
-    public static IEnumerable<Series<DateTimeOffset, float>> ToTimeSeries(this IEnumerable<Temperature> data)
+    public static IEnumerable<SeriesItem<DateTimeOffset, float>> ToTimeSeries(this IEnumerable<Temperature> data)
     {
         return data
             .GroupBy(item => item.RecordDateTime.Ticks / TimeSpan.FromSeconds(10).Ticks)
@@ -58,7 +60,7 @@ public static class TemperatureExtension
                 SeriesHelper.Create("min", min),
                 SeriesHelper.Create("average", avg),
                 SeriesHelper.Create("max", max),
-            ],
+            ]
         };
     }
 
@@ -71,6 +73,7 @@ public static class TemperatureExtension
                 {
                     Name = key,
                     Series = values.ToTimeSeries()
+                        .ToSeries()
                 });
     }
 }
