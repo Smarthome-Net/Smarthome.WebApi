@@ -6,8 +6,6 @@ using SmartHome.Common.Exceptions;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.MqttService.ApplicationMessageProcessors;
-using System.Reactive;
-using System.Text;
 using System.Text.Json;
 
 namespace SmartHome.Tests.UnitTests;
@@ -69,11 +67,10 @@ public class TemperatureMessageProcessorTests
     {
         var rawValue = new { value = 23, time = Timestamp };
         var bytes = JsonSerializer.SerializeToUtf8Bytes(rawValue);
-        var message = new MqttApplicationMessage
-        {
-            PayloadSegment = new ArraySegment<byte>(bytes),
-            Topic = "smarthome/sensors/temperature/Badezimmer/Dusche"
-        };
+        var message = new MqttApplicationMessageBuilder()
+            .WithPayload(bytes)
+            .WithTopic("smarthome/sensors/temperature/Badezimmer/Dusche")
+            .Build();
 
         var expected = new Temperature
         {
