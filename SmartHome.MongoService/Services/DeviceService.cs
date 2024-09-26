@@ -8,6 +8,7 @@ using System;
 using SmartHome.Common.Models.Db;
 using System.Threading;
 using SmartHome.Common.Collections;
+using MongoDB.Bson;
 
 namespace SmartHome.MongoService.Services;
 
@@ -28,7 +29,7 @@ public class DeviceService : IDeviceService
 
     public async Task<Device> GetDeviceById(string deviceId, CancellationToken cancellationToken = default)
     {
-        var filter = Builders<Device>.Filter.Eq(d => d.Id, deviceId);
+        var filter = Builders<Device>.Filter.Eq(d => d.Id, ObjectId.Parse(deviceId));
         var result = await _dbContext.DeviceCollection.FindAsync(filter, cancellationToken: cancellationToken);
         return result.FirstOrDefault(cancellationToken);
     }
@@ -69,7 +70,7 @@ public class DeviceService : IDeviceService
 
     public async Task<long> DeleteDevice(string deviceId, CancellationToken cancellationToken = default)
     {
-        var filter = Builders<Device>.Filter.Eq(p => p.Id, deviceId);
+        var filter = Builders<Device>.Filter.Eq(p => p.Id, ObjectId.Parse(deviceId));
         var result = await _dbContext.DeviceCollection!.DeleteOneAsync(filter, cancellationToken);
         
         if(result.IsAcknowledged) 

@@ -18,7 +18,9 @@ public class DeviceController : ControllerBase
     private readonly IDeviceService _deviceService;
     private readonly IDeviceManager _deviceManager;
 
-    public DeviceController(ILogger<DeviceController> logger, IDeviceService deviceService, IDeviceManager deviceManager)
+    public DeviceController(ILogger<DeviceController> logger, 
+        IDeviceService deviceService, 
+        IDeviceManager deviceManager)
     {
         _logger = logger;
         _deviceService = deviceService;

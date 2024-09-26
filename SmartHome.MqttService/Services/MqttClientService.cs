@@ -74,6 +74,11 @@ public class MqttClientService : IMqttClientService
 
     public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
+        if(IsRpcTopic(eventArgs.ApplicationMessage.Topic)) 
+        {
+            return;
+        }
+
         var source = new CancellationTokenSource();
         var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
         try
@@ -87,6 +92,11 @@ public class MqttClientService : IMqttClientService
             _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
             source.Cancel();
         }
+    }
+
+    public bool IsRpcTopic(string topic)
+    {
+        return topic.StartsWith(_mqttSetting.TopicSetting.SubscriptionRpcTopic!);
     }
 
     public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)

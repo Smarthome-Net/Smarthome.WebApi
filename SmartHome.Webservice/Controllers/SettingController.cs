@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SmartHome.Common.Interfaces;
+using SmartHome.Common.Models.Db;
+using System.Threading.Tasks;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -6,15 +9,17 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class SettingController : ControllerBase
 {
-    public SettingController()
+    private readonly ISettingService _settingService;
+    
+    public SettingController(ISettingService settingService)
     {
-
+        _settingService = settingService;
     }
 
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<Setting> GetSetting() 
     {
-        return Ok();
+        return await _settingService.GetSetting<PagingSetting>("66f4ee814b3a5a0e5074b591");
     }
 }

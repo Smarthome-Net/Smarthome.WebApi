@@ -33,4 +33,6 @@ public class MongoDBContext
     public IMongoCollection<Device>? DeviceCollection => _database!.GetCollection<Device>(Collection.Device);
 
     public IMongoCollection<Temperature>? TemperatureCollection => _database!.GetCollection<Temperature>(Collection.Temperature);
+    
+    public IMongoCollection<Setting>? SettingCollection => _database!.GetCollection<Setting>(Collection.Setting);
 }

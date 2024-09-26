@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using MongoDB.Bson;
 using Moq;
 using MQTTnet;
 using SmartHome.Common.Exceptions;
@@ -14,6 +15,7 @@ public class TemperatureMessageProcessorTests
 {
     private const string DeviceContext = "r/n";
     private const long Timestamp = 1724057532524;
+    private readonly ObjectId deviceId = ObjectId.GenerateNewId();
     private TemperatureMessageProcessor? _messageProcessor;
     
     [SetUp]
@@ -32,7 +34,7 @@ public class TemperatureMessageProcessorTests
                 var topic = $"{room}/{name}";
                 return Task.FromResult(new Device
                 {
-                    Id = "deviceId",
+                    Id = deviceId,
                     Name = name,
                     Room = room,
                     Topic = topic,
@@ -76,7 +78,7 @@ public class TemperatureMessageProcessorTests
         {
             RecordDateTime = DateTimeOffset.FromUnixTimeMilliseconds(Timestamp),
             Value = 23f,
-            DeviceId = "deviceId"
+            DeviceId = deviceId,
         };
 
         var result = await _messageProcessor?.ProcessMessage(message, DeviceContext)!;

@@ -7,8 +7,7 @@ namespace SmartHome.Common.Models.Db;
 
 public class Device
 {
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public ObjectId Id { get; set; }
     public string? Name { get; set; }
     public string? Room { get; set; }
     public string? Topic { get; set; }
