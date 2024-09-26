@@ -10,7 +10,4 @@ public class Temperature
     public DateTimeOffset RecordDateTime { get; set; }
     public float Value { get; set; }
     public ObjectId DeviceId { get; set; }
-
-    [BsonIgnore]
-    public Device? Device { get; set; }
 }

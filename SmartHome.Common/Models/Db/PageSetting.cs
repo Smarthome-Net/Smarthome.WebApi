@@ -1,7 +1,7 @@
 ﻿namespace SmartHome.Common.Models.Db;
 
 
-public class PagingSetting : Setting
+public class PageSetting : Setting
 {
     public int Length { get; set; }
     public int PageIndex { get; set; }

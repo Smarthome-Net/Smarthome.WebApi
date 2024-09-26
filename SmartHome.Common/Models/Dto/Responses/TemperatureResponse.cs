@@ -8,5 +8,5 @@ public class TemperatureResponse
 {
     public Scope? Scope { get; set; }
     public IEnumerable<Chart<DateTimeOffset, float>> Temperatures { get; set; } = [];
-    public PageSetting? PageSetting { get; set; }
+    public PageSettingDto? PageSetting { get; set; }
 }

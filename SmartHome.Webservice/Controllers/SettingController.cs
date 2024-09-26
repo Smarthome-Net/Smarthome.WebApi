@@ -20,6 +20,6 @@ public class SettingController : ControllerBase
     [HttpGet]
     public async Task<Setting> GetSetting() 
     {
-        return await _settingService.GetSetting<PagingSetting>("66f4ee814b3a5a0e5074b591");
+        return await _settingService.GetSetting<PageSetting>("66f4ee814b3a5a0e5074b591");
     }
 }

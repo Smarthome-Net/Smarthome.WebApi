@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using System.Diagnostics.CodeAnalysis;
 
@@ -11,10 +10,6 @@ public class Device
     public string? Name { get; set; }
     public string? Room { get; set; }
     public string? Topic { get; set; }
-
-    [BsonIgnore]
-    public DeviceConfiguration? Configuration { get; set; }
-
 }
 
 public class DeviceComparer : IEqualityComparer<Device>
