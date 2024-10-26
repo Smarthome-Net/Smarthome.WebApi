@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Collections;
 
 namespace SmartHome.MqttService.Services;
 
@@ -23,7 +22,7 @@ public class MqttClientService : IMqttClientService
     private readonly MqttSetting _mqttSetting;
     private readonly MqttFactory _mqttFactory;
     private readonly ITypedProvider<IMqttAction, string> _mqttActionProvider;
-    private bool _isDisposed = false;
+    private bool _isDisposed;
 
     public MqttClientService(ILogger<MqttClientService> logger,
         MqttClientOptions clientOptions,
@@ -33,7 +32,7 @@ public class MqttClientService : IMqttClientService
         _logger = logger;
         _clientOptions = clientOptions;
         _mqttActionProvider = mqttActionProvider;
-        _mqttSetting = mqttOptions.Value.MqttSetting!;
+        _mqttSetting = mqttOptions.Value.MqttSetting;
 
         _mqttFactory = new MqttFactory();
         _client = _mqttFactory.CreateMqttClient();
@@ -72,7 +71,7 @@ public class MqttClientService : IMqttClientService
 
     #region IMqttClientConnectedHandler, IMqttClientDisconnectedHandler, IMqttApplicationMessageReceivedHandler Implementation
 
-    public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
+    private async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         if(IsRpcTopic(eventArgs.ApplicationMessage.Topic)) 
         {
@@ -84,27 +83,27 @@ public class MqttClientService : IMqttClientService
         try
         {
             var sensorType = action!.GetSensorType();
-            string deviceContext = eventArgs.ApplicationMessage.GetDeviceContext($"{_mqttSetting!.TopicSetting!.SubscriptionTopic}/{sensorType}");
-            await action!.ExecuteAction(eventArgs.ApplicationMessage, deviceContext, source.Token);
+            var deviceContext = eventArgs.ApplicationMessage.GetDeviceContext($"{_mqttSetting.TopicSetting.SubscriptionTopic}/{sensorType}");
+            await action.ExecuteAction(eventArgs.ApplicationMessage, deviceContext, source.Token);
         }
         catch (ApplicationMessageException ex)
         {
             _logger.LogError("{Message} \r\n {StackTrace}", ex.Message, ex.StackTrace);
-            source.Cancel();
+            await source.CancelAsync();
         }
     }
 
-    public bool IsRpcTopic(string topic)
+    private bool IsRpcTopic(string topic)
     {
-        return topic.StartsWith(_mqttSetting.TopicSetting.SubscriptionRpcTopic!);
+        return topic.StartsWith(_mqttSetting.TopicSetting.SubscriptionRpcTopic);
     }
 
-    public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
+    private async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
     {
         MqttFactory factory = new();
 
         var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => f.WithTopic($"{_mqttSetting?.TopicSetting?.SubscriptionTopic!}/#"))
+            .WithTopicFilter(f => f.WithTopic($"{_mqttSetting.TopicSetting.SubscriptionTopic}/#"))
             .Build();
 
 
@@ -112,7 +111,7 @@ public class MqttClientService : IMqttClientService
         await _client.SubscribeAsync(subscribeOptions);
     }
 
-    public async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
+    private async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
     {
         _logger.LogInformation("Disconnected from Mqtt Broker: {Reason}", eventArgs.Reason);
         if(!_client.IsConnected && eventArgs.Reason != MqttClientDisconnectReason.NormalDisconnection) 
@@ -132,15 +131,17 @@ public class MqttClientService : IMqttClientService
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_isDisposed)
+        if (_isDisposed)
         {
-            if (disposing)
-            {
-                _client.Dispose();
-            }
-
-            _isDisposed = true;
+            return;
         }
+        
+        if (disposing)
+        {
+            _client.Dispose();
+        }
+
+        _isDisposed = true;
     }
 
     // // TODO: Finalizer nur überschreiben, wenn "Dispose(bool disposing)" Code für die Freigabe nicht verwalteter Ressourcen enthält

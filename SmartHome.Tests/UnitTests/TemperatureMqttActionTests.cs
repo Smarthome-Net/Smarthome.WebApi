@@ -6,6 +6,7 @@ using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.MqttService.Observables;
 using System.Text.Json;
+using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.Tests.UnitTests;
 
@@ -19,14 +20,14 @@ public class TemperatureMqttActionTests
     [OneTimeSetUp]
     public void OneTimeSetUp() 
     {
-        var messageProcessorMock = new Mock<IApplicationMessageProcessor<Temperature>>();
-        var _temperatureObservableMock = new Mock<ITemperatureObservable>();
+        var messageProcessorMock = new Mock<IApplicationMessageProcessor<TemperatureDto>>();
+        var temperatureObservableMock = new Mock<ITemperatureObservable>();
         
-        _temperatureAction = new TemperatureMqttAction(messageProcessorMock.Object, _temperatureObservableMock.Object);
+        _temperatureAction = new TemperatureMqttAction(messageProcessorMock.Object, temperatureObservableMock.Object);
     }
 
     [Test]
-    public void TestExcecuteAction()
+    public void TestExecuteAction()
     {
         var rawValue = new { value = 23, time = Timestamp };
         var bytes = JsonSerializer.SerializeToUtf8Bytes(rawValue);
@@ -36,8 +37,8 @@ public class TemperatureMqttActionTests
             Topic = "smarthome/sensors/temperature/Badezimmer/Dusche"
         };
 
-        var action = _temperatureAction.ExecuteAction(message, DeviceContext);
+        var action = () => _temperatureAction.ExecuteAction(message, DeviceContext);
         
-        action.Should();
+        action.Should().CompleteWithinAsync(TimeSpan.FromMicroseconds(1));
     }
 }

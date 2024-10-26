@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models;
-using SmartHome.Common.Models.Db;
+using SmartHome.Common.Models.Dto;
 using SmartHome.MqttService.Services;
 
 namespace SmartHome.Webservice.Controllers;
@@ -32,12 +33,12 @@ public class DeviceController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Device>>> GetAllDevices()
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetAllDevices()
     {
         try
         {
             var devices = await _deviceService.GetAllDevices();
-            return Ok(devices);
+            return Ok(devices.ToDto());
         }
         catch (Exception ex)
         {
@@ -52,12 +53,12 @@ public class DeviceController : ControllerBase
     /// <param name="room">Name of the room</param>
     /// <returns></returns>
     [HttpGet("{room}")]
-    public async Task<ActionResult<IEnumerable<Device>>> GetListOfDevices(string room)
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetListOfDevices(string room)
     {
         try
         {
             var devices = await _deviceService.GetDevices(room);
-            return Ok(devices);
+            return Ok(devices.ToDto());
         }
         catch (Exception ex)
         {
@@ -77,7 +78,7 @@ public class DeviceController : ControllerBase
         try
         {
             var device = await _deviceService.GetDeviceById(deviceId);
-            var status = await _deviceManager.GetStatus(device.Topic);
+            var status = await _deviceManager.GetStatus(device.Topic!);
             return Ok(status);
         }
         catch (Exception ex)
@@ -93,12 +94,13 @@ public class DeviceController : ControllerBase
     /// <param name="deviceId">Id of the device</param>
     /// <returns></returns>
     [HttpGet("{deviceId}/config")]
-    public async Task<ActionResult<Device>> GetDeviceConfig(string deviceId)
+    public async Task<ActionResult<DeviceDto>> GetDeviceConfig(string deviceId)
     {
         try
         {
-            var device = await _deviceService.GetDeviceById(deviceId);
-            device.Configuration = await _deviceManager.GetConfiguration(device.Topic);
+            var result = await _deviceService.GetDeviceById(deviceId);
+            var device = result.ToDto();
+            device.Configuration = await _deviceManager.GetConfiguration(device.Topic!);
             return Ok(device);
         }
         catch (Exception ex)
@@ -112,9 +114,10 @@ public class DeviceController : ControllerBase
     /// Updates the config of the spezified device id
     /// </summary>
     /// <param name="deviceId">Id of the device</param>
+    /// <param name="device"></param>
     /// <returns></returns>
     [HttpPost("{deviceId}/config")]
-    public async Task<ActionResult<Device>> UpdateDeviceConfig(string deviceId, Device device)
+    public async Task<ActionResult<DeviceDto>> UpdateDeviceConfig(string deviceId, DeviceDto device)
     {
         if(!string.Equals(deviceId, device.Id)) 
         {
@@ -128,12 +131,12 @@ public class DeviceController : ControllerBase
 
         try
         {
-            var result = await _deviceService.UpdateDevice(device);
+            var result = await _deviceService.UpdateDevice(device.ToDb()!);
             if(result == 0)
             {
                 return Problem();
             }
-            device.Configuration = await _deviceManager.PopulateConfiguration(device.Topic, device.Configuration);
+            device.Configuration = await _deviceManager.PopulateConfiguration(device.Topic!, device.Configuration);
             return Ok(device);
         }
         catch (Exception ex)

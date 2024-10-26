@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson;
-
-namespace SmartHome.Common.Models.Dto;
+﻿namespace SmartHome.Common.Models.Dto;
 
 public class SettingDto
 {

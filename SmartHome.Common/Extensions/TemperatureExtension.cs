@@ -1,7 +1,6 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SmartHome.Common.Helpers;
-using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
 using System;
@@ -12,19 +11,20 @@ namespace SmartHome.Common.Extensions;
 
 public static class TemperatureExtension
 {
-    public static IEnumerable<SeriesItem<DateTimeOffset, float>> ApplyPaging(this IEnumerable<SeriesItem<DateTimeOffset, float>> data, PageSetting setting)
+    private static IEnumerable<SeriesItem<DateTimeOffset, float>> ApplyPaging(this IEnumerable<SeriesItem<DateTimeOffset, float>> data, PageSettingDto setting)
     {
         var itemsToSkip = setting.PageIndex * setting.PageSize;
         var itemsToTake = setting.PageSize;
-        setting.Length = data.Count();
+        var seriesItems = data.ToArray();
+        setting.Length = seriesItems.Length;
 
-        return data
+        return seriesItems
             .Skip(itemsToSkip)
             .Take(itemsToTake)
             .OrderByDescending(item => item.Name);
     }
 
-    public static IEnumerable<Chart<DateTimeOffset, float>> ApplyPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, PageSetting setting)
+    public static IEnumerable<Chart<DateTimeOffset, float>> ApplyPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, PageSettingDto setting)
     {
         foreach (var item in data)
         {
@@ -35,7 +35,7 @@ public static class TemperatureExtension
         }
     }
 
-    public static IEnumerable<SeriesItem<DateTimeOffset, float>> ToTimeSeries(this IEnumerable<Temperature> data)
+    private static IEnumerable<SeriesItem<DateTimeOffset, float>> ToTimeSeries(this IEnumerable<TemperatureDto> data)
     {
         return data
             .GroupBy(item => item.RecordDateTime.Ticks / TimeSpan.FromSeconds(10).Ticks)
@@ -46,11 +46,12 @@ public static class TemperatureExtension
             });
     }
 
-    public static Chart<string, float> ToStatisticChart(this IEnumerable<Temperature> data, Scope scope) 
+    public static Chart<string, float> ToStatisticChart(this IEnumerable<TemperatureDto> data, Scope scope) 
     {
-        var max = data.Max(x => x.Value);
-        var min = data.Min(x => x.Value);
-        var avg = data.Average(x => x.Value);
+        var temperatures = data.ToArray();
+        var max = temperatures.Max(x => x.Value);
+        var min = temperatures.Min(x => x.Value);
+        var avg = temperatures.Average(x => x.Value);
 
         return new Chart<string, float>
         {
@@ -64,7 +65,7 @@ public static class TemperatureExtension
         };
     }
 
-    public static IEnumerable<Chart<DateTimeOffset, float>> ToTimeSeriesChart(this IEnumerable<Temperature> data, Func<Temperature, string> keySelector)
+    public static IEnumerable<Chart<DateTimeOffset, float>> ToTimeSeriesChart(this IEnumerable<TemperatureDto> data, Func<TemperatureDto, string> keySelector)
     {
         return data
             .GroupBy(

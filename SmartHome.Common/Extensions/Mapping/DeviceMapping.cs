@@ -1,6 +1,8 @@
 ﻿using MongoDB.Bson;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartHome.Common.Extensions.Mapping;
 
@@ -17,7 +19,12 @@ public static class DeviceMapping
         };
     }
 
-    public static Device? ToDB(this DeviceDto device) 
+    public static IEnumerable<DeviceDto> ToDto(this IEnumerable<Device> devices)
+    {
+        return devices.Select(ToDto);
+    }
+
+    public static Device? ToDb(this DeviceDto device) 
     {
         if(!ObjectId.TryParse(device.Id, out var id))
         {

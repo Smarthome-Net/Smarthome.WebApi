@@ -1,5 +1,5 @@
 ﻿using MQTTnet;
-using SmartHome.Common.Models.Db;
+using SmartHome.Common.Models.Dto;
 using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.Observables;
 using System.Threading;
@@ -10,9 +10,9 @@ namespace SmartHome.MqttService.MqttActions;
 public class TemperatureMqttAction : IMqttAction
 {
     private readonly ITemperatureObservable _temperatureObservable;
-    private readonly IApplicationMessageProcessor<Temperature> _messageProcessor;
+    private readonly IApplicationMessageProcessor<TemperatureDto> _messageProcessor;
 
-    public TemperatureMqttAction(IApplicationMessageProcessor<Temperature> messageProcessor, ITemperatureObservable temperatureObservable)
+    public TemperatureMqttAction(IApplicationMessageProcessor<TemperatureDto> messageProcessor, ITemperatureObservable temperatureObservable)
     {
         _messageProcessor = messageProcessor;
         _temperatureObservable = temperatureObservable;

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using SmartHome.Common.Models.Dto.Charts;
+﻿using System.Collections.Generic;
+using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Requests;
 
 namespace SmartHome.Common.Interfaces;
 
 public interface ITemperatureReaderService
 {
-    IEnumerable<Chart<DateTimeOffset, float>> GetTemperature(TemperatureRequest request);
+    IEnumerable<TemperatureDto> GetTemperature(TemperatureRequest request);
 }

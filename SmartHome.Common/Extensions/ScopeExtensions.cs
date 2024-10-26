@@ -6,7 +6,7 @@ namespace SmartHome.Common.Extensions;
 
 public static class ScopeExtensions
 {
-    public static Func<Temperature, string> ToTemperatureKeySelector(this Scope scope) 
+    public static Func<TemperatureDto, string> ToTemperatureKeySelector(this Scope scope) 
     {
         return scope.ScopeType switch
         {
@@ -16,11 +16,22 @@ public static class ScopeExtensions
         };
     }
 
+    public static Func<DeviceDto, bool> ToDeviceDtoPredicate(this Scope scope)
+    {
+        return scope.ScopeType switch
+        {
+            ScopeType.All => _ => true,
+            ScopeType.Room => item => item.Topic!.StartsWith(scope.Value!),
+            ScopeType.Device => item => string.Equals(item.Topic, scope.Value),
+            _ => throw new InvalidOperationException($"Scope was invaild: {scope}"),//Invalid enum value for scope
+        };
+    }
+
     public static Func<Device, bool> ToDevicePredicate(this Scope scope)
     {
         return scope.ScopeType switch
         {
-            ScopeType.All => item => true,
+            ScopeType.All => _ => true,
             ScopeType.Room => item => item.Topic!.StartsWith(scope.Value!),
             ScopeType.Device => item => string.Equals(item.Topic, scope.Value),
             _ => throw new InvalidOperationException($"Scope was invaild: {scope}"),//Invalid enum value for scope

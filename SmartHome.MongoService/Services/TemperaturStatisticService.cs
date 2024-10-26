@@ -1,9 +1,8 @@
 ﻿using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using SmartHome.Common.Extensions;
-using SmartHome.Common.Helpers;
+using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Models.Db;
+using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.MongoService.DbContext;
@@ -31,13 +30,12 @@ public class TemperaturStatisticService : ITemperatureStatisticService
             .Join(temperatureQuery.AsQueryable(),
                 device => device.Id,
                 temperature => temperature.DeviceId,
-                (device, temperature) => new Temperature()
+                (device, temperature) => new TemperatureDto()
                 {
-                    Id = temperature.Id,
+                    Id = temperature.Id.ToString(),
                     Value = temperature.Value,
                     RecordDateTime = temperature.RecordDateTime,
-                    DeviceId = temperature.DeviceId,
-                    Device = device,
+                    Device = device.ToDto(),
                 })
             .ToStatisticChart(request.Scope!);
     }

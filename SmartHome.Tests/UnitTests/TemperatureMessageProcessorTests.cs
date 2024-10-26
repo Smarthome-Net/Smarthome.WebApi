@@ -8,6 +8,7 @@ using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.MqttService.ApplicationMessageProcessors;
 using System.Text.Json;
+using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.Tests.UnitTests;
 
@@ -15,13 +16,13 @@ public class TemperatureMessageProcessorTests
 {
     private const string DeviceContext = "r/n";
     private const long Timestamp = 1724057532524;
-    private readonly ObjectId deviceId = ObjectId.GenerateNewId();
+    private readonly ObjectId _deviceId = ObjectId.GenerateNewId();
     private TemperatureMessageProcessor? _messageProcessor;
     
     [SetUp]
     public void Setup() 
     {
-        var nullLoger = NullLogger<TemperatureMessageProcessor>.Instance;
+        var nullLogger = NullLogger<TemperatureMessageProcessor>.Instance;
         var temperatureWriterMock = new Mock<ITemperatureWriterService>();
         var deviceServiceMock = new Mock<IDeviceService>();
 
@@ -29,19 +30,19 @@ public class TemperatureMessageProcessorTests
             .Setup(s => s.GetOrCreateDeviceByTopic(DeviceContext, It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                var name = "n";
-                var room = "r";
-                var topic = $"{room}/{name}";
+                const string name = "n";
+                const string room = "r";
+                const string topic = $"{room}/{name}";
                 return Task.FromResult(new Device
                 {
-                    Id = deviceId,
+                    Id = _deviceId,
                     Name = name,
                     Room = room,
                     Topic = topic,
                 });
             });
 
-        _messageProcessor = new TemperatureMessageProcessor(nullLoger, temperatureWriterMock.Object, deviceServiceMock.Object);
+        _messageProcessor = new TemperatureMessageProcessor(nullLogger, temperatureWriterMock.Object, deviceServiceMock.Object);
     }
 
     [TearDown] 
@@ -55,7 +56,7 @@ public class TemperatureMessageProcessorTests
     {
         var message = new MqttApplicationMessage
         {
-            PayloadSegment = new ArraySegment<byte>()
+            PayloadSegment = []
         };
 
         var action = () => _messageProcessor?.ProcessMessage(message, "");
@@ -65,7 +66,7 @@ public class TemperatureMessageProcessorTests
     }
 
     [Test]
-    public async Task TestTemperateMessageProcessorWithValidMessageReturnsTemperature()
+    public async Task TestTemperatureMessageProcessorWithValidMessageReturnsTemperature()
     {
         var rawValue = new { value = 23, time = Timestamp };
         var bytes = JsonSerializer.SerializeToUtf8Bytes(rawValue);
@@ -74,11 +75,18 @@ public class TemperatureMessageProcessorTests
             .WithTopic("smarthome/sensors/temperature/Badezimmer/Dusche")
             .Build();
 
-        var expected = new Temperature
+        var expected = new TemperatureDto()
         {
+            Id = ObjectId.Empty.ToString(),
             RecordDateTime = DateTimeOffset.FromUnixTimeMilliseconds(Timestamp),
             Value = 23f,
-            DeviceId = deviceId,
+            Device = new DeviceDto
+            {
+                Id = _deviceId.ToString(),
+                Topic = DeviceContext,
+                Name = "n",
+                Room = "r"
+            }
         };
 
         var result = await _messageProcessor?.ProcessMessage(message, DeviceContext)!;
@@ -86,19 +94,17 @@ public class TemperatureMessageProcessorTests
         result.Should()
             .NotBeNull()
             .And
-            .BeEquivalentTo(expected, options => options
-            .Excluding(t => t.Device)
-            .Excluding(t => t.Id));
+            .BeEquivalentTo(expected);
     }
 
     [Test]
-    public void TestTempetartureMessageProcessorObjectIsDisposed() 
+    public void TestTemperatureMessageProcessorObjectIsDisposed() 
     {
         _messageProcessor?.Dispose();
 
         var message = new MqttApplicationMessage
         {
-            PayloadSegment = new ArraySegment<byte>()
+            PayloadSegment = []
         };
 
         var action = () => _messageProcessor?.ProcessMessage(message, "");

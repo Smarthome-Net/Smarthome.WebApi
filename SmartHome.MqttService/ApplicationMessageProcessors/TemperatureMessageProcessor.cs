@@ -7,13 +7,14 @@ using SmartHome.Common.Interfaces;
 using System.Threading;
 using SmartHome.Common.Exceptions;
 using SmartHome.MqttService.JsonConvertes;
-using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.MqttMessages;
 using System.IO;
+using SmartHome.Common.Extensions.Mapping;
+using SmartHome.Common.Models.Db;
 
 namespace SmartHome.MqttService.ApplicationMessageProcessors;
 
-public class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
+public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.Models.Dto.TemperatureDto>
 {
     private ILogger<TemperatureMessageProcessor>? _logger;
     private ITemperatureWriterService? _temperatureWriteService;
@@ -39,7 +40,7 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperat
         PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default)
+    public async Task<Common.Models.Dto.TemperatureDto> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -49,15 +50,16 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperat
             using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
             var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
             var device = await _deviceService!.GetOrCreateDeviceByTopic(deviceContext, cancellationToken);
-            var temperature = new Temperature
+            var data = new Temperature
             {
                 RecordDateTime = message!.Time,
-                Value = message!.Value,
+                Value = message.Value,
                 DeviceId = device.Id,
             };
 
-            await _temperatureWriteService!.WriteTemperature(temperature, cancellationToken);
-            temperature.Device = device;
+            await _temperatureWriteService!.WriteTemperature(data, cancellationToken);
+            var temperature = data.ToDto();
+            temperature.Device = device.ToDto();
             return temperature;
         }
         catch (Exception ex)

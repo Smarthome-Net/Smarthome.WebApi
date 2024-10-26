@@ -1,4 +1,4 @@
-﻿using SmartHome.Common.Models.Db;
+﻿using SmartHome.Common.Models.Dto;
 using System;
 using System.Reactive.Subjects;
 
@@ -6,16 +6,16 @@ namespace SmartHome.MqttService.Observables;
 
 public class TemperatureObservable : ITemperatureObservable
 {
-    private readonly Subject<Temperature> _temperatureSubject;
+    private readonly Subject<TemperatureDto> _temperatureSubject;
 
     public TemperatureObservable()
     {
-        _temperatureSubject = new Subject<Temperature>();
+        _temperatureSubject = new Subject<TemperatureDto>();
     }
 
-    public IObservable<Temperature> Temperature => _temperatureSubject;
+    public IObservable<TemperatureDto> Temperature => _temperatureSubject;
 
-    public void OnNext(Temperature temperature)
+    public void OnNext(TemperatureDto temperature)
     {
         _temperatureSubject.OnNext(temperature);
     }

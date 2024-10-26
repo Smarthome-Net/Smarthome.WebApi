@@ -1,4 +1,4 @@
-﻿using SmartHome.Common.Models.Db;
+﻿using SmartHome.Common.Models.Dto;
 using System;
 
 namespace SmartHome.MqttService.Observables;
@@ -6,7 +6,7 @@ namespace SmartHome.MqttService.Observables;
 public interface ITemperatureObservable
 {
 
-    public IObservable<Temperature> Temperature { get; }
+    public IObservable<TemperatureDto> Temperature { get; }
 
-    public void OnNext(Temperature temperature);
+    public void OnNext(TemperatureDto temperature);
 }

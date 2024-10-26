@@ -1,12 +1,10 @@
 ﻿using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using SmartHome.Common.Extensions;
+using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.Dto.Charts;
+using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.MongoService.DbContext;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,10 +19,9 @@ public class TemperatureReaderService : ITemperatureReaderService
         _dbContext = dbContext;
     }
 
-    public IEnumerable<Chart<DateTimeOffset, float>> GetTemperature(TemperatureRequest request)
+    public IEnumerable<TemperatureDto> GetTemperature(TemperatureRequest request)
     {
         var predicate = request.Scope?.ToDevicePredicate();
-        var keySelector = request.Scope?.ToTemperatureKeySelector();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 
@@ -33,16 +30,13 @@ public class TemperatureReaderService : ITemperatureReaderService
             .Join(temperatureQuery,
                 device => device.Id,
                 temperature => temperature.DeviceId,
-                (device, temperature) => new Temperature()
+                (device, temperature) => new TemperatureDto()
                 {
-                    Id = temperature.Id,
+                    Id = temperature.Id.ToString(),
                     Value = temperature.Value,
                     RecordDateTime = temperature.RecordDateTime,
-                    DeviceId = temperature.DeviceId,
-                    Device = device
+                    Device = device.ToDto()
                 })
-            .OrderByDescending(item => item.RecordDateTime)
-            .ToTimeSeriesChart(keySelector!)
-            .ApplyPaging(request.PageSetting!);
+            .OrderByDescending(item => item.RecordDateTime);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using SmartHome.Common.Extensions;
-using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
 using SmartHome.MqttService.Observables;
@@ -25,12 +24,12 @@ public class TemperatureHubQueue : ITemperatureHubQueue
     public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData()
     {
         var keySelector = _scope.ToTemperatureKeySelector();
-        var predictae = _scope.ToDevicePredicate();
+        var predicate = _scope.ToDeviceDtoPredicate();
 
         return _temperatureObservable.Temperature
                     .Buffer(TimeSpan.FromSeconds(2))
                     .Where(x => x.Count > 0)
-                    .Select(d => d.Where(t => predictae(t.Device))
+                    .Select(d => d.Where(t => predicate(t.Device))
                                 .ToTimeSeriesChart(keySelector));
     }
 

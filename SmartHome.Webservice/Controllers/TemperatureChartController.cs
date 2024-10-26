@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SmartHome.Common.Extensions;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.Common.Models.Dto.Responses;
@@ -23,10 +24,15 @@ public class TemperatureChartController : ControllerBase
     [HttpPost]
     public ActionResult<TemperatureResponse> GetTemperature(TemperatureRequest temperatureRequest) 
     {
+        var keySelector = temperatureRequest.Scope.ToTemperatureKeySelector();
+        var temperature = temperatureService.GetTemperature(temperatureRequest);
+
         TemperatureResponse temperatureResponse = new()
         {
             Scope = temperatureRequest.Scope,
-            Temperatures = temperatureService.GetTemperature(temperatureRequest),
+            Temperatures = temperature
+                .ToTimeSeriesChart(keySelector)
+                .ApplyPaging(temperatureRequest.PageSetting),
             PageSetting = temperatureRequest.PageSetting
         };
         return Ok(temperatureResponse);
