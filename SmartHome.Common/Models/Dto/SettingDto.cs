@@ -3,5 +3,5 @@
 public class SettingDto
 {
     public string? Id { get; set; }
-    public string? Discription { get; set; }
+    public string? Description { get; set; }
 }

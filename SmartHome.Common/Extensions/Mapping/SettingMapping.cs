@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MongoDB.Bson;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 
@@ -6,41 +8,35 @@ namespace SmartHome.Common.Extensions.Mapping;
 
 public static class SettingMapping
 {
-    public static SettingDto ToDto(this Setting setting)
+    internal static TDto ToDto<TDb, TDto>(this TDb setting)
+        where TDb : Setting
+        where TDto : SettingDto, new()
     {
-        return new SettingDto
+        return new TDto
         {
             Id = setting.Id.ToString(),
-            Discription = setting.Discription,
+            Description = setting.Description,
         };
     }
+    
+    public static IEnumerable<SettingDto> ToDto(this IEnumerable<Setting> settings)
+    {
+        return settings.Select(setting => setting.ToDto<Setting, SettingDto>());
+    }
 
-    public static Setting? ToDb(this SettingDto setting)
+    internal static TDb? ToDb<TDto, TDb>(this TDto setting)
+        where TDb : Setting, new()
+        where TDto : SettingDto
     {
         if (!ObjectId.TryParse(setting.Id, out var id))
         {
             return null;
         }
 
-        return new Setting
+        return new TDb
         {
             Id = id,
-            Discription = setting.Discription,
+            Description = setting.Description,
         };
-    }
-
-    internal static TDto MapBaseDto<TDb, TDto>(this TDb setting)
-        where TDb : Setting
-        where TDto : SettingDto
-    {
-        return (TDto)setting.ToDto();
-    }
-
-    internal static TDb? MapBaseDb<TDto, TDb>(this TDto setting)
-        where TDb : Setting
-        where TDto : SettingDto
-    {
-
-        return (TDb?)setting.ToDb();
     }
 }

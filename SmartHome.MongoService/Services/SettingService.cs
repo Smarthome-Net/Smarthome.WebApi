@@ -10,32 +10,39 @@ namespace SmartHome.MongoService.Services;
 
 public class SettingService : ISettingService
 {
-    public readonly MongoDBContext _mongoDBContext;
+    private readonly MongoDBContext _mongoDBContext;
     
-    public SettingService(MongoDBContext mongoDBContext)
+    public SettingService(MongoDBContext mongoDbContext)
     {
-        _mongoDBContext = mongoDBContext; 
+        _mongoDBContext = mongoDbContext; 
     }
 
-    public TSetting CreateSetting<TSetting>(TSetting setting) where TSetting : Setting, new()
+    public async Task<long> UpdateSetting<TSetting>(TSetting setting, UpdateDefinition<TSetting> updateDefinition) where TSetting : Setting, new()
     {
-        _mongoDBContext.SettingCollection!.InsertOne(setting);
-        return setting;
+        var filter = Builders<TSetting>.Filter.Eq(s => s.Id, setting.Id);
+        var result =  await _mongoDBContext.SettingCollection!
+            .OfType<TSetting>()
+            .UpdateOneAsync(filter, updateDefinition);
+        return result.IsAcknowledged ? result.ModifiedCount : 0;
     }
 
     public async Task<IEnumerable<Setting>> GetAllSetting()
     {
-        var result = await _mongoDBContext.SettingCollection.FindAsync(a => true);
+        var result = await _mongoDBContext.SettingCollection!.FindAsync(a => true);
         return await result.ToListAsync();
     }
 
-    public Task<TSetting> GetSetting<TSetting>(string id) where TSetting : Setting, new()
+    public async Task<TSetting> GetSetting<TSetting>() where TSetting : Setting, new()
     {
-        var filter = Builders<Setting>.Filter.Eq(a => a.Id, ObjectId.Parse(id));
-        var projection = Builders<Setting>.Projection.As<TSetting>();
-        var result = _mongoDBContext.SettingCollection
-            .Find(filter)
-            .Project(projection);
-        return result.FirstOrDefaultAsync();
+        var projection = Builders<Setting>
+            .Projection
+            .As<TSetting>();
+        var result = await  _mongoDBContext.SettingCollection!
+            .Aggregate()
+            .Match(a => a is TSetting)
+            .Project(projection)
+            .FirstOrDefaultAsync();
+
+        return result;
     }
 }

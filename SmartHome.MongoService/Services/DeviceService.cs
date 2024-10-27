@@ -56,11 +56,7 @@ public class DeviceService : IDeviceService
             .Set(p => p.Topic, device.Topic);
 
         var result = await _dbContext.DeviceCollection!.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
-        if(result.IsAcknowledged) 
-        {
-            return result.ModifiedCount;
-        }
-        return 0;
+        return result.IsAcknowledged ? result.ModifiedCount : 0;
     }
     public async Task<Device> CreateDevice(Device device, CancellationToken cancellationToken = default)
     {

@@ -5,9 +5,9 @@ namespace SmartHome.Common.Extensions.Mapping;
 
 public static class PageSettingMapping
 {
-    public static PageSettingDto ToDto(this PageSetting setting)
+    public static PageSettingDto? ToDto(this PageSetting setting)
     {
-        var pageSetting = setting.MapBaseDto<PageSetting, PageSettingDto>();
+        var pageSetting = setting.ToDto<PageSetting, PageSettingDto>();
         pageSetting.Length = setting.Length;
         pageSetting.PageIndex = setting.PageIndex;
         pageSetting.PageSize = setting.PageSize;
@@ -16,7 +16,7 @@ public static class PageSettingMapping
 
     public static PageSetting? ToDb(this PageSettingDto setting)
     {
-        var pageSetting = setting.MapBaseDb<PageSettingDto, PageSetting>();
+        var pageSetting = setting.ToDb<PageSettingDto, PageSetting>();
         if(pageSetting == null)
         {
             return null;
