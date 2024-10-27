@@ -16,6 +16,7 @@ public static class SettingMapping
         {
             Id = setting.Id.ToString(),
             Description = setting.Description,
+            Type = setting.GetType().Name
         };
     }
     
