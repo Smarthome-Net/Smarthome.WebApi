@@ -10,17 +10,17 @@ namespace SmartHome.MongoService.Services;
 
 public class SettingService : ISettingService
 {
-    private readonly MongoDBContext _mongoDBContext;
+    private readonly MongoDBContext _mongoDbContext;
     
     public SettingService(MongoDBContext mongoDbContext)
     {
-        _mongoDBContext = mongoDbContext; 
+        _mongoDbContext = mongoDbContext; 
     }
 
     public async Task<long> UpdateSetting<TSetting>(TSetting setting, UpdateDefinition<TSetting> updateDefinition) where TSetting : Setting, new()
     {
         var filter = Builders<TSetting>.Filter.Eq(s => s.Id, setting.Id);
-        var result =  await _mongoDBContext.SettingCollection!
+        var result =  await _mongoDbContext.SettingCollection!
             .OfType<TSetting>()
             .UpdateOneAsync(filter, updateDefinition);
         return result.IsAcknowledged ? result.ModifiedCount : 0;
@@ -28,7 +28,7 @@ public class SettingService : ISettingService
 
     public async Task<IEnumerable<Setting>> GetAllSetting()
     {
-        var result = await _mongoDBContext.SettingCollection!.FindAsync(a => true);
+        var result = await _mongoDbContext.SettingCollection!.FindAsync(a => true);
         return await result.ToListAsync();
     }
 
@@ -37,7 +37,7 @@ public class SettingService : ISettingService
         var projection = Builders<Setting>
             .Projection
             .As<TSetting>();
-        var result = await  _mongoDBContext.SettingCollection!
+        var result = await  _mongoDbContext.SettingCollection!
             .Aggregate()
             .Match(a => a is TSetting)
             .Project(projection)

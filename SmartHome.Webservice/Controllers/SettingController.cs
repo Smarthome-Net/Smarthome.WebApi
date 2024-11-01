@@ -28,31 +28,6 @@ public class SettingController : ControllerBase
         var settings = await _settingService.GetAllSetting();
         return settings.ToDto().ToList();
     }
-
-    [HttpGet("PageSetting")]
-    public async Task<PageSettingDto> GetPageSetting()
-    {
-        
-        var setting = await _settingService.GetSetting<PageSetting>();
-        return setting.ToDto();
-    }
-    
-    [HttpPost("PageSetting")]
-    public async Task<long> UpdatePageSetting(PageSettingDto pageSetting)
-    {
-        var dbModel = pageSetting.ToDb();
-        if (dbModel == null)
-        {
-            return -1;
-        }
-        
-        var updateDefinition = Builders<PageSetting>.Update
-            .Set(f => f.Description, pageSetting.Description)
-            .Set(f => f.Length, pageSetting.Length)
-            .Set(f => f.PageIndex, pageSetting.PageIndex)
-            .Set(f => f.PageSize, pageSetting.PageSize);
-        return await _settingService.UpdateSetting(dbModel, updateDefinition);
-    }
     
     [HttpGet("CommonSetting")]
     public async Task<CommonSettingDto> GetCommonSetting()
