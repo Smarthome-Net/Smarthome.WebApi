@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SmartHome.Common.Extensions;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.Common.Models.Dto.Responses;
@@ -10,10 +11,10 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class StatisticController : ControllerBase
 {
-    private readonly ITemperatureStatisticService statisticService;
+    private readonly ITemperatureReaderService statisticService;
     private readonly ILogger<StatisticController> logger;
 
-    public StatisticController(ILogger<StatisticController> logger, ITemperatureStatisticService statisticService) 
+    public StatisticController(ILogger<StatisticController> logger, ITemperatureReaderService statisticService) 
     {
         this.logger = logger;
         this.statisticService = statisticService;
@@ -22,10 +23,11 @@ public class StatisticController : ControllerBase
     [HttpPost]
     public ActionResult<StatisticResponse> GetStatistic(StatisticRequest request)
     {
+        var temperatures = statisticService.GetTemperature(request.Scope);
         var response = new StatisticResponse
         {
             Scope = request.Scope,
-            Statistic = statisticService.GetStatistic(request)
+            Statistic = temperatures.ToStatisticChart(request.Scope)
         };
         return Ok(response);
     }

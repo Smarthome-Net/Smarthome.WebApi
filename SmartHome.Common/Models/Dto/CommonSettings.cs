@@ -1,5 +1,3 @@
-using SmartHome.Common.Models.Db;
-
 namespace SmartHome.Common.Models.Dto;
 
 public class CommonSettingDto : SettingDto

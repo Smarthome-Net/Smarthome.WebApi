@@ -30,7 +30,6 @@ public static class MongoDBServiceExtension
 
         services.AddTransient<ITemperatureWriterService, TemperatureWriterService>();
         services.AddTransient<ITemperatureReaderService, TemperatureReaderService>();
-        services.AddTransient<ITemperatureStatisticService, TemperaturStatisticService>();
         services.AddTransient<IDeviceService, DeviceService>();
         services.AddTransient<ISettingService, SettingService>();
 

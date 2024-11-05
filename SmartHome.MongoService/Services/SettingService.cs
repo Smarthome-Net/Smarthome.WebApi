@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
 using SmartHome.MongoService.DbContext;

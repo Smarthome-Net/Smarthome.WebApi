@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
 using MQTTnet;
-using SmartHome.Common.Models.Db;
 using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.MqttService.Observables;

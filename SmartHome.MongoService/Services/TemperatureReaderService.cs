@@ -3,7 +3,6 @@ using SmartHome.Common.Extensions;
 using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Dto;
-using SmartHome.Common.Models.Dto.Requests;
 using SmartHome.MongoService.DbContext;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +18,9 @@ public class TemperatureReaderService : ITemperatureReaderService
         _dbContext = dbContext;
     }
 
-    public IEnumerable<TemperatureDto> GetTemperature(TemperatureRequest request)
+    public IEnumerable<TemperatureDto> GetTemperature(Scope scope)
     {
-        var predicate = request.Scope?.ToDevicePredicate();
+        var predicate = scope?.ToDevicePredicate();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();
         var deviceQuery = _dbContext.DeviceCollection.AsQueryable();
 

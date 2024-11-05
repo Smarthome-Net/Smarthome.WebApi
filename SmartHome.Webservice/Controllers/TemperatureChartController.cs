@@ -25,7 +25,7 @@ public class TemperatureChartController : ControllerBase
     public ActionResult<TemperatureResponse> GetTemperature(TemperatureRequest temperatureRequest) 
     {
         var keySelector = temperatureRequest.Scope.ToTemperatureKeySelector();
-        var temperature = temperatureService.GetTemperature(temperatureRequest);
+        var temperature = temperatureService.GetTemperature(temperatureRequest.Scope);
 
         TemperatureResponse temperatureResponse = new()
         {
