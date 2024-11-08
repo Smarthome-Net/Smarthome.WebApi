@@ -12,48 +12,40 @@ using System.Text.Json.Serialization;
 using SmartHome.Webservice.Helper;
 using SmartHome.MongoService.Settings;
 
-namespace SmartHome.Webservice;
+namespace SmartHome.Webservice.Extensions;
 
-public class Startup
+public static class StartupHelperExtensions
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
+    public static void AddSmarthomeServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<ITemperatureHubQueue, TemperatureHubQueue>();
-        
+
         services.AddMongoDbService(o =>
         {
-            var connectionSetting = Configuration.GetSection("DbConnectionSetting").Get<DbConnectionSetting>();
+            var connectionSetting = configuration.GetSection("DbConnectionSetting").Get<DbConnectionSetting>();
             o.DbConnectionSetting = connectionSetting;
         });
 
         services.AddMqttClientHostedService(o =>
         {
-            var mqttSetting = Configuration.GetSection("MqttSetting").Get<MqttSetting>();
+            var mqttSetting = configuration.GetSection("MqttSetting").Get<MqttSetting>();
             o.MqttSetting = mqttSetting;
         });
 
         services.AddControllers()
-            .AddJsonOptions(options => 
+            .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
         services.AddSignalR();
 
 
-        services.AddSwaggerGen(c => 
+        services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Smarthome Dashboard API", Version = "V1" });
         });
 
-        services.AddCors(options => 
+        services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy", builder =>
             {
@@ -66,8 +58,7 @@ public class Startup
         });
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public static WebApplication ConfigureSmarthomeApp(this WebApplication app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
         {
@@ -81,19 +72,12 @@ public class Startup
             c.DisplayRequestDuration();
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Smarthome Dashboard API V1");
         });
-
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-
         app.UseRouting();
-
         app.UseAuthorization();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapHub<TemperatureChartHub>("/hub/temperature");
-        });
-
+        app.MapControllers();
+        app.MapHub<TemperatureChartHub>("/hub/temperature");
+        return app;
     }
 }
