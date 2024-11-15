@@ -7,10 +7,10 @@ var environment = builder.Environment;
 
 builder
     .Services
-    .AddSmarthomeServices(config);
+    .AddSmartHomeServices(config);
 
 var app = builder
     .Build()
-    .ConfigureSmarthomeApp(environment);
+    .ConfigureSmartHomeApp(environment);
 
 app.Run();

@@ -75,7 +75,7 @@ public class MqttClientService : IMqttClientService
         {
             return;
         }
-
+        
         var source = new CancellationTokenSource();
         var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
         try
@@ -116,7 +116,7 @@ public class MqttClientService : IMqttClientService
     public IMqttRpcClient CreateMqttRpcClient() 
     {
         var options = new MqttRpcClientOptionsBuilder()
-            .WithTopicGenerationStrategy(new SmarthomeRpcTopicGenerationStrategy(_mqttSetting))
+            .WithTopicGenerationStrategy(new SmartHomeRpcTopicGenerationStrategy(_mqttSetting))
             .Build();
         
         return _mqttFactoryProvider.MqttFactory.CreateMqttRpcClient(_client, options);

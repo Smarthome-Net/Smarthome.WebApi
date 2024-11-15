@@ -16,7 +16,7 @@ namespace SmartHome.Webservice.Extensions;
 
 public static class StartupHelperExtensions
 {
-    public static void AddSmarthomeServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddSmartHomeServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<ITemperatureHubQueue, TemperatureHubQueue>();
 
@@ -58,7 +58,7 @@ public static class StartupHelperExtensions
         });
     }
 
-    public static WebApplication ConfigureSmarthomeApp(this WebApplication app, IWebHostEnvironment env)
+    public static WebApplication ConfigureSmartHomeApp(this WebApplication app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartHome.MqttService.Extensions;
 
-internal static class IMqttRpcClientExtensions
+internal static class MqttRpcClientExtensions
 {
     public static async Task<T?> ExecuteAsync<T>(this IMqttRpcClient mqttRpcClient, TimeSpan timeout, string methodName, T? payload, MqttQualityOfServiceLevel qos) 
     {

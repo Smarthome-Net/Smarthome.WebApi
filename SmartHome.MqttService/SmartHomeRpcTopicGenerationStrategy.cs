@@ -4,11 +4,11 @@ using System;
 
 namespace SmartHome.MqttService;
 
-internal class SmarthomeRpcTopicGenerationStrategy : IMqttRpcClientTopicGenerationStrategy
+internal class SmartHomeRpcTopicGenerationStrategy : IMqttRpcClientTopicGenerationStrategy
 {
     private readonly MqttSetting _mqttSetting;
 
-    public SmarthomeRpcTopicGenerationStrategy(MqttSetting mqttSetting)
+    public SmartHomeRpcTopicGenerationStrategy(MqttSetting mqttSetting)
     {
         _mqttSetting = mqttSetting;
     }
