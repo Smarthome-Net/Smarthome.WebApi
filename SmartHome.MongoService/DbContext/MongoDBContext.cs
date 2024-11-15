@@ -13,7 +13,6 @@ public class MongoDBContext
     public MongoDBContext(IMongoClient mongoClient, 
                             ILogger<MongoDBContext> logger)
     {
-
         _mongoClient = mongoClient;
         _logger = logger;
     }
