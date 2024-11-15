@@ -25,39 +25,35 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
     public override Task OnDisconnectedAsync(Exception exception)
     {
         _logger.LogInformation("Disconnection");
-        DisposeTemperatureSubscription();
+        TryDisposeSubscription();
         Context.Items.Clear();
         return base.OnDisconnectedAsync(exception);
     }
 
     public void Temperature(Scope scope) 
     {
-        var clients = Clients;
-        var context = Context;
         _temperatureHubQueue.SetScope(scope);
         var subscription = _temperatureHubQueue
             .GetTemperaturChartData()
             .Subscribe(chartData =>
             {
-                _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), context.ConnectionId);
-                clients.Caller.UpdateTemperatuure(chartData);
+                _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), Context.ConnectionId);
+                Clients.Caller.UpdateTemperatuure(chartData);
             });
         
-        if(context.Items.ContainsKey(TEMPERATURE_SUBSCRIPTION))
-        {
-            DisposeTemperatureSubscription();
-        }
-
-        context.Items[TEMPERATURE_SUBSCRIPTION] = subscription;
+        TryDisposeSubscription(); //Try to cleanup the old subscription
+        Context.Items[TEMPERATURE_SUBSCRIPTION] = subscription;
     }
 
-    private void DisposeTemperatureSubscription()
+    private void TryDisposeSubscription()
     {
-        if (Context.Items.TryGetValue(TEMPERATURE_SUBSCRIPTION, out var subscription))
+        if (!Context.Items.TryGetValue(TEMPERATURE_SUBSCRIPTION, out var subscription))
         {
-            _logger.LogInformation("Dispose");
-            var disposable = (IDisposable)subscription;
-            disposable.Dispose();
+            return;
         }
+
+        _logger.LogInformation("Dispose");
+        var disposable = (IDisposable)subscription;
+        disposable.Dispose();
     }
 }
