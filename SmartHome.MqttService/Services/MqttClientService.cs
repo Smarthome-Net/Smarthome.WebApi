@@ -20,22 +20,23 @@ public class MqttClientService : IMqttClientService
     private readonly MqttClientOptions _clientOptions;
     private readonly ILogger<MqttClientService> _logger;
     private readonly MqttSetting _mqttSetting;
-    private readonly MqttFactory _mqttFactory;
+    private readonly IMqttFactoryProvider _mqttFactoryProvider;
     private readonly ITypedProvider<IMqttAction, string> _mqttActionProvider;
     private bool _isDisposed;
 
     public MqttClientService(ILogger<MqttClientService> logger,
         MqttClientOptions clientOptions,
         IOptions<MqttOptions> mqttOptions,
-        ITypedProvider<IMqttAction, string> mqttActionProvider)
+        ITypedProvider<IMqttAction, string> mqttActionProvider,
+        IMqttFactoryProvider mqttFactoryProvider)
     {
         _logger = logger;
         _clientOptions = clientOptions;
         _mqttActionProvider = mqttActionProvider;
         _mqttSetting = mqttOptions.Value.MqttSetting;
-
-        _mqttFactory = new MqttFactory();
-        _client = _mqttFactory.CreateMqttClient();
+        _mqttFactoryProvider = mqttFactoryProvider;
+        
+        _client = _mqttFactoryProvider.MqttFactory.CreateMqttClient();
         _client.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
         _client.ConnectedAsync += HandleConnectedAsync;
         _client.DisconnectedAsync += HandleDisconnectedAsync;
@@ -44,6 +45,7 @@ public class MqttClientService : IMqttClientService
     #region IHostedService Implementation
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting MQTT client");
         try
         {
             await _client.ConnectAsync(_clientOptions, cancellationToken);
@@ -57,20 +59,16 @@ public class MqttClientService : IMqttClientService
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (cancellationToken.IsCancellationRequested)
+        _logger.LogInformation("Stopping MQTT client");
+        var disconnectOption = new MqttClientDisconnectOptions
         {
-            var disconnectOption = new MqttClientDisconnectOptions
-            {
-                Reason = MqttClientDisconnectOptionsReason.NormalDisconnection,
-                ReasonString = "Normal Disconect"
-            };
-            await _client.DisconnectAsync(disconnectOption, cancellationToken);
-        }
+            Reason = MqttClientDisconnectOptionsReason.NormalDisconnection,
+        };
+        await _client.DisconnectAsync(disconnectOption, cancellationToken);
     }
     #endregion
 
-    #region IMqttClientConnectedHandler, IMqttClientDisconnectedHandler, IMqttApplicationMessageReceivedHandler Implementation
-
+    #region Mqtt Actions Handlers
     private async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         if(IsRpcTopic(eventArgs.ApplicationMessage.Topic)) 
@@ -92,20 +90,12 @@ public class MqttClientService : IMqttClientService
             await source.CancelAsync();
         }
     }
-
-    private bool IsRpcTopic(string topic)
-    {
-        return topic.StartsWith(_mqttSetting.TopicSetting.SubscriptionRpcTopic);
-    }
-
+    
     private async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
     {
-        MqttFactory factory = new();
-
-        var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
+        var subscribeOptions = _mqttFactoryProvider.MqttFactory.CreateSubscribeOptionsBuilder()
             .WithTopicFilter(f => f.WithTopic($"{_mqttSetting.TopicSetting.SubscriptionTopic}/#"))
             .Build();
-
 
         _logger.LogInformation("Connected to Mqtt Broker");
         await _client.SubscribeAsync(subscribeOptions);
@@ -116,20 +106,29 @@ public class MqttClientService : IMqttClientService
         _logger.LogInformation("Disconnected from Mqtt Broker: {Reason}", eventArgs.Reason);
         if(!_client.IsConnected && eventArgs.Reason != MqttClientDisconnectReason.NormalDisconnection) 
         {
+            _logger.LogInformation("Reconnect to Mqtt Broker");
             await _client.ConnectAsync(_clientOptions);
         }
     }
+    #endregion
 
+    #region IMqttClientService Implementations
     public IMqttRpcClient CreateMqttRpcClient() 
     {
         var options = new MqttRpcClientOptionsBuilder()
             .WithTopicGenerationStrategy(new SmarthomeRpcTopicGenerationStrategy(_mqttSetting))
             .Build();
         
-        return _mqttFactory.CreateMqttRpcClient(_client, options);
+        return _mqttFactoryProvider.MqttFactory.CreateMqttRpcClient(_client, options);
+    }
+    #endregion
+    
+    private bool IsRpcTopic(string topic)
+    {
+        return topic.StartsWith(_mqttSetting.TopicSetting.SubscriptionRpcTopic);
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (_isDisposed)
         {
@@ -143,18 +142,10 @@ public class MqttClientService : IMqttClientService
 
         _isDisposed = true;
     }
-
-    // // TODO: Finalizer nur überschreiben, wenn "Dispose(bool disposing)" Code für die Freigabe nicht verwalteter Ressourcen enthält
-    // ~MqttClientService()
-    // {
-    //     // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
-    //     Dispose(disposing: false);
-    // }
-
+    
     public void Dispose()
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
-    #endregion
 }

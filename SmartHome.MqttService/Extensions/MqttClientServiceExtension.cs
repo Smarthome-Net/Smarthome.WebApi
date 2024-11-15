@@ -33,18 +33,16 @@ public static class MqttClientServiceExtension
     private static IServiceCollection AddMqttClientServiceWithConfig(this IServiceCollection services, Action<MqttClientOptionsBuilder, ServiceProvider> optionsBuilder)
     {
         services.AddApplicationMessageProcessors();
-        services.AddTransient(serviceProvider =>
+        services.AddTransient(_ =>
         {
             var optionBuilder = new MqttClientOptionsBuilder();
             optionsBuilder(optionBuilder, services.BuildServiceProvider());
             return optionBuilder.Build();
         });
 
+        services.AddSingleton<IMqttFactoryProvider, MqttFactoryProvider>();
         services.AddSingleton<IMqttClientService, MqttClientService>();
-        services.AddSingleton<IHostedService>(serviceProvider =>
-        {
-            return serviceProvider.GetRequiredService<IMqttClientService>();
-        });
+        services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<IMqttClientService>());
 
         services.AddSingleton(serviceProvider =>
         {

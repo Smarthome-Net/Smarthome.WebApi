@@ -73,7 +73,6 @@ public static class StartupHelperExtensions
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Smarthome Dashboard API V1");
         });
         app.UseHttpsRedirection();
-        app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthorization();
         app.MapControllers();
