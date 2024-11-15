@@ -10,20 +10,21 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
 
     public SeriesItem<TName, TValue> this[int index]
     {
-        get { return _seriesItem[index]; }
-        set { _seriesItem[index] = value; }
+        get => _seriesItem[index]; 
+        set => _seriesItem[index] = value;
     }
 
     public static Series<TName, TValue> From(IEnumerable<SeriesItem<TName, TValue>> items) 
     {
-        return new Series<TName, TValue>(items);
+        return [.. items];
     }
-    
-    public Series(){}
 
-    private Series(IEnumerable<SeriesItem<TName, TValue>> items) 
+    public void Add(TName name, TValue value) 
     {
-        _seriesItem.AddRange(items);
+        Add(new SeriesItem<TName, TValue>{
+            Name = name, 
+            Value = value
+        });
     }
 
     public void Add(SeriesItem<TName, TValue> item) 

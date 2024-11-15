@@ -16,8 +16,8 @@ public class Segments : IEnumerable<Segment>
 
     public Segment this[int index]
     {
-        get { return _segements[index]; }
-        set { _segements[index] = value; }
+        get => _segements[index]; 
+        set => _segements[index] = value;
     }
 
     /// <summary>
@@ -27,28 +27,26 @@ public class Segments : IEnumerable<Segment>
     /// <returns></returns>
     public static Segments FromString(string value) 
     {
-        var segments = new Segments();
-        foreach (var values in value.Split(SegmentSeperator))
-        {
-            segments.AddSegment(values);
-        }
-        return segments;
+        var segments = value
+            .Split(SegmentSeperator)
+            .Select(s => new Segment(s));
+        return [..segments];
     }
 
     /// <summary>
     /// Adds a new raw segment
     /// </summary>
     /// <param name="value"></param>
-    public void AddSegment(string value) 
+    public void Add(string value) 
     {
-        AddSegment(new Segment(value));
+        Add(new Segment(value));
     }
 
     /// <summary>
     /// Adds a new segment
     /// </summary>
     /// <param name="segment"></param>
-    public void AddSegment(Segment segment) 
+    public void Add(Segment segment) 
     {
         _segements.Add(segment);
     }

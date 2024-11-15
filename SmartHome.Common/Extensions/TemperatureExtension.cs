@@ -56,12 +56,11 @@ public static class TemperatureExtension
         return new Chart<string, float>
         {
             Name = scope.Value!,
-            Series =
-            [
-                SeriesHelper.Create("min", min),
-                SeriesHelper.Create("average", avg),
-                SeriesHelper.Create("max", max),
-            ]
+            Series = {
+                { "min", min },
+                { "average", avg },
+                { "max", max}
+            }
         };
     }
 
@@ -73,7 +72,8 @@ public static class TemperatureExtension
                 (key, values) => new Chart<DateTimeOffset, float>()
                 {
                     Name = key,
-                    Series = values.ToTimeSeries()
+                    Series = values
+                        .ToTimeSeries()
                         .ToSeries()
                 });
     }
