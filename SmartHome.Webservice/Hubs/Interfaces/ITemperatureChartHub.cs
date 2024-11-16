@@ -8,5 +8,5 @@ namespace SmartHome.Webservice.Hubs.Interfaces;
 
 public interface ITemperatureChartHub
 {
-    void UpdateTemperature([NoEnumeration] IEnumerable<Chart<DateTimeOffset, float>> chartData);
+    Task UpdateTemperature([NoEnumeration] IEnumerable<Chart<DateTimeOffset, float>> chartData);
 }

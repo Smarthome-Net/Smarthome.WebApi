@@ -24,21 +24,23 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
 
     public override Task OnDisconnectedAsync(Exception exception)
     {
-        _logger.LogInformation("Disconnection");
+        _logger.LogInformation("Disconnection of client: {ConnectionId}", Context.ConnectionId);
         TryDisposeSubscription();
         Context.Items.Clear();
         return base.OnDisconnectedAsync(exception);
     }
 
-    public void Temperature(Scope scope) 
+    public void Temperature(Scope scope)
     {
+        var context = Context;
+        var clients = Clients;
         _temperatureHubQueue.SetScope(scope);
         var subscription = _temperatureHubQueue
             .GetTemperaturChartData()
             .Subscribe(chartData =>
             {
-                _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), Context.ConnectionId);
-                Clients.Caller.UpdateTemperature(chartData);
+                _logger.LogInformation("Sending {Count} charts to client: {ConnectionId}", chartData.Count(), context.ConnectionId);
+                clients.Caller.UpdateTemperature(chartData);
             });
         
         TryDisposeSubscription(); //Try to clean up the old subscription
@@ -52,7 +54,7 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
             return;
         }
 
-        _logger.LogInformation("Dispose");
+        _logger.LogInformation("Dispose temperature subscription of client: {ConnectionId}", Context.ConnectionId);
         var disposable = (IDisposable)subscription;
         disposable?.Dispose();
     }
