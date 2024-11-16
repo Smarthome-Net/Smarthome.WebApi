@@ -12,7 +12,7 @@ namespace SmartHome.Webservice.Hubs;
 
 public class TemperatureChartHub : Hub<ITemperatureChartHub>
 {
-    private const string TEMPERATURE_SUBSCRIPTION = "temperature_subscription";
+    private const string TemperatureSubscription = "temperature_subscription";
     private readonly ITemperatureHubQueue _temperatureHubQueue;
     private readonly ILogger<TemperatureChartHub> _logger;
 
@@ -38,22 +38,22 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
             .Subscribe(chartData =>
             {
                 _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), Context.ConnectionId);
-                Clients.Caller.UpdateTemperatuure(chartData);
+                Clients.Caller.UpdateTemperature(chartData);
             });
         
-        TryDisposeSubscription(); //Try to cleanup the old subscription
-        Context.Items[TEMPERATURE_SUBSCRIPTION] = subscription;
+        TryDisposeSubscription(); //Try to clean up the old subscription
+        Context.Items[TemperatureSubscription] = subscription;
     }
 
     private void TryDisposeSubscription()
     {
-        if (!Context.Items.TryGetValue(TEMPERATURE_SUBSCRIPTION, out var subscription))
+        if (!Context.Items.TryGetValue(TemperatureSubscription, out var subscription))
         {
             return;
         }
 
         _logger.LogInformation("Dispose");
         var disposable = (IDisposable)subscription;
-        disposable.Dispose();
+        disposable?.Dispose();
     }
 }

@@ -8,31 +8,35 @@ using Microsoft.Extensions.Options;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.MqttService.Observables;
 using SmartHome.Common.Interfaces;
+using SmartHome.Common.Models.Dto;
+using SmartHome.MqttService.ApplicationMessageProcessors;
 
 namespace SmartHome.MqttService.Extensions;
 
 public static class MqttClientServiceExtension
 {
-    public static IServiceCollection AddMqttClientHostedService(this IServiceCollection services, Action<MqttOptions> configuration)
+    public static void AddMqttClientHostedService(this IServiceCollection services, Action<MqttOptions> configuration)
     {
         services.AddOptions<MqttOptions>()
             .Configure(configuration);
+        
         services.AddMqttActions();
+        services.AddApplicationMessageProcessors();
+        
         services.AddMqttClientServiceWithConfig((optionsBuilder, serviceProvider) =>
         {
             var mqttOptions = serviceProvider.GetRequiredService<IOptions<MqttOptions>>();
-            var settings = mqttOptions.Value.MqttSetting!;
+            var settings = mqttOptions.Value.MqttSetting;
             optionsBuilder
-                .WithCredentials(settings?.ClientSetting?.UserName, settings?.ClientSetting?.Password)
-                .WithClientId(settings?.ClientSetting?.Id)
-                .WithTcpServer(settings?.BrokerSetting?.Host, settings?.BrokerSetting?.Port);
+                .WithCredentials(settings.ClientSetting.UserName, settings.ClientSetting.Password)
+                .WithClientId(settings.ClientSetting.Id)
+                .WithTcpServer(settings.BrokerSetting.Host, settings.BrokerSetting.Port);
         });
-        return services;
     }
 
-    private static IServiceCollection AddMqttClientServiceWithConfig(this IServiceCollection services, Action<MqttClientOptionsBuilder, ServiceProvider> optionsBuilder)
+    private static void AddMqttClientServiceWithConfig(this IServiceCollection services,
+        Action<MqttClientOptionsBuilder, ServiceProvider> optionsBuilder)
     {
-        services.AddApplicationMessageProcessors();
         services.AddTransient(_ =>
         {
             var optionBuilder = new MqttClientOptionsBuilder();
@@ -52,14 +56,17 @@ public static class MqttClientServiceExtension
         });
 
         services.AddTransient<IDeviceManager, DeviceManager>();
-        return services;
     }
 
-    private static IServiceCollection AddMqttActions(this IServiceCollection services)
+    private static void AddApplicationMessageProcessors(this IServiceCollection services) 
+    {
+        services.AddTransient<IApplicationMessageProcessor<TemperatureDto>, TemperatureMessageProcessor>();
+    }
+
+    private static void AddMqttActions(this IServiceCollection services)
     {
         services.AddSingleton<ITemperatureObservable, TemperatureObservable>();
         services.AddKeyedTransient<IMqttAction, TemperatureMqttAction>(SensorType.Temperature);
         services.AddTransient< ITypedProvider<IMqttAction, string>, MqttActionProvider >();
-        return services;
     }
 }
