@@ -23,9 +23,7 @@ public static class MongoDBServiceExtension
             var logger = provider.GetRequiredService<ILogger<MongoDBContext>>();
             var setting = option.Value.DbConnectionSetting;
             var mongoClient = new MongoClient(setting.GetMongoConnectionString());
-            var mongoDBContext = new MongoDBContext(mongoClient, logger);
-            mongoDBContext.ConfigureDatabase(setting!.Database);
-            return mongoDBContext;
+            return new MongoDBContext(mongoClient, logger, setting.Database);
         });
 
         services.AddTransient<ITemperatureWriterService, TemperatureWriterService>();
