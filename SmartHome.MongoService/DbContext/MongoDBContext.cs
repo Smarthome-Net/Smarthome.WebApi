@@ -1,5 +1,4 @@
 ﻿using MongoDB.Driver;
-using System;
 using SmartHome.Common.Models.Db;
 using Microsoft.Extensions.Logging;
 
@@ -11,12 +10,12 @@ public class MongoDBContext
     private readonly IMongoDatabase _database;
     
     public MongoDBContext(IMongoClient mongoClient, 
-                            ILogger<MongoDBContext> logger,
-                            string database)
+                            string database, 
+                            ILogger<MongoDBContext> logger)
     {
         _mongoClient = mongoClient;
         _database = _mongoClient.GetDatabase(database);
-        logger.LogError("Database context created");
+        logger.LogInformation("Database context created");
     }
 
     public IMongoCollection<Device> DeviceCollection => _database.GetCollection<Device>(Collection.Device);
