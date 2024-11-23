@@ -11,28 +11,28 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class TemperatureChartController : ControllerBase
 {
-    private readonly ILogger<TemperatureChartController> logger;
-    private readonly ITemperatureReaderService temperatureService;
+    private readonly ILogger<TemperatureChartController> _logger;
+    private readonly ITemperatureReaderService _temperatureService;
     public TemperatureChartController(ILogger<TemperatureChartController> logger, 
         ITemperatureReaderService temperatureService)
     {
-        this.logger = logger;
-        this.temperatureService = temperatureService;
+        this._logger = logger;
+        this._temperatureService = temperatureService;
     }
     
     [Produces("application/json")]
     [HttpPost]
     public ActionResult<TemperatureResponse> GetTemperature(TemperatureRequest temperatureRequest) 
     {
-        var keySelector = temperatureRequest.Scope.ToTemperatureKeySelector();
-        var temperature = temperatureService.GetTemperature(temperatureRequest.Scope);
+        var keySelector = temperatureRequest.Scope?.ToTemperatureKeySelector();
+        var temperature = _temperatureService.GetTemperature(temperatureRequest.Scope);
 
         TemperatureResponse temperatureResponse = new()
         {
             Scope = temperatureRequest.Scope,
             Temperatures = temperature
-                .ToTimeSeriesChart(keySelector)
-                .ApplyPaging(temperatureRequest.PageSetting),
+                .ToTimeSeriesChart(keySelector!)
+                .ApplyPaging(temperatureRequest.PageSetting!),
             PageSetting = temperatureRequest.PageSetting
         };
         return Ok(temperatureResponse);

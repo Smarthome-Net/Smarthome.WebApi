@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SmartHome.Common.Models;
+using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.Common.Collections;
 
@@ -10,25 +11,25 @@ namespace SmartHome.Common.Collections;
 /// </summary>
 public class Segments : IEnumerable<Segment>
 {
-    public const char SegmentSeperator = '/';
+    private const char SegmentSeparator = '/';
     
-    private readonly List<Segment> _segements = [];
+    private readonly List<Segment> _segments = [];
 
     public Segment this[int index]
     {
-        get => _segements[index]; 
-        set => _segements[index] = value;
+        get => _segments[index]; 
+        set => _segments[index] = value;
     }
 
     /// <summary>
     /// Create a new instance from the string value, containing all segments from the string
     /// </summary>
-    /// <param name="value">A value with one or more forward slashes, that can be splited</param>
+    /// <param name="value">A value with one or more forward slashes, that can be split</param>
     /// <returns></returns>
     public static Segments FromString(string value) 
     {
         var segments = value
-            .Split(SegmentSeperator)
+            .Split(SegmentSeparator)
             .Select(s => new Segment(s));
         return [..segments];
     }
@@ -37,7 +38,7 @@ public class Segments : IEnumerable<Segment>
     /// Adds a new raw segment
     /// </summary>
     /// <param name="value"></param>
-    public void Add(string value) 
+    private void Add(string value) 
     {
         Add(new Segment(value));
     }
@@ -46,9 +47,9 @@ public class Segments : IEnumerable<Segment>
     /// Adds a new segment
     /// </summary>
     /// <param name="segment"></param>
-    public void Add(Segment segment) 
+    private void Add(Segment segment) 
     {
-        _segements.Add(segment);
+        _segments.Add(segment);
     }
 
     /// <summary>
@@ -57,40 +58,40 @@ public class Segments : IEnumerable<Segment>
     /// <returns></returns>
     public string MergeSegments() 
     {
-        return string.Join(SegmentSeperator, _segements.Select(seg => seg.Value));
+        return string.Join(SegmentSeparator, _segments.Select(seg => seg.Value));
     }
 
     /// <summary>
     /// Remove segments from the collection
     /// </summary>
-    /// <param name="value">The value, can also contain the segment seperator to remove multiple segments</param>
+    /// <param name="value">The value, can also contain the segment separator to remove multiple segments</param>
     public void RemoveSegments(string value)
     {
         var segmentsToRemove = FromString(value);
 
-        foreach (var segement in segmentsToRemove)
+        foreach (var segment in segmentsToRemove)
         {
-            _segements.Remove(segement);
+            _segments.Remove(segment);
         }
     }
 
     /// <summary>
     /// Forward property to the count value of the inner collection
     /// </summary>
-    public int Count => _segements.Count;
+    public int Count => _segments.Count;
 
     /// <summary>
     /// Forward property to the capacity value of the inner collection
     /// </summary>
-    public int Capacity => _segements.Capacity;
+    public int Capacity => _segments.Capacity;
 
     public IEnumerator<Segment> GetEnumerator()
     {
-        return _segements.GetEnumerator();
+        return _segments.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return _segements.GetEnumerator();
+        return _segments.GetEnumerator();
     }
 }

@@ -11,19 +11,19 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class StatisticController : ControllerBase
 {
-    private readonly ITemperatureReaderService statisticService;
-    private readonly ILogger<StatisticController> logger;
+    private readonly ITemperatureReaderService _statisticService;
+    private readonly ILogger<StatisticController> _logger;
 
     public StatisticController(ILogger<StatisticController> logger, ITemperatureReaderService statisticService) 
     {
-        this.logger = logger;
-        this.statisticService = statisticService;
+        _logger = logger;
+        _statisticService = statisticService;
     }
 
     [HttpPost]
     public ActionResult<StatisticResponse> GetStatistic(StatisticRequest request)
     {
-        var temperatures = statisticService.GetTemperature(request.Scope);
+        var temperatures = _statisticService.GetTemperature(request.Scope);
         var response = new StatisticResponse
         {
             Scope = request.Scope,

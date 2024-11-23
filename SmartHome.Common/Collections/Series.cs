@@ -4,21 +4,30 @@ using SmartHome.Common.Models.Dto.Charts;
 
 namespace SmartHome.Common.Collections;
 
+/// <summary>
+/// Generic custom collection for a chart series
+/// </summary>
+/// <typeparam name="TName">The label name</typeparam>
+/// <typeparam name="TValue">The chart value</typeparam>
 public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
 {
     private readonly List<SeriesItem<TName, TValue>> _seriesItem = [];
-
+    
+    /// <summary>
+    /// Returns a single item of the series
+    /// </summary>
+    /// <param name="index"></param>
     public SeriesItem<TName, TValue> this[int index]
     {
         get => _seriesItem[index]; 
         set => _seriesItem[index] = value;
     }
-
-    public static Series<TName, TValue> From(IEnumerable<SeriesItem<TName, TValue>> items) 
-    {
-        return [.. items];
-    }
-
+    
+    /// <summary>
+    /// Adda a new item into the series
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
     public void Add(TName name, TValue value) 
     {
         Add(new SeriesItem<TName, TValue>{
@@ -26,27 +35,16 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
             Value = value
         });
     }
-
+    
+    /// <summary>
+    /// Adds a new items into the series
+    /// </summary>
+    /// <param name="item"></param>
     public void Add(SeriesItem<TName, TValue> item) 
     {
         _seriesItem.Add(item);
     }
-
-    public void AddRange(IEnumerable<SeriesItem<TName, TValue>> items) 
-    {
-        _seriesItem.AddRange(items);
-    }
-
-    public void Remove(SeriesItem<TName, TValue> item) 
-    {
-        _seriesItem.Remove(item);
-    }
-
-    public void RemoveRange(int index, int count) 
-    {
-        _seriesItem.RemoveRange(index, count);
-    }
-
+    
     /// <summary>
     /// Forward property to the count value of the inner collection
     /// </summary>
@@ -56,13 +54,20 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
     /// Forward property to the capacity value of the inner collection
     /// </summary>
     public int Capacity => _seriesItem.Capacity;
-
-
+    
+    /// <summary>
+    /// Returns a generic enumerator
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator<SeriesItem<TName, TValue>> GetEnumerator()
     {
         return _seriesItem.GetEnumerator();
     }
-
+    
+    /// <summary>
+    /// Returns an enumerator
+    /// </summary>
+    /// <returns></returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return _seriesItem.GetEnumerator();

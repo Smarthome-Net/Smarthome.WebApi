@@ -5,5 +5,5 @@ namespace SmartHome.Common.Interfaces;
 
 public interface ITemperatureReaderService
 {
-    IEnumerable<TemperatureDto> GetTemperature(Scope scope);
+    IEnumerable<TemperatureDto> GetTemperature(Scope? scope);
 }

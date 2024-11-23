@@ -1,6 +1,4 @@
-﻿using MongoDB.Driver;
-using MongoDB.Driver.Linq;
-using SmartHome.Common.Helpers;
+﻿using SmartHome.Common.Helpers;
 using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
 using System;
@@ -46,7 +44,7 @@ public static class TemperatureExtension
             });
     }
 
-    public static Chart<string, float> ToStatisticChart(this IEnumerable<TemperatureDto> data, Scope scope) 
+    public static Chart<string, float> ToStatisticChart(this IEnumerable<TemperatureDto> data, Scope? scope) 
     {
         var temperatures = data.ToArray();
         var max = temperatures.Max(x => x.Value);
@@ -55,7 +53,7 @@ public static class TemperatureExtension
 
         return new Chart<string, float>
         {
-            Name = scope.Value!,
+            Name = scope?.Value!,
             Series = {
                 { "min", min },
                 { "average", avg },

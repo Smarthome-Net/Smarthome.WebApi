@@ -18,7 +18,7 @@ public class TemperatureReaderService : ITemperatureReaderService
         _dbContext = dbContext;
     }
 
-    public IEnumerable<TemperatureDto> GetTemperature(Scope scope)
+    public IEnumerable<TemperatureDto> GetTemperature(Scope? scope)
     {
         var predicate = scope?.ToDevicePredicate();
         var temperatureQuery = _dbContext.TemperatureCollection.AsQueryable();

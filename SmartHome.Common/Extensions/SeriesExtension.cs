@@ -8,6 +8,6 @@ public static class SeriesExtension
 {
     public static Series<TName, TValue> ToSeries<TName, TValue>(this IEnumerable<SeriesItem<TName, TValue>> items) 
     {
-        return Series<TName, TValue>.From(items);
+        return [..items];
     }
 }
