@@ -11,10 +11,10 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class StatisticController : ControllerBase
 {
-    private readonly ITemperatureReaderService _statisticService;
+    private readonly ITemperatureService _statisticService;
     private readonly ILogger<StatisticController> _logger;
 
-    public StatisticController(ILogger<StatisticController> logger, ITemperatureReaderService statisticService) 
+    public StatisticController(ILogger<StatisticController> logger, ITemperatureService statisticService) 
     {
         _logger = logger;
         _statisticService = statisticService;

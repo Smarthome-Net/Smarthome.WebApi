@@ -11,13 +11,10 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class TemperatureChartController : ControllerBase
 {
-    private readonly ILogger<TemperatureChartController> _logger;
-    private readonly ITemperatureReaderService _temperatureService;
-    public TemperatureChartController(ILogger<TemperatureChartController> logger, 
-        ITemperatureReaderService temperatureService)
+    private readonly ITemperatureService _temperatureService;
+    public TemperatureChartController(ITemperatureService temperatureService)
     {
-        this._logger = logger;
-        this._temperatureService = temperatureService;
+        _temperatureService = temperatureService;
     }
     
     [Produces("application/json")]

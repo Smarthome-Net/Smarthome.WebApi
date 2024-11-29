@@ -2,20 +2,28 @@
 using SmartHome.Common.Extensions;
 using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Interfaces;
+using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
 using SmartHome.MongoService.DbContext;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SmartHome.MongoService.Services;
 
-public class TemperatureReaderService : ITemperatureReaderService
+public class TemperatureService : ITemperatureService
 {
     private readonly MongoDBContext _dbContext;
 
-    public TemperatureReaderService(MongoDBContext dbContext)
+    public TemperatureService(MongoDBContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    public async Task CreateTemperature(Temperature temperature, CancellationToken cancellationToken = default)
+    {
+        await _dbContext.TemperatureCollection!.InsertOneAsync(temperature, cancellationToken: cancellationToken);
     }
 
     public IEnumerable<TemperatureDto> GetTemperature(Scope? scope)
@@ -29,13 +37,7 @@ public class TemperatureReaderService : ITemperatureReaderService
             .Join(temperatureQuery,
                 device => device.Id,
                 temperature => temperature.DeviceId,
-                (device, temperature) => new TemperatureDto()
-                {
-                    Id = temperature.Id.ToString(),
-                    Value = temperature.Value,
-                    RecordDateTime = temperature.RecordDateTime,
-                    Device = device.ToDto()
-                })
+                (device, temperature) => temperature.ToDto(device))
             .OrderByDescending(item => item.RecordDateTime);
     }
 }

@@ -23,7 +23,7 @@ public class TemperatureMessageProcessorTests
     public void Setup() 
     {
         var nullLogger = NullLogger<TemperatureMessageProcessor>.Instance;
-        var temperatureWriterMock = new Mock<ITemperatureWriterService>();
+        var temperatureWriterMock = new Mock<ITemperatureService>();
         var deviceServiceMock = new Mock<IDeviceService>();
 
         deviceServiceMock

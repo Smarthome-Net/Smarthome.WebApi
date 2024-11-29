@@ -26,8 +26,7 @@ public static class MongoDBServiceExtension
             return new MongoDBContext(mongoClient, setting.Database, logger);
         });
 
-        services.AddTransient<ITemperatureWriterService, TemperatureWriterService>();
-        services.AddTransient<ITemperatureReaderService, TemperatureReaderService>();
+        services.AddTransient<ITemperatureService, TemperatureService>();
         services.AddTransient<IDeviceService, DeviceService>();
         services.AddTransient<ISettingService, SettingService>();
 

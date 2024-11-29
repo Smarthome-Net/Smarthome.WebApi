@@ -17,17 +17,17 @@ namespace SmartHome.MqttService.ApplicationMessageProcessors;
 public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.Models.Dto.TemperatureDto>
 {
     private ILogger<TemperatureMessageProcessor>? _logger;
-    private ITemperatureWriterService? _temperatureWriteService;
+    private ITemperatureService? _temperatureService;
     private IDeviceService? _deviceService;
 
     private bool _isDisposed;
 
     public TemperatureMessageProcessor(ILogger<TemperatureMessageProcessor> logger,
-        ITemperatureWriterService temperatureWriteService,
+        ITemperatureService temperatureWriteService,
         IDeviceService deviceService)
     {
         _logger = logger;
-        _temperatureWriteService = temperatureWriteService;
+        _temperatureService = temperatureWriteService;
         _deviceService = deviceService;
     }
 
@@ -50,17 +50,15 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.M
             using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
             var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
             var device = await _deviceService!.GetOrCreateDeviceByTopic(deviceContext, cancellationToken);
-            var data = new Temperature
+            var temperature = new Temperature
             {
                 RecordDateTime = message!.Time,
                 Value = message.Value,
                 DeviceId = device.Id,
             };
 
-            await _temperatureWriteService!.WriteTemperature(data, cancellationToken);
-            var temperature = data.ToDto();
-            temperature.Device = device.ToDto();
-            return temperature;
+            await _temperatureService!.CreateTemperature(temperature, cancellationToken);
+            return temperature.ToDto(device);
         }
         catch (Exception ex)
         {
@@ -74,7 +72,7 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.M
         if (!_isDisposed)
         {
             _logger = null;
-            _temperatureWriteService = null;
+            _temperatureService = null;
             _deviceService = null;
             _isDisposed = true;
         }

@@ -6,13 +6,14 @@ namespace SmartHome.Common.Extensions.Mapping;
 
 public static class TemperatureMapping
 {
-    public static TemperatureDto ToDto(this Temperature temperature)
+    public static TemperatureDto ToDto(this Temperature temperature, Device device)
     {
         return new TemperatureDto
         {
             Id = temperature.Id.ToString(),
             RecordDateTime = temperature.RecordDateTime,
             Value = temperature.Value,
+            Device = device.ToDto(),
         };
     }
 
