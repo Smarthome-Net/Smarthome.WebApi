@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SmartHome.MqttService.Providers;
 using SmartHome.MqttService.Services;
 using System;

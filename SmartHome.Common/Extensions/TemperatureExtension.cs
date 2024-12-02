@@ -1,5 +1,4 @@
-﻿using SmartHome.Common.Helpers;
-using SmartHome.Common.Models.Dto;
+﻿using SmartHome.Common.Models.Dto;
 using SmartHome.Common.Models.Dto.Charts;
 using System;
 using System.Collections.Generic;
@@ -40,7 +39,7 @@ public static class TemperatureExtension
             .Select(groupedValues =>
             {
                 var firstValue = groupedValues.FirstOrDefault();
-                return SeriesHelper.Create(firstValue!.RecordDateTime, groupedValues.Average(item => item.Value));
+                return SeriesItem.Create(firstValue!.RecordDateTime, groupedValues.Average(item => item.Value));
             });
     }
 

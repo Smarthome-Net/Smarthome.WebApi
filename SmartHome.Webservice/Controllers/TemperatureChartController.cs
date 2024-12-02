@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using SmartHome.Common.Extensions;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Dto.Requests;
