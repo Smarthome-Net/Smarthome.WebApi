@@ -1,10 +1,11 @@
-﻿using SmartHome.Common.Models;
-using SmartHome.MqttService.Providers;
+﻿using SmartHome.MqttService.Providers;
 using MQTTnet.Extensions.Rpc;
 using System;
 using SmartHome.MqttService.Extensions;
 using System.Threading.Tasks;
 using MQTTnet.Protocol;
+using SmartHome.Common.Models.MqttMessages;
+using SmartHome.Common.Interfaces;
 
 namespace SmartHome.MqttService.Services;
 

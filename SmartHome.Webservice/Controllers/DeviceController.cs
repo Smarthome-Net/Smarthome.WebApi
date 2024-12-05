@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Interfaces;
-using SmartHome.Common.Models;
 using SmartHome.Common.Models.Dto;
-using SmartHome.MqttService.Services;
+using SmartHome.Common.Models.MqttMessages;
 
 namespace SmartHome.Webservice.Controllers;
 

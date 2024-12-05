@@ -1,4 +1,6 @@
-﻿namespace SmartHome.Common.Models.Dto;
+﻿using SmartHome.Common.Models.MqttMessages;
+
+namespace SmartHome.Common.Models.Dto;
 
 public class DeviceDto
 {

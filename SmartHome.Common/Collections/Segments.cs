@@ -35,15 +35,6 @@ public class Segments : IEnumerable<Segment>
     }
 
     /// <summary>
-    /// Adds a new raw segment
-    /// </summary>
-    /// <param name="value"></param>
-    private void Add(string value) 
-    {
-        Add(new Segment(value));
-    }
-
-    /// <summary>
     /// Adds a new segment
     /// </summary>
     /// <param name="segment"></param>

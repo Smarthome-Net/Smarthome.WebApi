@@ -11,7 +11,7 @@ namespace SmartHome.Common.Collections;
 /// <typeparam name="TValue">The chart value</typeparam>
 public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
 {
-    private readonly List<SeriesItem<TName, TValue>> _seriesItem = [];
+    private readonly List<SeriesItem<TName, TValue>> _seriesItems = [];
     
     /// <summary>
     /// Returns a single item of the series
@@ -19,8 +19,8 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
     /// <param name="index"></param>
     public SeriesItem<TName, TValue> this[int index]
     {
-        get => _seriesItem[index]; 
-        set => _seriesItem[index] = value;
+        get => _seriesItems[index]; 
+        set => _seriesItems[index] = value;
     }
     
     /// <summary>
@@ -42,18 +42,18 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
     /// <param name="item"></param>
     public void Add(SeriesItem<TName, TValue> item) 
     {
-        _seriesItem.Add(item);
+        _seriesItems.Add(item);
     }
     
     /// <summary>
     /// Forward property to the count value of the inner collection
     /// </summary>
-    public int Count => _seriesItem.Count;
+    public int Count => _seriesItems.Count;
 
     /// <summary>
     /// Forward property to the capacity value of the inner collection
     /// </summary>
-    public int Capacity => _seriesItem.Capacity;
+    public int Capacity => _seriesItems.Capacity;
     
     /// <summary>
     /// Returns a generic enumerator
@@ -61,7 +61,7 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
     /// <returns></returns>
     public IEnumerator<SeriesItem<TName, TValue>> GetEnumerator()
     {
-        return _seriesItem.GetEnumerator();
+        return _seriesItems.GetEnumerator();
     }
     
     /// <summary>
@@ -70,6 +70,6 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
     /// <returns></returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return _seriesItem.GetEnumerator();
+        return _seriesItems.GetEnumerator();
     }
 }

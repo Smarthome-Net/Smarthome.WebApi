@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SmartHome.Common.Models;
+using SmartHome.Common.Models.MqttMessages;
 
 namespace SmartHome.Common.Interfaces;
 
