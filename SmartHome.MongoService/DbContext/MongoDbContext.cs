@@ -1,21 +1,24 @@
-﻿using MongoDB.Driver;
+﻿using System;
+using MongoDB.Driver;
 using SmartHome.Common.Models.Db;
 using Microsoft.Extensions.Logging;
 
 namespace SmartHome.MongoService.DbContext;
 
-public class MongoDBContext
+public class MongoDbContext : IDisposable
 {
     private readonly IMongoClient _mongoClient;
+    private readonly ILogger<MongoDbContext> _logger;
     private readonly IMongoDatabase _database;
     
-    public MongoDBContext(IMongoClient mongoClient, 
+    public MongoDbContext(IMongoClient mongoClient, 
                             string database, 
-                            ILogger<MongoDBContext> logger)
+                            ILogger<MongoDbContext> logger)
     {
         _mongoClient = mongoClient;
+        _logger = logger;
         _database = _mongoClient.GetDatabase(database);
-        logger.LogInformation("Database context created");
+        _logger.LogInformation("Database context created");
     }
 
     public IMongoCollection<Device> DeviceCollection => _database.GetCollection<Device>(Collection.Device);
@@ -23,4 +26,25 @@ public class MongoDBContext
     public IMongoCollection<Temperature> TemperatureCollection => _database.GetCollection<Temperature>(Collection.Temperature);
     
     public IMongoCollection<Setting> SettingCollection => _database.GetCollection<Setting>(Collection.Setting);
+
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _mongoClient.Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        _logger.LogInformation("Disposing MongoDBContext");
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~MongoDbContext()
+    {
+        Dispose(false);
+    }
 }

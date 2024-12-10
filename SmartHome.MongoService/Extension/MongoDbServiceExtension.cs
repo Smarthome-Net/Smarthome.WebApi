@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartHome.MongoService.Extension;
 
-public static class MongoDBServiceExtension
+public static class MongoDbServiceExtension
 {
     public static IServiceCollection AddMongoDbService(this IServiceCollection services, Action<MongoDbOptions> options) 
     {
@@ -17,13 +17,13 @@ public static class MongoDBServiceExtension
             .AddOptions<MongoDbOptions>()
             .Configure(options);
 
-        services.AddSingleton(provider =>
+        services.AddTransient(provider =>
         {
             var option = provider.GetRequiredService<IOptions<MongoDbOptions>>();
-            var logger = provider.GetRequiredService<ILogger<MongoDBContext>>();
+            var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
             var setting = option.Value.DbConnectionSetting;
             var mongoClient = new MongoClient(setting.GetMongoConnectionString());
-            return new MongoDBContext(mongoClient, setting.Database, logger);
+            return new MongoDbContext(mongoClient, setting.Database, logger);
         });
 
         services.AddTransient<ITemperatureService, TemperatureService>();

@@ -14,9 +14,9 @@ namespace SmartHome.MongoService.Services;
 
 public class TemperatureService : ITemperatureService
 {
-    private readonly MongoDBContext _dbContext;
+    private readonly MongoDbContext _dbContext;
 
-    public TemperatureService(MongoDBContext dbContext)
+    public TemperatureService(MongoDbContext dbContext)
     {
         _dbContext = dbContext;
     }

@@ -70,6 +70,7 @@ public class MqttClientService : IMqttClientService
     #region Mqtt Actions Handlers
     private async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
+        _logger.LogInformation("Received notification from MQTT broker.");
         if(IsRpcTopic(eventArgs.ApplicationMessage.Topic)) 
         {
             return;
@@ -81,6 +82,7 @@ public class MqttClientService : IMqttClientService
         {
             var sensorType = action!.GetSensorType();
             var deviceContext = eventArgs.ApplicationMessage.GetDeviceContext($"{_mqttSetting.TopicSetting.SubscriptionTopic}/{sensorType}");
+            _logger.LogInformation("Execute MQTT action for {SensorType}", sensorType);
             await action.ExecuteAction(eventArgs.ApplicationMessage, deviceContext, source.Token);
         }
         catch (ApplicationMessageException ex)

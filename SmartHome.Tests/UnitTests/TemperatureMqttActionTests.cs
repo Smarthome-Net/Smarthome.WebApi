@@ -5,6 +5,7 @@ using SmartHome.MqttService.ApplicationMessageProcessors;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.MqttService.Observables;
 using System.Text.Json;
+using Microsoft.Extensions.Logging.Abstractions;
 using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.Tests.UnitTests;
@@ -21,8 +22,9 @@ public class TemperatureMqttActionTests
     {
         var messageProcessorMock = new Mock<IApplicationMessageProcessor<TemperatureDto>>();
         var temperatureObservableMock = new Mock<ITemperatureObservable>();
+        var logger = NullLogger<TemperatureMqttAction>.Instance;
         
-        _temperatureAction = new TemperatureMqttAction(messageProcessorMock.Object, temperatureObservableMock.Object);
+        _temperatureAction = new TemperatureMqttAction(messageProcessorMock.Object, temperatureObservableMock.Object, logger);
     }
 
     [Test]

@@ -44,8 +44,8 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.M
     {
         try
         {
-            _logger!.LogInformation("Start processing new application message");
             ObjectDisposedException.ThrowIf(_isDisposed, typeof(TemperatureMessageProcessor));
+            _logger!.LogInformation("Start processing new application message");
             
             using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
             var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
@@ -58,6 +58,7 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.M
             };
 
             await _temperatureService!.CreateTemperature(temperature, cancellationToken);
+            _logger!.LogInformation("Finished processing new application message");
             return temperature.ToDto(device);
         }
         catch (Exception ex)

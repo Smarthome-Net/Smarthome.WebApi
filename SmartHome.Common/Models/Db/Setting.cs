@@ -3,6 +3,7 @@ using MongoDB.Bson;
 
 namespace SmartHome.Common.Models.Db;
 
+[BsonDiscriminator(RootClass = true)]
 [BsonKnownTypes(typeof(CommonSetting))]
 public class Setting
 {

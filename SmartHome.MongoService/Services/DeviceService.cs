@@ -13,8 +13,8 @@ namespace SmartHome.MongoService.Services;
 
 public class DeviceService : IDeviceService
 {
-    private readonly MongoDBContext _dbContext;
-    public DeviceService(MongoDBContext dbContext) 
+    private readonly MongoDbContext _dbContext;
+    public DeviceService(MongoDbContext dbContext) 
     {
         _dbContext = dbContext;
     }

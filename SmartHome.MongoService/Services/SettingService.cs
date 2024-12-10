@@ -9,9 +9,9 @@ namespace SmartHome.MongoService.Services;
 
 public class SettingService : ISettingService
 {
-    private readonly MongoDBContext _mongoDbContext;
+    private readonly MongoDbContext _mongoDbContext;
     
-    public SettingService(MongoDBContext mongoDbContext)
+    public SettingService(MongoDbContext mongoDbContext)
     {
         _mongoDbContext = mongoDbContext; 
     }
@@ -19,7 +19,7 @@ public class SettingService : ISettingService
     public async Task<long> UpdateSetting<TSetting>(TSetting setting, UpdateDefinition<TSetting> updateDefinition) where TSetting : Setting, new()
     {
         var filter = Builders<TSetting>.Filter.Eq(s => s.Id, setting.Id);
-        var result =  await _mongoDbContext.SettingCollection!
+        var result =  await _mongoDbContext.SettingCollection
             .OfType<TSetting>()
             .UpdateOneAsync(filter, updateDefinition);
         return result.IsAcknowledged ? result.ModifiedCount : 0;
@@ -27,13 +27,13 @@ public class SettingService : ISettingService
 
     public async Task<IEnumerable<Setting>> GetAllSetting()
     {
-        var result = await _mongoDbContext.SettingCollection!.FindAsync(a => true);
+        var result = await _mongoDbContext.SettingCollection.FindAsync(a => true);
         return await result.ToListAsync();
     }
 
     public async Task<TSetting> GetSetting<TSetting>() where TSetting : Setting, new()
-    {      
-        return await _mongoDbContext.SettingCollection!
+    { 
+        return await _mongoDbContext.SettingCollection
             .Aggregate()
             .OfType<TSetting>()
             .FirstOrDefaultAsync();
