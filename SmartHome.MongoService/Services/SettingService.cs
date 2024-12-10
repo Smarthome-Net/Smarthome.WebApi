@@ -32,16 +32,10 @@ public class SettingService : ISettingService
     }
 
     public async Task<TSetting> GetSetting<TSetting>() where TSetting : Setting, new()
-    {
-        var projection = Builders<Setting>
-            .Projection
-            .As<TSetting>();
-        var result = await  _mongoDbContext.SettingCollection!
+    {      
+        return await _mongoDbContext.SettingCollection!
             .Aggregate()
-            .Match(a => a is TSetting)
-            .Project(projection)
+            .OfType<TSetting>()
             .FirstOrDefaultAsync();
-
-        return result;
     }
 }

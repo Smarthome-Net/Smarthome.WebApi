@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
+using SmartHome.MongoService.Extension;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -39,16 +40,12 @@ public class SettingController : ControllerBase
     [HttpPost("CommonSetting")]
     public async Task<long> UpdateCommonSetting(CommonSettingDto commonSetting)
     {
-        var dbModel = commonSetting.ToDb();
-        if (dbModel == null)
+        var setting = commonSetting.ToDb();
+        if (setting == null)
         {
             return -1;
         }
         
-        var updateDefinition = Builders<CommonSetting>.Update
-            .Set(f => f.Description, commonSetting.Description)
-            .Set(f => f.Title, commonSetting.Title)
-            .Set(f => f.ColorScheme, commonSetting.ColorScheme);
-        return await _settingService.UpdateSetting(dbModel, updateDefinition);
+        return await _settingService.UpdateCommonSetting(setting);
     }
 }
