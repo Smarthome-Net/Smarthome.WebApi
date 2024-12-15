@@ -14,6 +14,7 @@ public static class SettingServiceExtension
         var updateDefinition = Builders<CommonSetting>.Update
             .Set(f => f.Description, commonSetting.Description)
             .Set(f => f.Title, commonSetting.Title)
+            .Set(f => f.PageLength, commonSetting.PageLength)
             .Set(f => f.ColorScheme, commonSetting.ColorScheme);
         return settingService.UpdateSetting(commonSetting, updateDefinition);
     }
