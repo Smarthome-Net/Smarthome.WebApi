@@ -23,6 +23,7 @@ public class StatisticController : ControllerBase
     [HttpPost]
     public ActionResult<StatisticResponse> GetStatistic(StatisticRequest request)
     {
+        _logger.LogInformation("Get statistic for scope: {Value}", request.Scope.Value);
         var temperatures = _statisticService.GetTemperature(request.Scope);
         var response = new StatisticResponse
         {

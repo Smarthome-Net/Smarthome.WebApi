@@ -1,9 +1,7 @@
-using System;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Db;
-using SmartHome.MongoService.Services;
 
 namespace SmartHome.MongoService.Extension;
 

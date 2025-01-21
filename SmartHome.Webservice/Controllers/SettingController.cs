@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Common.Interfaces;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.Dto;
@@ -27,7 +26,7 @@ public class SettingController : ControllerBase
     public async Task<IEnumerable<SettingDto>> GetAllSetting()
     {
         var settings = await _settingService.GetAllSetting();
-        return settings.ToDto().ToList();
+        return settings.ToDto();
     }
     
     [HttpGet("CommonSetting")]
