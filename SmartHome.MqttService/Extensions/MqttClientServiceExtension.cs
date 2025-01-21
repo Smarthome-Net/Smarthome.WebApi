@@ -70,16 +70,14 @@ public static class MqttClientServiceExtension
 
         services.AddTransient<MqttActionProvider>(sp =>
         {
-            return MqttActionProvider;
-
-            IMqttAction? MqttActionProvider(string topic)
+            return topic =>
             {
                 var options = sp.GetRequiredService<IOptions<MqttOptions>>();
                 var topicSetting = options.Value.MqttSetting.TopicSetting;
                 var segments = Segments.FromString(topic);
                 segments.RemoveSegments(topicSetting.SubscriptionTopic!);
                 return sp.GetKeyedService<IMqttAction>(segments[0].Value);
-            }
+            };
         });
     }
 }
