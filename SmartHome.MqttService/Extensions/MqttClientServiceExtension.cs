@@ -4,6 +4,7 @@ using SmartHome.MqttService.Services;
 using System;
 using MQTTnet.Client;
 using Microsoft.Extensions.Options;
+using SmartHome.Common.Collections;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.MqttService.Observables;
 using SmartHome.Common.Interfaces;
@@ -66,6 +67,19 @@ public static class MqttClientServiceExtension
     {
         services.AddSingleton<ITemperatureObservable, TemperatureObservable>();
         services.AddKeyedTransient<IMqttAction, TemperatureMqttAction>(SensorType.Temperature);
-        services.AddTransient<ITypedProvider<IMqttAction, string>, MqttActionProvider>();
+
+        services.AddTransient<MqttActionProvider>(sp =>
+        {
+            return MqttActionProvider;
+
+            IMqttAction? MqttActionProvider(string topic)
+            {
+                var options = sp.GetRequiredService<IOptions<MqttOptions>>();
+                var topicSetting = options.Value.MqttSetting.TopicSetting;
+                var segments = Segments.FromString(topic);
+                segments.RemoveSegments(topicSetting.SubscriptionTopic!);
+                return sp.GetKeyedService<IMqttAction>(segments[0].Value);
+            }
+        });
     }
 }

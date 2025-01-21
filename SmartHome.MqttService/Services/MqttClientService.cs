@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using MQTTnet.Client;
 using Microsoft.Extensions.Logging;
 using SmartHome.MqttService.Settings;
 using SmartHome.Common.Exceptions;
 using MQTTnet.Extensions.Rpc;
 using Microsoft.Extensions.Options;
+using SmartHome.Common.Collections;
 using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.MqttActions;
 using SmartHome.Common.Interfaces;
@@ -20,18 +22,18 @@ public class MqttClientService : IMqttClientService
     private readonly ILogger<MqttClientService> _logger;
     private readonly MqttSetting _mqttSetting;
     private readonly IMqttFactoryProvider _mqttFactoryProvider;
-    private readonly ITypedProvider<IMqttAction, string> _mqttActionProvider;
+    private readonly MqttActionProvider _actionProvider;
     private bool _isDisposed;
 
     public MqttClientService(ILogger<MqttClientService> logger,
         MqttClientOptions clientOptions,
         IOptions<MqttOptions> mqttOptions,
-        ITypedProvider<IMqttAction, string> mqttActionProvider,
+        MqttActionProvider actionProvider,
         IMqttFactoryProvider mqttFactoryProvider)
     {
         _logger = logger;
         _clientOptions = clientOptions;
-        _mqttActionProvider = mqttActionProvider;
+        _actionProvider = actionProvider;
         _mqttSetting = mqttOptions.Value.MqttSetting;
         _mqttFactoryProvider = mqttFactoryProvider;
         
@@ -77,7 +79,7 @@ public class MqttClientService : IMqttClientService
         }
         
         var source = new CancellationTokenSource();
-        var action = _mqttActionProvider.GetService(eventArgs.ApplicationMessage.Topic);
+        var action = _actionProvider(eventArgs.ApplicationMessage.Topic);
         try
         {
             var sensorType = action!.GetSensorType();
