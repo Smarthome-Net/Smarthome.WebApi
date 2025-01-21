@@ -8,5 +8,5 @@
 /// <typeparam name="TKey"></typeparam>
 public interface ITypedProvider<TService, TKey>
 {
-    TService? GetService(TKey topic);
+    TService? GetService(TKey key);
 }
