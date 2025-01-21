@@ -66,6 +66,6 @@ public static class MqttClientServiceExtension
     {
         services.AddSingleton<ITemperatureObservable, TemperatureObservable>();
         services.AddKeyedTransient<IMqttAction, TemperatureMqttAction>(SensorType.Temperature);
-        services.AddTransient< ITypedProvider<IMqttAction, string>, MqttActionProvider >();
+        services.AddTransient<ITypedProvider<IMqttAction, string>, MqttActionProvider>();
     }
 }
