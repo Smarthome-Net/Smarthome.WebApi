@@ -22,13 +22,13 @@ public class DeviceManager : IDeviceManager
     public async Task<DeviceConfiguration?> GetConfiguration(string deviceId)
     {
         var methodName = GetMethodName(deviceId, "config");
-        return await _mqttRpcClient.ExecuteAsync<DeviceConfiguration>(TimeSpan.FromSeconds(10), methodName, null, MqttQualityOfServiceLevel.AtMostOnce);
+        return await _mqttRpcClient.ExecuteAsync<DeviceConfiguration>(TimeSpan.FromSeconds(10), methodName, MqttQualityOfServiceLevel.AtMostOnce);
     }
 
     public async Task<DeviceStatus?> GetStatus(string deviceId)
     {
         var methodName = GetMethodName(deviceId, "status");
-        return await _mqttRpcClient.ExecuteAsync<DeviceStatus>(TimeSpan.FromSeconds(10), methodName, null, MqttQualityOfServiceLevel.AtMostOnce);
+        return await _mqttRpcClient.ExecuteAsync<DeviceStatus>(TimeSpan.FromSeconds(10), methodName, MqttQualityOfServiceLevel.AtMostOnce);
     }
 
     public async Task<DeviceConfiguration?> PopulateConfiguration(string deviceId, DeviceConfiguration deviceConfiguration)
