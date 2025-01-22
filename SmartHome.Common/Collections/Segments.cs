@@ -56,14 +56,17 @@ public class Segments : IEnumerable<Segment>
     /// Remove segments from the collection
     /// </summary>
     /// <param name="value">The value, can also contain the segment separator to remove multiple segments</param>
-    public void RemoveSegments(string value)
+    public void Remove(Segments segments) 
     {
-        var segmentsToRemove = FromString(value);
-
-        foreach (var segment in segmentsToRemove)
+        foreach (var segment in segments)
         {
-            _segments.Remove(segment);
+            Remove(segment);
         }
+    }
+
+    private void Remove(Segment segment) 
+    {
+        _segments.Remove(segment);
     }
 
     /// <summary>

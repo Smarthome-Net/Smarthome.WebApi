@@ -73,9 +73,9 @@ public static class MqttClientServiceExtension
             return topic =>
             {
                 var options = sp.GetRequiredService<IOptions<MqttOptions>>();
-                var topicSetting = options.Value.MqttSetting.TopicSetting;
+                var topicSegments = Segments.FromString(options.Value.MqttSetting.TopicSetting.SubscriptionTopic);
                 var segments = Segments.FromString(topic);
-                segments.RemoveSegments(topicSetting.SubscriptionTopic!);
+                segments.Remove(topicSegments);
                 return sp.GetKeyedService<IMqttAction>(segments[0].Value);
             };
         });

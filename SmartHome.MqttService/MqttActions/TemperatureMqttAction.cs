@@ -8,6 +8,7 @@ using MQTTnet;
 using Microsoft.Extensions.Options;
 using SmartHome.MqttService.Settings;
 using SmartHome.MqttService.Extensions;
+using SmartHome.Common.Collections;
 
 namespace SmartHome.MqttService.MqttActions;
 
@@ -31,7 +32,8 @@ public class TemperatureMqttAction : IMqttAction
 
     public async Task ProcessAction(MqttApplicationMessage mqttApplicationMessage, CancellationToken token = default)
     {
-        var deviceContext = mqttApplicationMessage.GetDeviceContext($"{_topicSetting.SubscriptionTopic}/{SensorType}");
+        var segments = Segments.FromString($"{_topicSetting.SubscriptionTopic}/{SensorType}");
+        var deviceContext = mqttApplicationMessage.GetDeviceContext(segments);
         var temperature = await _messageProcessor.ProcessMessage(mqttApplicationMessage, deviceContext, token);
         _temperatureObservable.OnNext(temperature);
         _logger.LogInformation("Temperature Mqtt Action executed");
