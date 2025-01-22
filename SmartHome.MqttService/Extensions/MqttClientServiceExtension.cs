@@ -10,6 +10,7 @@ using SmartHome.MqttService.Observables;
 using SmartHome.Common.Interfaces;
 using SmartHome.Common.Models.Dto;
 using SmartHome.MqttService.ApplicationMessageProcessors;
+using MQTTnet;
 
 namespace SmartHome.MqttService.Extensions;
 
@@ -44,7 +45,7 @@ public static class MqttClientServiceExtension
             return optionBuilder.Build();
         });
 
-        services.AddSingleton<IMqttFactoryProvider, MqttFactoryProvider>();
+        services.AddSingleton<MqttFactoryProvider>(_ => () => new MqttFactory());
         services.AddSingleton<IMqttClientService, MqttClientService>();
         services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<IMqttClientService>());
 

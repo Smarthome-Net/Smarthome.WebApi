@@ -2,7 +2,8 @@ using MQTTnet;
 
 namespace SmartHome.MqttService;
 
-public class MqttFactoryProvider : IMqttFactoryProvider
-{
-    public MqttFactory MqttFactory => new();
-}
+/// <summary>
+/// Factory delegate to get an mqtt factory instance
+/// </summary>
+/// <returns></returns>
+public delegate MqttFactory MqttFactoryProvider();

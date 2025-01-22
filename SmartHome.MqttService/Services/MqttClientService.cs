@@ -18,7 +18,7 @@ public class MqttClientService : IMqttClientService
     private readonly MqttClientOptions _clientOptions;
     private readonly ILogger<MqttClientService> _logger;
     private readonly MqttSetting _mqttSetting;
-    private readonly IMqttFactoryProvider _mqttFactoryProvider;
+    private readonly MqttFactoryProvider _mqttFactoryProvider;
     private readonly MqttActionProvider _actionProvider;
     private bool _isDisposed;
 
@@ -26,7 +26,7 @@ public class MqttClientService : IMqttClientService
         MqttClientOptions clientOptions,
         IOptions<MqttOptions> mqttOptions,
         MqttActionProvider actionProvider,
-        IMqttFactoryProvider mqttFactoryProvider)
+        MqttFactoryProvider mqttFactoryProvider)
     {
         _logger = logger;
         _clientOptions = clientOptions;
@@ -34,7 +34,7 @@ public class MqttClientService : IMqttClientService
         _mqttSetting = mqttOptions.Value.MqttSetting;
         _mqttFactoryProvider = mqttFactoryProvider;
         
-        _client = _mqttFactoryProvider.MqttFactory.CreateMqttClient();
+        _client = _mqttFactoryProvider().CreateMqttClient();
         _client.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
         _client.ConnectedAsync += HandleConnectedAsync;
         _client.DisconnectedAsync += HandleDisconnectedAsync;
@@ -91,7 +91,7 @@ public class MqttClientService : IMqttClientService
     
     private async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
     {
-        var subscribeOptions = _mqttFactoryProvider.MqttFactory.CreateSubscribeOptionsBuilder()
+        var subscribeOptions = _mqttFactoryProvider().CreateSubscribeOptionsBuilder()
             .WithTopicFilter(f => f.WithTopic($"{_mqttSetting.TopicSetting.SubscriptionTopic}/#"))
             .Build();
 
@@ -117,7 +117,7 @@ public class MqttClientService : IMqttClientService
             .WithTopicGenerationStrategy(new SmartHomeRpcTopicGenerationStrategy(_mqttSetting))
             .Build();
         
-        return _mqttFactoryProvider.MqttFactory.CreateMqttRpcClient(_client, options);
+        return _mqttFactoryProvider().CreateMqttRpcClient(_client, options);
     }
     #endregion
     
