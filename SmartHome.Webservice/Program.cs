@@ -2,15 +2,13 @@ using Microsoft.AspNetCore.Builder;
 using SmartHome.Webservice.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
-var environment = builder.Environment;
 
 builder
     .Services
-    .AddSmartHomeServices(config);
+    .AddSmartHomeServices(builder.Configuration);
 
 var app = builder
     .Build()
-    .ConfigureSmartHomeApp(environment);
+    .ConfigureSmartHomeApp(builder.Environment);
 
 app.Run();
