@@ -1,6 +1,6 @@
 ﻿namespace SmartHome.MqttService;
 
-internal static class SensorType
+internal static class SensorTypes
 {
     internal const string Temperature = "temperature";
 }

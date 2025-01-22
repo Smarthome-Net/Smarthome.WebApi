@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Common.Interfaces;
 using System.Threading.Tasks;

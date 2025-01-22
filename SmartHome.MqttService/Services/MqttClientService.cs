@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using MQTTnet.Client;
 using Microsoft.Extensions.Logging;
 using SmartHome.MqttService.Settings;
 using SmartHome.Common.Exceptions;
 using MQTTnet.Extensions.Rpc;
 using Microsoft.Extensions.Options;
-using SmartHome.Common.Collections;
 using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.MqttActions;
-using SmartHome.Common.Interfaces;
 
 namespace SmartHome.MqttService.Services;
 
@@ -82,10 +79,8 @@ public class MqttClientService : IMqttClientService
         var action = _actionProvider(eventArgs.ApplicationMessage.Topic);
         try
         {
-            var sensorType = action!.GetSensorType();
-            var deviceContext = eventArgs.ApplicationMessage.GetDeviceContext($"{_mqttSetting.TopicSetting.SubscriptionTopic}/{sensorType}");
-            _logger.LogInformation("Execute MQTT action for {SensorType}", sensorType);
-            await action.ExecuteAction(eventArgs.ApplicationMessage, deviceContext, source.Token);
+            _logger.LogInformation("Execute MQTT action for {SensorType}", action!.SensorType);
+            await action.ProcessAction(eventArgs.ApplicationMessage, source.Token);
         }
         catch (ApplicationMessageException ex)
         {
