@@ -22,7 +22,7 @@ internal static class MqttRpcClientExtensions
     public static async Task<T?> ExecuteAsync<T>(this IMqttRpcClient mqttRpcClient, TimeSpan timeout, string methodName, T payload, MqttQualityOfServiceLevel qos)
     {
         var data = JsonSerializer.SerializeToUtf8Bytes(payload);
-        return await ExecuteAsync<T>(mqttRpcClient, timeout, methodName, qos, data);
+        return await mqttRpcClient.ExecuteAsync<T>(timeout, methodName, qos, data);
     }
 
     /// <summary>
@@ -36,11 +36,11 @@ internal static class MqttRpcClientExtensions
     /// <returns></returns>
     public static async Task<T?> ExecuteAsync<T>(this IMqttRpcClient mqttRpcClient, TimeSpan timeout, string methodName, MqttQualityOfServiceLevel qos) 
     {
-        var data = Array.Empty<byte>();        
-        return await ExecuteAsync<T>(mqttRpcClient, timeout, methodName, qos, data);
+        byte[] data = []; //use an empty list      
+        return await mqttRpcClient.ExecuteAsync<T>(timeout, methodName, qos, data);
     }
 
-    private static async Task<T?> ExecuteAsync<T>(IMqttRpcClient mqttRpcClient, TimeSpan timeout, string methodName, MqttQualityOfServiceLevel qos, byte[] data)
+    private static async Task<T?> ExecuteAsync<T>(this IMqttRpcClient mqttRpcClient, TimeSpan timeout, string methodName, MqttQualityOfServiceLevel qos, byte[] data)
     {
         var rawResponse = await mqttRpcClient.ExecuteAsync(timeout, methodName, data, qos);
         var response = Encoding.UTF8.GetString(rawResponse);

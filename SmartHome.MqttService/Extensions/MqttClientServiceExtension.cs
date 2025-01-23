@@ -20,10 +20,10 @@ public static class MqttClientServiceExtension
     {
         services.AddOptions<MqttOptions>()
             .Configure(configuration);
-        
+
         services.AddMqttActions();
         services.AddApplicationMessageProcessors();
-        
+
         services.AddMqttClientServiceWithConfig((optionsBuilder, serviceProvider) =>
         {
             var mqttOptions = serviceProvider.GetRequiredService<IOptions<MqttOptions>>();
@@ -59,7 +59,7 @@ public static class MqttClientServiceExtension
         services.AddTransient<IDeviceManager, DeviceManager>();
     }
 
-    private static void AddApplicationMessageProcessors(this IServiceCollection services) 
+    private static void AddApplicationMessageProcessors(this IServiceCollection services)
     {
         services.AddTransient<IApplicationMessageProcessor<TemperatureDto>, TemperatureMessageProcessor>();
     }
@@ -69,16 +69,13 @@ public static class MqttClientServiceExtension
         services.AddSingleton<ITemperatureObservable, TemperatureObservable>();
         services.AddKeyedTransient<IMqttAction, TemperatureMqttAction>(SensorTypes.Temperature);
 
-        services.AddTransient<MqttActionProvider>(sp =>
-        {
-            return topic =>
+        services.AddTransient<MqttActionProvider>(sp => topic =>
             {
                 var options = sp.GetRequiredService<IOptions<MqttOptions>>();
                 var topicSegments = Segments.FromString(options.Value.MqttSetting.TopicSetting.SubscriptionTopic);
                 var segments = Segments.FromString(topic);
                 segments.Remove(topicSegments);
                 return sp.GetKeyedService<IMqttAction>(segments[0].Value);
-            };
-        });
+            });
     }
 }
