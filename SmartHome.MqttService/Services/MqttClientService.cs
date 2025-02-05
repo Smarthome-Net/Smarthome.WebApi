@@ -8,7 +8,7 @@ using SmartHome.Common.Exceptions;
 using MQTTnet.Extensions.Rpc;
 using Microsoft.Extensions.Options;
 using SmartHome.MqttService.Extensions;
-using SmartHome.MqttService.MqttActions;
+using SmartHome.MqttService.Providers;
 
 namespace SmartHome.MqttService.Services;
 

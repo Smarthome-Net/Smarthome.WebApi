@@ -1,6 +1,6 @@
 using MQTTnet;
 
-namespace SmartHome.MqttService;
+namespace SmartHome.MqttService.Providers;
 
 /// <summary>
 /// Factory delegate to get a mqtt factory instance

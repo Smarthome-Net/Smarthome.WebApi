@@ -48,14 +48,7 @@ public static class MqttClientServiceExtension
         services.AddSingleton<MqttFactoryProvider>(_ => () => new MqttFactory());
         services.AddSingleton<IMqttClientService, MqttClientService>();
         services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<IMqttClientService>());
-
-        services.AddSingleton(serviceProvider =>
-        {
-            var mqttClientService = serviceProvider.GetRequiredService<IMqttClientService>();
-            var mqttClientServiceProvider = new MqttClientServiceProvider(mqttClientService);
-            return mqttClientServiceProvider;
-        });
-
+        services.AddSingleton<MqttClientServiceProvider>(serviceProvider => () => serviceProvider.GetRequiredService<IMqttClientService>());
         services.AddTransient<IDeviceManager, DeviceManager>();
     }
 

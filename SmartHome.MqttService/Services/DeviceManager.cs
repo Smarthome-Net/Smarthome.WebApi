@@ -15,7 +15,7 @@ public class DeviceManager : IDeviceManager
 
     public DeviceManager(MqttClientServiceProvider mqttClientServiceProvider) 
     {
-        var mqttClientService = mqttClientServiceProvider.MqttClientService;
+        var mqttClientService = mqttClientServiceProvider();
         _mqttRpcClient = mqttClientService.CreateMqttRpcClient();
     }
 

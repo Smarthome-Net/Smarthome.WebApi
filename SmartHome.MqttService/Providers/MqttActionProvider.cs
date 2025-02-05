@@ -1,4 +1,6 @@
-﻿namespace SmartHome.MqttService.MqttActions;
+﻿using SmartHome.MqttService.MqttActions;
+
+namespace SmartHome.MqttService.Providers;
 
 /// <summary>
 /// Factory delegate to resolve an <see cref="IMqttAction"/> from DI Container
