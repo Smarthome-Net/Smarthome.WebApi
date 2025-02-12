@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SmartHome.Common.Extensions;
 using SmartHome.Common.Interfaces;
+using SmartHome.Common.Models.Dto.Requests;
+using SmartHome.Common.Models.Dto.Responses;
 
 namespace SmartHome.Webservice.Controllers;
 
@@ -10,19 +11,25 @@ namespace SmartHome.Webservice.Controllers;
 [Route("api/[controller]")]
 public class StatisticController : ControllerBase
 {
-    private readonly ITemperatureStatisticService statisticService;
-    private readonly ILogger<StatisticController> logger;
+    private readonly ITemperatureService _statisticService;
+    private readonly ILogger<StatisticController> _logger;
 
-    public StatisticController(ILogger<StatisticController> logger, ITemperatureStatisticService statisticService) 
+    public StatisticController(ILogger<StatisticController> logger, ITemperatureService statisticService) 
     {
-        this.logger = logger;
-        this.statisticService = statisticService;
+        _logger = logger;
+        _statisticService = statisticService;
     }
 
-    [HttpPost("device/{name}/{isRoom}")]
-    public async Task<IActionResult> CompareStatistic(string name, bool isRoom, List<string> compareList = null) 
+    [HttpPost]
+    public ActionResult<StatisticResponse> GetStatistic(StatisticRequest request)
     {
-        var result = await statisticService.GetStatistic(name, isRoom, compareList);
-        return Ok(result);
+        _logger.LogInformation("Get statistic for scope: {Value}", request.Scope.Value);
+        var temperatures = _statisticService.GetTemperature(request.Scope);
+        var response = new StatisticResponse
+        {
+            Scope = request.Scope,
+            Statistic = temperatures.ToStatisticChart(request.Scope)
+        };
+        return Ok(response);
     }
 }

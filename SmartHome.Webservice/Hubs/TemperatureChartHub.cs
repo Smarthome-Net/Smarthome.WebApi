@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.SignalR;
 using SmartHome.Webservice.Hubs.Interfaces;
 using Microsoft.Extensions.Logging;
 using SmartHome.Webservice.Helper;
+using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.Webservice.Hubs;
 
 public class TemperatureChartHub : Hub<ITemperatureChartHub>
 {
-    private const string TEMPERATURE_SUBSCRIPTION = "temperature_subscription";
+    private const string TemperatureSubscription = "temperature_subscription";
     private readonly ITemperatureHubQueue _temperatureHubQueue;
     private readonly ILogger<TemperatureChartHub> _logger;
 
@@ -23,41 +24,38 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
 
     public override Task OnDisconnectedAsync(Exception exception)
     {
-        _logger.LogInformation("Disconnection");
-        DisposeTemperatureSubscription();
+        _logger.LogInformation("Disconnection of client: {ConnectionId}", Context.ConnectionId);
+        TryDisposeSubscription();
         Context.Items.Clear();
         return base.OnDisconnectedAsync(exception);
     }
 
-    public void Temperature(string scopeFilter) 
+    public void Temperature(Scope scope)
     {
-        var clients = Clients;
         var context = Context;
-        _temperatureHubQueue.SetScope(scopeFilter);
-        var subscription = _temperatureHubQueue.TemperaturChartData
-           .Where(item => item.ScopeFilter.Equals(scopeFilter))
-           .Select(item => item.Chart)
-           .Subscribe(chartData =>
+        var clients = Clients;
+        _temperatureHubQueue.SetScope(scope);
+        var subscription = _temperatureHubQueue
+            .GetTemperaturChartData()
+            .Subscribe(chartData =>
             {
-                _logger.LogInformation("Charts: {Count}, to Client: {ConnectionId}", chartData.Count(), context.ConnectionId);
-                clients.Caller.UpdateTemperatuure(chartData);
+                _logger.LogInformation("Sending {Count} charts to client: {ConnectionId}", chartData.Count(), context.ConnectionId);
+                clients.Caller.UpdateTemperature(chartData);
             });
         
-        if(context.Items.ContainsKey(TEMPERATURE_SUBSCRIPTION))
-        {
-            DisposeTemperatureSubscription();
-        }
-
-        context.Items[TEMPERATURE_SUBSCRIPTION] = subscription;
+        TryDisposeSubscription(); //Try to clean up the old subscription
+        Context.Items[TemperatureSubscription] = subscription;
     }
 
-    private void DisposeTemperatureSubscription()
+    private void TryDisposeSubscription()
     {
-        if (Context.Items.TryGetValue(TEMPERATURE_SUBSCRIPTION, out var subscription))
+        if (!Context.Items.TryGetValue(TemperatureSubscription, out var subscription))
         {
-            _logger.LogInformation("Dispose");
-            var disposable = (IDisposable)subscription;
-            disposable.Dispose();
+            return;
         }
+
+        _logger.LogInformation("Dispose temperature subscription of client: {ConnectionId}", Context.ConnectionId);
+        var disposable = (IDisposable)subscription;
+        disposable?.Dispose();
     }
 }

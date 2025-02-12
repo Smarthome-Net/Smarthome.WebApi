@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,101 +7,85 @@ using SmartHome.Common.Interfaces;
 using System.Threading;
 using SmartHome.Common.Exceptions;
 using SmartHome.MqttService.JsonConvertes;
-using SmartHome.Common.Models.Db;
 using SmartHome.Common.Models.MqttMessages;
+using System.IO;
+using SmartHome.Common.Extensions.Mapping;
+using SmartHome.Common.Models.Db;
 
 namespace SmartHome.MqttService.ApplicationMessageProcessors;
 
-class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperature>
+public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.Models.Dto.TemperatureDto>
 {
-    private ILogger<TemperatureMessageProcessor> _logger;
-    private ITemperatureWriterService _temperatureWriteService;
-    private IDeviceService _deviceService;
+    private ILogger<TemperatureMessageProcessor>? _logger;
+    private ITemperatureService? _temperatureService;
+    private IDeviceService? _deviceService;
 
-    private bool isDisposed;
+    private bool _isDisposed;
 
     public TemperatureMessageProcessor(ILogger<TemperatureMessageProcessor> logger,
-        ITemperatureWriterService temperatureWriteService,
+        ITemperatureService temperatureWriteService,
         IDeviceService deviceService)
     {
         _logger = logger;
-        _temperatureWriteService = temperatureWriteService;
+        _temperatureService = temperatureWriteService;
         _deviceService = deviceService;
     }
-
-    public string SubscriptionTopic { get; set; }
 
     private static JsonSerializerOptions SerializerOptions => new()
     {
         Converters =
         {
             new DateTimeOffsetConverter()
-        }
+        },
+        PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<Temperature> ProcessMessage(MqttApplicationMessage applicationMessage, CancellationToken cancellationToken)
+    public async Task<Common.Models.Dto.TemperatureDto> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default)
     {
         try
         {
-            if (isDisposed)
-            {
-                throw new ObjectDisposedException(nameof(TemperatureMessageProcessor));
-            }
-
-            var payload = Encoding.UTF8.GetString(applicationMessage.Payload);
-            var message = JsonSerializer.Deserialize<MqttMessage>(payload, SerializerOptions);
-            var fullTopic = GetDeviceTopic(applicationMessage.Topic, "temperature");
-            var device = await _deviceService.GetOrCreateDeviceByTopic(fullTopic);
+            ObjectDisposedException.ThrowIf(_isDisposed, typeof(TemperatureMessageProcessor));
+            _logger!.LogInformation("Start processing new application message");
+            
+            using var byteStream = new MemoryStream([.. applicationMessage.PayloadSegment]);
+            var message = await JsonSerializer.DeserializeAsync<MqttMessage>(byteStream, SerializerOptions, cancellationToken);
+            var device = await _deviceService!.GetOrCreateDeviceByTopic(deviceContext, cancellationToken);
             var temperature = new Temperature
             {
-                RecordDateTime = message.Time,
+                RecordDateTime = message!.Time,
                 Value = message.Value,
                 DeviceId = device.Id,
-                Device = device
             };
 
-            return await _temperatureWriteService.WriteTemperature(temperature, cancellationToken);
+            await _temperatureService!.CreateTemperature(temperature, cancellationToken);
+            _logger!.LogInformation("Finished processing new application message");
+            return temperature.ToDto(device);
         }
         catch (Exception ex)
         {
+            _logger!.LogError("Processing application failed with: {Message}", ex.Message);
             throw new ApplicationMessageException(ex);
         }
     }
 
-    private string GetDeviceTopic(string topic, string sensorType)
+    protected virtual void Dispose(bool disposing, CancellationToken cancellationToken = default)
     {
-        var baseTopic = SubscriptionTopic.Replace("#", "");
-        var sensor = topic.Remove(0, baseTopic.Length);
-        var deviceTopic = sensor.Remove(0, sensorType.Length + 1);
-        return deviceTopic;
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!isDisposed)
+        if (!_isDisposed)
         {
-            if (disposing)
-            {
-                // TODO: Verwalteten Zustand (verwaltete Objekte) bereinigen
-            }
-            // TODO: Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
-            // TODO: Große Felder auf NULL setzen
             _logger = null;
-            _temperatureWriteService = null;
+            _temperatureService = null;
             _deviceService = null;
-            isDisposed = true;
+            _isDisposed = true;
         }
     }
 
     // ~TemperatureMessageProcessor()
     // {
-    //     // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
     //     Dispose(disposing: false);
     // }
 
     public void Dispose()
     {
-        // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }

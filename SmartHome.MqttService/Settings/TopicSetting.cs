@@ -2,5 +2,6 @@
 
 public class TopicSetting
 {
-    public string SubscriptionTopic { get; set; }
+    public required string SubscriptionTopic { get; set; }
+    public required string SubscriptionRpcTopic { get; set; }
 }

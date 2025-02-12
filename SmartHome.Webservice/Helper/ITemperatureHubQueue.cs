@@ -1,12 +1,14 @@
-﻿using SmartHome.Common.Models.DTO;
+﻿using SmartHome.Common.Models.Dto;
+using SmartHome.Common.Models.Dto.Charts;
 using System;
+using System.Collections.Generic;
 
 namespace SmartHome.Webservice.Helper;
 
 public interface ITemperatureHubQueue
 {
-    public void SetScope(string scopeValue);
+    public void SetScope(Scope scope);
 
-    public IObservable<FilterableChart> TemperaturChartData { get; }
+    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData();
 
 }

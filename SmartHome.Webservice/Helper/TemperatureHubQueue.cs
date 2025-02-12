@@ -1,71 +1,40 @@
-﻿using SmartHome.Common.Models.Db;
-using SmartHome.Common.Models.DTO;
-using SmartHome.Common.QueryHelper;
-using SmartHome.MqttService.Providers;
-using SmartHome.MqttService.Services;
+﻿using SmartHome.Common.Extensions;
+using SmartHome.Common.Models.Dto;
+using SmartHome.Common.Models.Dto.Charts;
+using SmartHome.MqttService.Observables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace SmartHome.Webservice.Helper;
 
 
-public class TemperatureHubQueue : TemperatureQueryBase, ITemperatureHubQueue
+public class TemperatureHubQueue : ITemperatureHubQueue
 {
-    private readonly IMqttClientService _mqttClientService;
-    private readonly Subject<FilterableChart> _subject;
+    private readonly ITemperatureObservable _temperatureObservable;
 
-    private string _scopeValue;
     private Scope _scope;
 
-    public TemperatureHubQueue(MqttClientServiceProvider mqttClientServiceProvider)
+    public TemperatureHubQueue(ITemperatureObservable temperatureObservable)
     {
-        _mqttClientService = mqttClientServiceProvider.MqttClientService;
-        _subject = new Subject<FilterableChart>();
-        _mqttClientService.Temperature
-            .Subscribe(data => 
-            {
-                Process(new List<Temperature> { data });
-            });
+        _temperatureObservable = temperatureObservable;
     }
 
-
-    private void Process(IList<Temperature> rawData)
+    public IObservable<IEnumerable<Chart<DateTimeOffset, float>>> GetTemperaturChartData()
     {
-        var data = CreateTemperatureChart(rawData);
-        var chartData = new FilterableChart(_scopeValue, data);
-        _subject.OnNext(chartData);
+        var keySelector = _scope.ToTemperatureKeySelector();
+        var predicate = _scope.ToDeviceDtoPredicate();
+
+        return _temperatureObservable.Temperature
+                    .Buffer(TimeSpan.FromSeconds(2))
+                    .Where(x => x.Count > 0)
+                    .Select(d => d.Where(t => predicate(t.Device))
+                                .ToTimeSeriesChart(keySelector));
     }
 
-
-    public IObservable<FilterableChart> TemperaturChartData { get => _subject.AsObservable(); }
-
-    public IEnumerable<Chart> CreateTemperatureChart(IList<Temperature> data)
+    public void SetScope(Scope scope)
     {
-        var keySelector = CreateKeySelector(_scope);
-
-        return GroupData(keySelector, data);
-    }
-
-    private static Scope GetScope(string scopeValue)
-    {
-        if (scopeValue.Equals(string.Empty))
-        {
-            return Scope.All;
-        }
-
-        if(scopeValue.Contains('/'))
-        {
-            return Scope.Room;
-        }
-        return Scope.Device;
-    }
-
-    public void SetScope(string scopeValue)
-    {
-        _scopeValue = scopeValue;
-        _scope = GetScope(scopeValue);
+        _scope = scope;
     }
 }

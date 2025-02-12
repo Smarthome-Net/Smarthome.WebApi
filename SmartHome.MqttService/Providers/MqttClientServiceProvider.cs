@@ -2,12 +2,9 @@
 
 namespace SmartHome.MqttService.Providers;
 
-public class MqttClientServiceProvider
-{
-    public IMqttClientService MqttClientService { get; }
+/// <summary>
+/// Factory delegate get an <see cref="IMqttClientService"/>
+/// </summary>
+/// <returns></returns>
+public delegate IMqttClientService MqttClientServiceProvider();
 
-    public MqttClientServiceProvider(IMqttClientService mqttClientService)
-    {
-        MqttClientService = mqttClientService;
-    }
-}

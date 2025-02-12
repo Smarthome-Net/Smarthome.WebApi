@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Hosting;
-using SmartHome.Common.Models.Db;
+using MQTTnet.Extensions.Rpc;
 using System;
 
 namespace SmartHome.MqttService.Services;
 
 public interface IMqttClientService : IDisposable, IHostedService
 {
-    IObservable<Temperature> Temperature { get; }
+    IMqttRpcClient CreateMqttRpcClient();
 }

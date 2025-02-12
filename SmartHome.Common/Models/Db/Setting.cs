@@ -1,0 +1,12 @@
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+
+namespace SmartHome.Common.Models.Db;
+
+[BsonDiscriminator(RootClass = true)]
+[BsonKnownTypes(typeof(CommonSetting))]
+public class Setting
+{
+    public ObjectId Id { get; set; }
+    public string? Description { get; set; }
+}

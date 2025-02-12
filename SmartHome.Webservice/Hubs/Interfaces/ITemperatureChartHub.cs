@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using SmartHome.Common.Models.DTO;
+using JetBrains.Annotations;
+using SmartHome.Common.Models.Dto.Charts;
 
 namespace SmartHome.Webservice.Hubs.Interfaces;
 
 public interface ITemperatureChartHub
 {
-    Task UpdateTemperatuure(IEnumerable<Chart> chartData);
-
-    Task SendMessage(string message);
+    Task UpdateTemperature([NoEnumeration] IEnumerable<Chart<DateTimeOffset, float>> chartData);
 }

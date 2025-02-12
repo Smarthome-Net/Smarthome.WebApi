@@ -2,7 +2,7 @@
 
 public class ClientSetting
 {
-    public string Id { set; get; }
-    public string UserName { set; get; }
-    public string Password { set; get; }
+    public required string Id { set; get; }
+    public required string UserName { set; get; }
+    public required string Password { set; get; }
 }
