@@ -6,12 +6,13 @@ using SmartHome.MongoService.Services;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Microsoft.Extensions.Logging;
+using SmartHome.MongoService.BsonCustomSerializers;
 
 namespace SmartHome.MongoService.Extension;
 
 public static class MongoDbServiceExtension
 {
-    public static IServiceCollection AddMongoDbService(this IServiceCollection services, Action<MongoDbOptions> options) 
+    public static MongoSerializerConfigurator AddMongoDbService(this IServiceCollection services, Action<MongoDbOptions> options) 
     {
         services
             .AddOptions<MongoDbOptions>()
@@ -19,15 +20,15 @@ public static class MongoDbServiceExtension
         services.AddTransient(provider =>
         {
             var option = provider.GetRequiredService<IOptions<MongoDbOptions>>();
-            var logger = provider.GetRequiredService<ILogger<MongDBManagementContext>>();
+            var logger = provider.GetRequiredService<ILogger<MongDbManagementContext>>();
             var setting = option.Value.DbConnectionSetting;
             var mongoClient = new MongoClient(setting.GetMongoConnectionString());
-            return new MongDBManagementContext(mongoClient, setting.Database, logger);
+            return new MongDbManagementContext(mongoClient, setting.Database, logger);
         });
 
         services.AddTransient(provider =>
         {
-            var managementContext = provider.GetRequiredService<MongDBManagementContext>();
+            var managementContext = provider.GetRequiredService<MongDbManagementContext>();
             var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
             return new MongoDbContext(managementContext, logger);
         });
@@ -36,6 +37,6 @@ public static class MongoDbServiceExtension
         services.AddTransient<IDeviceService, DeviceService>();
         services.AddTransient<ISettingService, SettingService>();
 
-        return services;
+        return new MongoSerializerConfigurator(services);
     }
 }

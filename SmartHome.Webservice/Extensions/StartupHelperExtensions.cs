@@ -9,6 +9,7 @@ using SmartHome.MqttService.Extensions;
 using SmartHome.MqttService.Settings;
 using SmartHome.MongoService.Extension;
 using System.Text.Json.Serialization;
+using SmartHome.MongoService.BsonCustomSerializers;
 using SmartHome.Webservice.Helper;
 using SmartHome.MongoService.Settings;
 
@@ -24,6 +25,9 @@ public static class StartupHelperExtensions
         {
             var connectionSetting = configuration.GetSection("DbConnectionSetting").Get<DbConnectionSetting>();
             o.DbConnectionSetting = connectionSetting;
+        }).ConfigureSerializer(s =>
+        {
+            s.AddBsonSerializationProvider(new SmartHomeSerializerProvider());
         });
 
         services.AddMqttClientHostedService(o =>

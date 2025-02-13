@@ -7,10 +7,10 @@ namespace SmartHome.MongoService.DbContext;
 
 public class MongoDbContext : IDisposable
 {
-    private readonly MongDBManagementContext _managementContext;
+    private readonly MongDbManagementContext _managementContext;
     private readonly ILogger<MongoDbContext> _logger;
 
-    public MongoDbContext(MongDBManagementContext managementContext, ILogger<MongoDbContext> logger)
+    public MongoDbContext(MongDbManagementContext managementContext, ILogger<MongoDbContext> logger)
     {
         _managementContext = managementContext;
         _logger = logger;
