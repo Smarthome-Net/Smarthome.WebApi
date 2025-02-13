@@ -16,14 +16,20 @@ public static class MongoDbServiceExtension
         services
             .AddOptions<MongoDbOptions>()
             .Configure(options);
-
         services.AddTransient(provider =>
         {
             var option = provider.GetRequiredService<IOptions<MongoDbOptions>>();
-            var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
+            var logger = provider.GetRequiredService<ILogger<MongDBManagementContext>>();
             var setting = option.Value.DbConnectionSetting;
             var mongoClient = new MongoClient(setting.GetMongoConnectionString());
-            return new MongoDbContext(mongoClient, setting.Database, logger);
+            return new MongDBManagementContext(mongoClient, setting.Database, logger);
+        });
+
+        services.AddTransient(provider =>
+        {
+            var managementContext = provider.GetRequiredService<MongDBManagementContext>();
+            var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
+            return new MongoDbContext(managementContext, logger);
         });
 
         services.AddTransient<ITemperatureService, TemperatureService>();
