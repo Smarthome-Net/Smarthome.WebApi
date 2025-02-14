@@ -13,12 +13,12 @@ namespace SmartHome.Cli.Tools.Commands;
 public class InitializeDatabaseCommand : AsyncCommand
 {
     private readonly MongDbManagementContext _managementContext;
-    private readonly IRessourceManager _ressourceManager;
+    private readonly IResourceManager _resourceManager;
 
-    public InitializeDatabaseCommand(MongDbManagementContext managementContext, IRessourceManager ressourceManager)
+    public InitializeDatabaseCommand(MongDbManagementContext managementContext, IResourceManager resourceManager)
     {
         _managementContext = managementContext;
-        _ressourceManager = ressourceManager;
+        _resourceManager = resourceManager;
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context)
@@ -48,7 +48,7 @@ public class InitializeDatabaseCommand : AsyncCommand
         }
 
         AnsiConsole.WriteLine("Load default setting into database.");
-        var defaultSettings = await _ressourceManager.GetJsonRessource<Dictionary<string, JsonElement>[]>("smarthome.setting.json") ?? [];
+        var defaultSettings = await _resourceManager.GetJsonResource<Dictionary<string, JsonElement>[]>("smarthome.setting.json") ?? [];
         var bsonDocuments = defaultSettings.AsBsonDocuments();
         await settingCollection.InsertManyAsync(bsonDocuments);
 

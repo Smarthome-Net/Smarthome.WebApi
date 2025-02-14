@@ -19,7 +19,7 @@ services.AddMongoDbService(o =>
     o.DbConnectionSetting = connectionSetting;
 });
 services.AddLogging();
-services.AddScoped<IRessourceManager, RessourceManager>();
+services.AddScoped<IResourceManager, ResourceManager>();
 
 
 var registrar = new TypeRegistrar(services);
