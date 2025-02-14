@@ -1,0 +1,24 @@
+[{
+  "_id": {
+    "$oid": "671e0d70a3a9f077733bbf29"
+  },
+  "_t": [
+    "Setting",
+    "CommonSetting"
+  ],
+  "Description": "Allgemeine Einstellungen",
+  "ColorScheme": {
+    "Primary": {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+    },
+    "Secondary": {
+      "Red": 0,
+      "Green": 0,
+      "Blue": 0
+    }
+  },
+  "Title": "Smarthomedashboard",
+  "PageLength": 100
+}]

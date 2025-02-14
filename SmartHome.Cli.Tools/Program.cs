@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SmartHome.Cli.Tools.Commands;
 using SmartHome.Cli.Tools.Infrastructure;
+using SmartHome.Cli.Tools.Services;
 using SmartHome.MongoService.Extension;
 using SmartHome.MongoService.Settings;
 using Spectre.Console.Cli;
@@ -18,6 +19,7 @@ services.AddMongoDbService(o =>
     o.DbConnectionSetting = connectionSetting;
 });
 services.AddLogging();
+services.AddScoped<IRessourceManager, RessourceManager>();
 
 
 var registrar = new TypeRegistrar(services);
@@ -27,7 +29,8 @@ app.Configure(conf =>
     conf.AddBranch("migrate", a =>
     {
         a.AddCommand<MigrateTempartureValuesCommand>("temperature");
-    });  
+    });
+    conf.AddCommand<InitializeDatabaseCommand>("initDb");  
     conf.PropagateExceptions();
 });
 

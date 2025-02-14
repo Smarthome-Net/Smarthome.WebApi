@@ -22,4 +22,12 @@
     <ProjectReference Include="..\SmartHome.MongoService\SmartHome.MongoService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Ressources\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
