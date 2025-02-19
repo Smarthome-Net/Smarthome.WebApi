@@ -7,7 +7,7 @@ public class SmartHomeSerializerProvider : IBsonSerializationProvider
 {
     public IBsonSerializer? GetSerializer(Type type)
     {
-        return type == typeof(DateTime) 
+        return type == typeof(DateTimeOffset) 
             ? new DatetimeOffsetSerializer() 
             : null;
     }

@@ -23,7 +23,7 @@ public class TemperatureService : ITemperatureService
 
     public async Task CreateTemperature(Temperature temperature, CancellationToken cancellationToken = default)
     {
-        await _dbContext.TemperatureCollection!.InsertOneAsync(temperature, cancellationToken: cancellationToken);
+        await _dbContext.TemperatureCollection.InsertOneAsync(temperature, cancellationToken: cancellationToken);
     }
 
     public IEnumerable<TemperatureDto> GetTemperature(Scope? scope)
