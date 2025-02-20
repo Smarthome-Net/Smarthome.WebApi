@@ -25,10 +25,7 @@ public static class StartupHelperExtensions
         {
             var connectionSetting = configuration.GetSection("DbConnectionSetting").Get<DbConnectionSetting>();
             o.DbConnectionSetting = connectionSetting;
-        }).ConfigureSerializer(s =>
-        {
-            s.AddBsonSerializationProvider(new SmartHomeSerializerProvider());
-        });
+        }).ConfigureSerializer(s => { s.AddBsonSerializationProvider(new SmartHomeSerializerProvider()); });
 
         services.AddMqttClientHostedService(o =>
         {
