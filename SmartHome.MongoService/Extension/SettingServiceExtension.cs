@@ -13,7 +13,7 @@ public static class SettingServiceExtension
             .Set(f => f.Description, commonSetting.Description)
             .Set(f => f.Title, commonSetting.Title)
             .Set(f => f.PageLength, commonSetting.PageLength)
-            .Set(f => f.ColorScheme, commonSetting.ColorScheme);
+            .Set(f => f.Theme, commonSetting.Theme);
         return settingService.UpdateSetting(commonSetting, updateDefinition);
     }
 }

@@ -9,7 +9,7 @@ public static class CommonSettingsMapping
     {
         var commonSetting = setting.ToDto<CommonSetting, CommonSettingDto>();
         commonSetting.Title = setting.Title;
-        commonSetting.ColorScheme = setting.ColorScheme;
+        commonSetting.Theme = setting.Theme;
         commonSetting.PageLength = setting.PageLength;
         return commonSetting;
     }
@@ -23,7 +23,7 @@ public static class CommonSettingsMapping
         }
 
         commonSetting.Title = setting.Title;
-        commonSetting.ColorScheme = setting.ColorScheme;
+        commonSetting.Theme = setting.Theme;
         commonSetting.PageLength = setting.PageLength;
         return commonSetting;
     }
