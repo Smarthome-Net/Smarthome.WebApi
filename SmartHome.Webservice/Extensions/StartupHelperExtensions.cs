@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using SmartHome.MongoService.BsonCustomSerializers;
 using SmartHome.Webservice.Helper;
 using SmartHome.MongoService.Settings;
+using Microsoft.AspNetCore.Http.Json;
 
 namespace SmartHome.Webservice.Extensions;
 
@@ -33,14 +34,13 @@ public static class StartupHelperExtensions
             o.MqttSetting = mqttSetting;
         });
 
-        services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            });
+        services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        });
         services.AddSignalR();
 
-
+        services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Smarthome Dashboard API", Version = "V1" });
@@ -76,7 +76,7 @@ public static class StartupHelperExtensions
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
-        app.MapControllers();
+        app.MapApiEndpoints();
         app.MapHub<TemperatureChartHub>("/hub/temperature");
         return app;
     }
