@@ -10,9 +10,9 @@ namespace SmartHome.Cli.Tools.Commands;
 
 public class MigrateTempartureValuesCommand : AsyncCommand
 {
-    private readonly MongDbManagementContext _context;
+    private readonly IMongoDbManagementContext _context;
 
-    public MigrateTempartureValuesCommand(MongDbManagementContext context)
+    public MigrateTempartureValuesCommand(IMongoDbManagementContext context)
     {
         _context = context;
     }

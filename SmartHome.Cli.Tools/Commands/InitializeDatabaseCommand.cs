@@ -12,10 +12,10 @@ namespace SmartHome.Cli.Tools.Commands;
 
 public class InitializeDatabaseCommand : AsyncCommand
 {
-    private readonly MongDbManagementContext _managementContext;
+    private readonly IMongoDbManagementContext _managementContext;
     private readonly IResourceManager _resourceManager;
 
-    public InitializeDatabaseCommand(MongDbManagementContext managementContext, IResourceManager resourceManager)
+    public InitializeDatabaseCommand(IMongoDbManagementContext managementContext, IResourceManager resourceManager)
     {
         _managementContext = managementContext;
         _resourceManager = resourceManager;

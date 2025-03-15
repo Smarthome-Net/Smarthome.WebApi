@@ -7,10 +7,10 @@ namespace SmartHome.MongoService.DbContext;
 
 public class MongoDbContext : IDisposable
 {
-    private readonly MongDbManagementContext _managementContext;
+    private readonly IMongoDbManagementContext _managementContext;
     private readonly ILogger<MongoDbContext> _logger;
 
-    public MongoDbContext(MongDbManagementContext managementContext, ILogger<MongoDbContext> logger)
+    public MongoDbContext(IMongoDbManagementContext managementContext, ILogger<MongoDbContext> logger)
     {
         _managementContext = managementContext;
         _logger = logger;
@@ -23,7 +23,7 @@ public class MongoDbContext : IDisposable
 
     public IMongoCollection<Setting> SettingCollection => _managementContext.Database.GetCollection<Setting>(Collection.Setting);
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing)
         {

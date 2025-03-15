@@ -4,17 +4,17 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartHome.MongoService.DbContext;
 
-public class MongDbManagementContext : IDisposable
+public class MongoDbManagementContext : IMongoDbManagementContext
 {
     public IMongoClient MongoClient { get; }
 
     public IMongoDatabase Database { get; }
 
-    private readonly ILogger<MongDbManagementContext> _logger;
+    private readonly ILogger<MongoDbManagementContext> _logger;
 
-    public MongDbManagementContext(IMongoClient mongoClient,
+    public MongoDbManagementContext(IMongoClient mongoClient,
                             string database,
-                            ILogger<MongDbManagementContext> logger)
+                            ILogger<MongoDbManagementContext> logger)
     {
         MongoClient = mongoClient;
         Database = MongoClient.GetDatabase(database);
@@ -22,7 +22,7 @@ public class MongDbManagementContext : IDisposable
         _logger.LogInformation("Database context created");
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing)
         {
@@ -37,7 +37,7 @@ public class MongDbManagementContext : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    ~MongDbManagementContext()
+    ~MongoDbManagementContext()
     {
         Dispose(false);
     }
