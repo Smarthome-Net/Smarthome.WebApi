@@ -11,10 +11,11 @@ using SmartHome.Common.Models.MqttMessages;
 using System.IO;
 using SmartHome.Common.Extensions.Mapping;
 using SmartHome.Common.Models.Db;
+using SmartHome.Common.Models.Dto;
 
 namespace SmartHome.MqttService.ApplicationMessageProcessors;
 
-public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.Models.Dto.TemperatureDto>
+public class TemperatureMessageProcessor : IApplicationMessageProcessor<TemperatureDto>
 {
     private ILogger<TemperatureMessageProcessor>? _logger;
     private ITemperatureService? _temperatureService;
@@ -40,7 +41,7 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Common.M
         PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<Common.Models.Dto.TemperatureDto> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default)
+    public async Task<TemperatureDto> ProcessMessage(MqttApplicationMessage applicationMessage, string deviceContext, CancellationToken cancellationToken = default)
     {
         try
         {

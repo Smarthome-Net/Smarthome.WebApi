@@ -7,18 +7,7 @@
     "CommonSetting"
   ],
   "Description": "Allgemeine Einstellungen",
-  "ColorScheme": {
-    "Primary": {
-      "Red": 0,
-      "Green": 0,
-      "Blue": 0
-    },
-    "Secondary": {
-      "Red": 0,
-      "Green": 0,
-      "Blue": 0
-    }
-  },
-  "Title": "Smarthomedashboard",
-  "PageLength": 100
+  "Title": "Smarthome Dashboard",
+  "PageLength": 10,
+  "Theme": "lime-pink"
 }]

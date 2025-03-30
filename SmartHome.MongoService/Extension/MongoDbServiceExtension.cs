@@ -17,7 +17,7 @@ public static class MongoDbServiceExtension
         services
             .AddOptions<MongoDbOptions>()
             .Configure(options);
-        services.AddTransient<IMongoDbManagementContext>(provider =>
+        services.AddSingleton<IMongoDbManagementContext>(provider =>
         {
             var option = provider.GetRequiredService<IOptions<MongoDbOptions>>();
             var logger = provider.GetRequiredService<ILogger<MongoDbManagementContext>>();
@@ -26,9 +26,9 @@ public static class MongoDbServiceExtension
             return new MongoDbManagementContext(mongoClient, setting.Database, logger);
         });
 
-        services.AddTransient(provider =>
+        services.AddSingleton(provider =>
         {
-            var managementContext = provider.GetRequiredService<MongoDbManagementContext>();
+            var managementContext = provider.GetRequiredService<IMongoDbManagementContext>();
             var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
             return new MongoDbContext(managementContext, logger);
         });
