@@ -26,7 +26,7 @@ public class Charts
 
     public static StatisticResponse GetStatistic(StatisticRequest request, ILogger<Charts> logger, ITemperatureService statisticService)
     {
-        logger.LogInformation("Get statistic for scope: {Value}", request.Scope.Value);
+        logger.LogInformation("Get statistic for scope: {Value}", request.Scope!.Value);
         var temperatures = statisticService.GetTemperature(request.Scope);
         return new StatisticResponse
         {

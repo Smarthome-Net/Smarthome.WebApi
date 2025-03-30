@@ -27,15 +27,15 @@ public class SettingService : ISettingService
 
     public async Task<IEnumerable<Setting>> GetAllSetting()
     {
-        var result = await _mongoDbContext.SettingCollection.FindAsync(a => true);
-        return await result.ToListAsync();
+        var cursor = await _mongoDbContext.SettingCollection.FindAsync(a => true);
+        return await cursor.ToListAsync();
     }
 
     public async Task<TSetting> GetSetting<TSetting>() where TSetting : Setting, new()
     { 
-        return await _mongoDbContext.SettingCollection
-            .Aggregate()
+       var cursor = await _mongoDbContext.SettingCollection
             .OfType<TSetting>()
-            .FirstOrDefaultAsync();
+            .FindAsync(a => true);
+       return await cursor.FirstOrDefaultAsync();
     }
 }
