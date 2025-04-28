@@ -64,7 +64,7 @@ public class TemperatureMessageProcessor : IApplicationMessageProcessor<Temperat
         }
         catch (Exception ex)
         {
-            _logger!.LogError("Processing application failed with: {Message}", ex.Message);
+            _logger!.LogError("Processing application message failed with: {Message}", ex.Message);
             throw new ApplicationMessageException(ex);
         }
     }

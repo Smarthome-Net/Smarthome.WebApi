@@ -29,11 +29,13 @@ public class Devices
             return TypedResults.Problem();
         }
     }
-    
+
     /// <summary>
     /// Get a list of all devices in one room
     /// </summary>
     /// <param name="room">Name of the room</param>
+    /// <param name="logger"></param>
+    /// <param name="deviceService"></param>
     /// <returns></returns>
     public static async Task<Results<Ok<IEnumerable<DeviceDto>>, ProblemHttpResult>> GetListOfDevices(string room, ILogger<Devices> logger, IDeviceService deviceService)
     {
@@ -50,16 +52,19 @@ public class Devices
     }
 
     /// <summary>
-    /// Get the status of the spezified device id
+    /// Get the status of the specified device id
     /// </summary>
     /// <param name="deviceId">Id of the device</param>
+    /// <param name="logger"></param>
+    /// <param name="deviceService"></param>
+    /// <param name="deviceManager"></param>
     /// <returns></returns>
     public static async Task<Results<Ok<DeviceStatus>, ProblemHttpResult>> GetDeviceStatus(string deviceId, ILogger<Devices> logger, IDeviceService deviceService, IDeviceManager deviceManager)
     {
         try
         {
             var device = await deviceService.GetDeviceById(deviceId);
-            var status = await deviceManager.GetStatus(device.Topic!);
+            var status = await deviceManager.GetStatus(device?.Topic!);
             return TypedResults.Ok(status);
         }
         catch (Exception ex)
@@ -70,17 +75,20 @@ public class Devices
     }
 
     /// <summary>
-    /// Get the config of the spezified device id
+    /// Get the config of the specified device id
     /// </summary>
     /// <param name="deviceId">Id of the device</param>
+    /// <param name="logger"></param>
+    /// <param name="deviceService"></param>
+    /// <param name="deviceManager"></param>
     /// <returns></returns>
     public static async Task<Results<ProblemHttpResult, Ok<DeviceDto>>> GetDeviceConfig(string deviceId, ILogger<Devices> logger, IDeviceService deviceService, IDeviceManager deviceManager)
     {
         try
         {
             var result = await deviceService.GetDeviceById(deviceId);
-            var device = result.ToDto();
-            device.Configuration = await deviceManager.GetConfiguration(device.Topic!);
+            var device = result?.ToDto();
+            device!.Configuration = await deviceManager.GetConfiguration(device?.Topic!);
             return  TypedResults.Ok(device);
         }
         catch (Exception ex)
@@ -91,10 +99,13 @@ public class Devices
     }
 
     /// <summary>
-    /// Updates the config of the spezified device id
+    /// Updates the config of the specified device id
     /// </summary>
     /// <param name="deviceId">Id of the device</param>
     /// <param name="device"></param>
+    /// <param name="logger"></param>
+    /// <param name="deviceService"></param>
+    /// <param name="deviceManager"></param>
     /// <returns></returns>
     public static async Task<Results<BadRequest<string>, ProblemHttpResult, Ok<DeviceDto>>> UpdateDeviceConfig(string deviceId, DeviceDto device, ILogger<Devices> logger, IDeviceService deviceService, IDeviceManager deviceManager)
     {

@@ -9,6 +9,11 @@ namespace SmartHome.MqttService.Extensions;
 
 internal static class MqttRpcClientExtensions
 {
+    private static JsonSerializerOptions SerializerOptions => new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+    
     /// <summary>
     /// Execute the action with the given data and returns the response
     /// </summary>
@@ -44,9 +49,9 @@ internal static class MqttRpcClientExtensions
     {
         var rawResponse = await mqttRpcClient.ExecuteAsync(timeout, methodName, data, qos);
         var response = Encoding.UTF8.GetString(rawResponse);
-
+        
         return response is null
             ? throw new NullReferenceException("Device doesn't respond with any data")
-            : JsonSerializer.Deserialize<T>(response);
+            : JsonSerializer.Deserialize<T>(response, SerializerOptions);
     }
 }
