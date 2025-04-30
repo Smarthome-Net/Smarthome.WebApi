@@ -88,7 +88,8 @@ public class Devices
         {
             var result = await deviceService.GetDeviceById(deviceId);
             var device = result?.ToDto();
-            device!.Configuration = await deviceManager.GetConfiguration(device?.Topic!);
+            var configuration = await deviceManager.GetConfiguration(device?.Topic!);
+            device!.Configuration = configuration?.ToDto();
             return  TypedResults.Ok(device);
         }
         catch (Exception ex)
@@ -126,7 +127,10 @@ public class Devices
             {
                 return TypedResults.Problem();
             }
-            device.Configuration = await deviceManager.PopulateConfiguration(device.Topic!, device.Configuration);
+
+            var mqttMessage = device.Configuration.ToMessage(device);
+            var configuration = await deviceManager.PopulateConfiguration(device.Topic!, mqttMessage);
+            device.Configuration = configuration?.ToDto();
             return TypedResults.Ok(device);
         }
         catch (Exception ex)

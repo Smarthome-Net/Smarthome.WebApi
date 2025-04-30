@@ -1,9 +1,7 @@
-﻿namespace SmartHome.Common.Models.MqttMessages;
+namespace SmartHome.Common.Models.Dto;
 
-public class DeviceConfiguration
+public class DeviceConfigurationDto
 {
-    public string? DeviceName { get; set; }
-    public string? Room { get; set; }
     public int MeasureInterval { get; set; }
     public string? MqttHost { get; set; }
     public int MqttPort { get; set; }

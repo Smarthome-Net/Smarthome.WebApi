@@ -8,5 +8,5 @@ public class DeviceDto
     public string? Name { get; set; }
     public string? Room { get; set; }
     public string? Topic { get; set; }
-    public DeviceConfiguration? Configuration { get; set; }
+    public DeviceConfigurationDto? Configuration { get; set; }
 }

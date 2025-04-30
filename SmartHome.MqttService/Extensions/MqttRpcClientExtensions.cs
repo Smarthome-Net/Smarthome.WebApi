@@ -11,7 +11,7 @@ internal static class MqttRpcClientExtensions
 {
     private static JsonSerializerOptions SerializerOptions => new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
     };
     
     /// <summary>
