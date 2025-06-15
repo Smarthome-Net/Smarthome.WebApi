@@ -3,5 +3,5 @@
 public class TemperatureRequest
 {
     public Scope? Scope { get; set; }
-    public PageSettingDto? PageSetting { get; set; }
+    public Pagination? Pagination { get; set; }
 }

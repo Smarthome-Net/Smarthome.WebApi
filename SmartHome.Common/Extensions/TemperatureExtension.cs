@@ -8,12 +8,12 @@ namespace SmartHome.Common.Extensions;
 
 public static class TemperatureExtension
 {
-    private static IEnumerable<SeriesItem<DateTimeOffset, float>> ApplyPaging(this IEnumerable<SeriesItem<DateTimeOffset, float>> data, PageSettingDto setting)
+    private static IEnumerable<SeriesItem<DateTimeOffset, float>> ApplyPaging(this IEnumerable<SeriesItem<DateTimeOffset, float>> data, Pagination pagination)
     {
-        var itemsToSkip = setting.PageIndex * setting.PageSize;
-        var itemsToTake = setting.PageSize;
+        var itemsToSkip = pagination.PageIndex * pagination.PageSize;
+        var itemsToTake = pagination.PageSize;
         var seriesItems = data.ToArray();
-        setting.Length = seriesItems.Length;
+        pagination.Length = seriesItems.Length;
 
         return seriesItems
             .Skip(itemsToSkip)
@@ -21,12 +21,12 @@ public static class TemperatureExtension
             .OrderByDescending(item => item.Name);
     }
 
-    public static IEnumerable<Chart<DateTimeOffset, float>> ApplyPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, PageSettingDto setting)
+    public static IEnumerable<Chart<DateTimeOffset, float>> ApplyPaging(this IEnumerable<Chart<DateTimeOffset, float>> data, Pagination pagination)
     {
         foreach (var item in data)
         {
             item.Series = item.Series
-                .ApplyPaging(setting)
+                .ApplyPaging(pagination)
                 .ToSeries();
             yield return item;
         }

@@ -1,6 +1,6 @@
 ﻿namespace SmartHome.Common.Models.Dto;
 
-public class PageSettingDto : SettingDto
+public class Pagination
 {
     public int Length { get; set; }
     public int PageIndex { get; set; }

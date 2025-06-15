@@ -18,8 +18,8 @@ public class Charts
             Scope = temperatureRequest.Scope,
             Temperatures = temperature
                 .ToTimeSeriesChart(keySelector!)
-                .ApplyPaging(temperatureRequest.PageSetting!),
-            PageSetting = temperatureRequest.PageSetting
+                .ApplyPaging(temperatureRequest.Pagination!),
+            Pagination = temperatureRequest.Pagination
         };
         return temperatureResponse;
     }
