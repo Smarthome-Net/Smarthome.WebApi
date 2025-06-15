@@ -13,7 +13,7 @@ public class SeriesItem<TName, TValue> : SeriesItem
 
 
 /// <summary>
-/// Non generic base class for the generic variant
+/// Non-generic base class for the generic variant
 /// </summary>
 public class SeriesItem
 {

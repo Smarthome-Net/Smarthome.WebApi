@@ -56,7 +56,7 @@ public static class TemperatureExtension
             Series = {
                 { "min", min },
                 { "average", avg },
-                { "max", max}
+                { "max", max }
             }
         };
     }

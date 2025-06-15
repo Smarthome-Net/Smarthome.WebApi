@@ -30,14 +30,11 @@ public class Series<TName, TValue> : IEnumerable<SeriesItem<TName, TValue>>
     /// <param name="value"></param>
     public void Add(TName name, TValue value) 
     {
-        Add(new SeriesItem<TName, TValue>{
-            Name = name, 
-            Value = value
-        });
+        Add(SeriesItem.Create(name, value));
     }
     
     /// <summary>
-    /// Adds a new items into the series
+    /// Adds new items into the series
     /// </summary>
     /// <param name="item"></param>
     public void Add(SeriesItem<TName, TValue> item) 
