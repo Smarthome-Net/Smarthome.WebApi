@@ -28,9 +28,7 @@ public class Segments : IEnumerable<Segment>
     /// <returns></returns>
     public static Segments FromString(string value) 
     {
-        var segments = value
-            .Split(SegmentSeparator)
-            .Select(s => new Segment(s));
+        var segments = value.Split(SegmentSeparator);
         return [..segments];
     }
 
