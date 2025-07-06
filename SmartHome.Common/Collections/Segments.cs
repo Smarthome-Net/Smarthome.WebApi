@@ -53,7 +53,7 @@ public class Segments : IEnumerable<Segment>
     /// <summary>
     /// Remove segments from the collection
     /// </summary>
-    /// <param name="value">The value, can also contain the segment separator to remove multiple segments</param>
+    /// <param name="segments">The value, can also contain the segment separator to remove multiple segments</param>
     public void Remove(Segments segments) 
     {
         foreach (var segment in segments)
