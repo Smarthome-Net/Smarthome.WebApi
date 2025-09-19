@@ -87,10 +87,8 @@ public class Devices
         try
         {
             var result = await deviceService.GetDeviceById(deviceId);
-            var device = result?.ToDto();
-            var configuration = await deviceManager.GetConfiguration(device?.Topic!);
-            device!.Configuration = configuration?.ToDto();
-            return  TypedResults.Ok(device);
+            var configuration = await deviceManager.GetConfiguration(result?.Topic!);
+            return  TypedResults.Ok(result.ToDto(configuration));
         }
         catch (Exception ex)
         {
