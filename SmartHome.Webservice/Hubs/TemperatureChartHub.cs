@@ -42,8 +42,9 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
                 _logger.LogInformation("Sending {Count} charts to client: {ConnectionId}", chartData.Count(), context.ConnectionId);
                 clients.Caller.UpdateTemperature(chartData);
             });
-        
+
         TryDisposeSubscription(); //Try to clean up the old subscription
+        _logger.LogInformation("New subscription of client: {ConeectionId} with scope value: {Value}", context.ConnectionId, scope.Value);
         Context.Items[TemperatureSubscription] = subscription;
     }
 
@@ -51,11 +52,19 @@ public class TemperatureChartHub : Hub<ITemperatureChartHub>
     {
         if (!Context.Items.TryGetValue(TemperatureSubscription, out var subscription))
         {
+            //only appears for first connection of the client
+            _logger.LogInformation("No subscription available to dispose");
             return;
         }
 
-        _logger.LogInformation("Dispose temperature subscription of client: {ConnectionId}", Context.ConnectionId);
-        var disposable = (IDisposable)subscription;
-        disposable?.Dispose();
+        if (subscription is IDisposable disposable)
+        {
+            disposable?.Dispose();
+            _logger.LogInformation("Dispose subscription of client: {ConnectionId}", Context.ConnectionId);
+            return;
+        }
+        
+        // should be possible, but if this was in the logs something goes wrong
+        _logger.LogInformation("Unable to Dispose subcription of client: {ConnectionId}, no IDisosable object found", Context.ConnectionId);
     }
 }
